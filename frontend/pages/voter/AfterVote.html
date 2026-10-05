@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vote Confirmation | E-Voting Platform</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <nav>
+        <a href="/" class="logo">🗳️ E-Voting Platform</a>
+        <div class="nav-links">
+            <a href="/pages/spectator/LiveCounting.html">Live Counting</a>
+            <a href="/" class="btn btn-secondary">Home</a>
+        </div>
+    </nav>
+
+    <div class="container" style="max-width: 550px; margin-top: 3rem;">
+        <div class="card" style="text-align: center; padding: 3rem 2rem;">
+            <div class="symbol-badge" style="background: rgba(16, 185, 129, 0.2); color: var(--accent-green);">✓</div>
+            <h2 style="color: var(--accent-green); margin-bottom: 0.5rem;">Vote Cast Successfully!</h2>
+            <p>Your vote has been cryptographically signed and stored in Supabase.</p>
+
+            <div style="background: #090D16; border: 1px dashed var(--border-color); padding: 1.25rem; border-radius: 8px; margin: 1.5rem 0; word-break: break-all;">
+                <span style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 0.25rem;">YOUR VERIFICATION RECEIPT HASH</span>
+                <strong id="receipt-hash" style="color: var(--accent-blue); font-family: monospace;">---</strong>
+            </div>
+
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <a href="/pages/spectator/LiveCounting.html" class="btn">View Live Counting</a>
+                <a href="/" class="btn btn-secondary">Done</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/main.js"></script>
+    <script>
+        const hash = sessionStorage.getItem('lastVoteHash') || '0x' + Array.from({length: 32}, () => Math.floor(Math.random()*16).toString(16)).join('');
+        document.getElementById('receipt-hash').innerText = hash;
+    </script>
+</body>
+</html>

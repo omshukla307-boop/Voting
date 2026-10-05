@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cast Vote | E-Voting Platform</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <nav>
+        <a href="/" class="logo">🗳️ E-Voting Platform</a>
+        <div class="nav-links">
+            <a href="/pages/spectator/LiveCounting.html">Live Counting</a>
+            <button id="logout-btn" class="btn btn-secondary" style="padding: 0.4rem 1rem;">Logout</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <h2>Official Ballot Paper</h2>
+            <p>Select your preferred candidate and click <strong>Cast Vote</strong>. This action is irreversible once confirmed.</p>
+
+            <div id="vote-alert" style="display: none; padding: 0.75rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.9rem;"></div>
+
+            <div id="candidates-container" class="candidate-grid">
+                <div style="text-align: center; grid-column: 1/-1; padding: 2rem; color: var(--text-muted);">
+                    Loading registered candidates...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/main.js"></script>
+    <script>
+        let selectedCandidateId = null;
+
+        async function loadCandidates() {
+            const container = document.getElementById('candidates-container');
+            try {
+                const res = await fetch('/api/spectator/candidates');
+                const data = await res.json();
+
+                const candidates = data.candidates || data;
+
+                if (!candidates || candidates.length === 0) {
+                    container.innerHTML = '<div style="grid-column: 1/-1; text-align: center;">No candidates found.</div>';
+                    return;
+                }
+
+                container.innerHTML = candidates.map(c => `
+                    <div class="candidate-card" id="candidate-${c.id}">
+                        <div class="symbol-badge">${c.symbol || '🗳️'}</div>
+                        <h3>${c.name}</h3>
+                        <p style="color: var(--primary); font-weight: 600; margin-bottom: 0.5rem;">${c.party}</p>
+                        <p style="font-size: 0.85rem;">Constituency: ${c.constituency || 'General'}</p>
+                        <button class="btn" style="width: 100%; margin-top: 1rem;" onclick="castVote(${c.id}, ${c.electionId || 1})">
+                            Vote for ${c.name}
+                        </button>
+                    </div>
+                `).join('');
+            } catch (err) {
+                container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #EF4444;">Failed to load candidates.</div>';
+            }
+        }
+
+        async function castVote(candidateId, electionId) {
+            const token = getToken();
+            const alert = document.getElementById('vote-alert');
+
+            if (!confirm("Are you sure you want to cast your vote for this candidate?")) return;
+
+            try {
+                const res = await fetch('/api/voter/vote', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ candidateId, electionId })
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    alert.style.display = 'block';
+                    alert.style.background = 'rgba(239, 68, 68, 0.2)';
+                    alert.style.border = '1px solid #EF4444';
+                    alert.style.color = '#FCA5A5';
+                    alert.innerText = data.error || data.message || 'Voting failed';
+                    return;
+                }
+
+                // Redirect to receipt page
+                sessionStorage.setItem('lastVoteHash', data.voteHash || data.hash || 'VOTE-REC-2026-OK');
+                window.location.href = '/pages/voter/AfterVote.html';
+            } catch (err) {
+                alert.style.display = 'block';
+                alert.style.background = 'rgba(239, 68, 68, 0.2)';
+                alert.style.border = '1px solid #EF4444';
+                alert.style.color = '#FCA5A5';
+                alert.innerText = 'Error submitting vote. Please try again.';
+            }
+        }
+
+        loadCandidates();
+    </script>
+</body>
+</html>

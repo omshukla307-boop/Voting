@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Voting Platform | Secure & Transparent</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <nav>
+        <a href="/" class="logo">🗳️ E-Voting Platform</a>
+        <div class="nav-links">
+            <a href="/pages/spectator/LiveCounting.html">Live Counting</a>
+            <a href="/pages/spectator/FinalResult.html">Final Results</a>
+            <a href="/pages/auth/Login.html" class="btn">Voter Login</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card" style="text-align: center; padding: 4rem 2rem;">
+            <h1 style="font-size: 2.5rem; margin-bottom: 1rem;">Secure, Transparent & Instant Digital Voting</h1>
+            <p style="font-size: 1.1rem; max-width: 650px; margin: 0 auto 2rem auto;">
+                Cast your vote securely using unique cryptographic verification hashes and real-time live result counting powered by Supabase.
+            </p>
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <a href="/pages/auth/Login.html" class="btn">Cast Your Vote Now</a>
+                <a href="/pages/spectator/LiveCounting.html" class="btn btn-secondary">View Live Results</a>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+            <div class="card">
+                <div class="symbol-badge">🔐</div>
+                <h3>Cryptographic Security</h3>
+                <p>Every cast vote generates a unique receipt hash preventing double-voting and tampering.</p>
+            </div>
+            <div class="card">
+                <div class="symbol-badge">📊</div>
+                <h3>Live Real-Time Tallying</h3>
+                <p>Spectators and voters can track election turnouts and live vote counts as they are recorded.</p>
+            </div>
+            <div class="card">
+                <div class="symbol-badge">☁️</div>
+                <h3>Supabase Powered</h3>
+                <p>Backed by high-concurrency cloud database infrastructure ensuring zero downtime during peak voting hours.</p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 E-Voting Platform. All rights reserved.</p>
+    </footer>
+
+    <script src="/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Results | E-Voting Platform</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <nav>
+        <a href="/" class="logo">🗳️ E-Voting Platform</a>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/pages/spectator/FinalResult.html">Final Results</a>
+            <a href="/pages/auth/Login.html" class="btn">Voter Login</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <h2>Live Election Counting <span class="badge badge-live">LIVE</span></h2>
+                    <p style="margin: 0;">Real-time vote counters (auto-refreshes every 3 seconds)</p>
+                </div>
+                <div style="font-size: 0.9rem; color: var(--text-muted);">
+                    Total Votes Cast: <strong id="total-votes" style="color: white; font-size: 1.2rem;">0</strong>
+                </div>
+            </div>
+
+            <div id="live-results-container" style="margin-top: 2rem;">
+                <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                    Loading live vote tally...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/main.js"></script>
+    <script>
+        async function fetchLiveResults() {
+            try {
+                const res = await fetch('/api/spectator/live');
+                const data = await res.json();
+                const results = data.results || data.candidates || [];
+
+                let total = 0;
+                results.forEach(r => total += (r.voteCount || r.votes || 0));
+                document.getElementById('total-votes').innerText = total;
+
+                const container = document.getElementById('live-results-container');
+
+                if (results.length === 0) {
+                    container.innerHTML = '<p style="text-align: center;">No votes or candidates recorded yet.</p>';
+                    return;
+                }
+
+                container.innerHTML = results.map(r => {
+                    const count = r.voteCount || r.votes || 0;
+                    const pct = total > 0 ? ((count / total) * 100).toFixed(1) : 0;
+                    return `
+                        <div style="margin-bottom: 1.5rem; background: #090D16; padding: 1.25rem; border-radius: 8px; border: 1px solid var(--border-color);">
+                            <div style="display: flex; justify-content: space-between; font-weight: 600; margin-bottom: 0.5rem;">
+                                <span>${r.symbol || '🗳️'} ${r.name} (${r.party})</span>
+                                <span>${count} votes (${pct}%)</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${pct}%;"></div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (err) {
+                console.error("Live fetch error:", err);
+            }
+        }
+
+        fetchLiveResults();
+        setInterval(fetchLiveResults, 3000);
+    </script>
+</body>
+</html>

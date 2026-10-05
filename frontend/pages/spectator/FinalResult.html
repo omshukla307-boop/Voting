@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Final Results | E-Voting Platform</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <nav>
+        <a href="/" class="logo">🗳️ E-Voting Platform</a>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/pages/spectator/LiveCounting.html">Live Counting</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <h2>Official Final Election Tally</h2>
+            <p>Certified final vote count and breakdown by candidate.</p>
+
+            <div id="final-results-container" style="margin-top: 2rem;">
+                <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                    Loading official final result...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/main.js"></script>
+    <script>
+        async function fetchFinalResults() {
+            try {
+                const res = await fetch('/api/spectator/final');
+                const data = await res.json();
+                const results = data.results || data.candidates || [];
+
+                let total = 0;
+                results.forEach(r => total += (r.voteCount || r.votes || 0));
+
+                const container = document.getElementById('final-results-container');
+
+                if (results.length === 0) {
+                    container.innerHTML = '<p style="text-align: center;">No final election results available.</p>';
+                    return;
+                }
+
+                // Sort by vote count descending
+                results.sort((a, b) => (b.voteCount || 0) - (a.voteCount || 0));
+                const winner = results[0];
+
+                container.innerHTML = `
+                    <div style="background: rgba(79, 70, 229, 0.15); border: 1px solid var(--primary); padding: 1.5rem; border-radius: 10px; margin-bottom: 2rem; text-align: center;">
+                        <span style="font-size: 2.5rem; display: block; margin-bottom: 0.5rem;">🏆</span>
+                        <h3 style="color: var(--text-light); font-size: 1.5rem;">Projected Winner: ${winner.name} (${winner.party})</h3>
+                        <p style="margin: 0; color: var(--accent-blue);">Total Votes Secured: <strong>${winner.voteCount || 0}</strong></p>
+                    </div>
+
+                    <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                        <thead>
+                            <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-muted);">
+                                <th style="padding: 1rem;">Candidate</th>
+                                <th style="padding: 1rem;">Party</th>
+                                <th style="padding: 1rem;">Total Votes</th>
+                                <th style="padding: 1rem;">Vote Share</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${results.map(r => {
+                                const count = r.voteCount || r.votes || 0;
+                                const pct = total > 0 ? ((count / total) * 100).toFixed(1) : 0;
+                                return `
+                                    <tr style="border-bottom: 1px solid var(--border-color);">
+                                        <td style="padding: 1rem; font-weight: 600;">${r.symbol || '🗳️'} ${r.name}</td>
+                                        <td style="padding: 1rem; color: var(--text-muted);">${r.party}</td>
+                                        <td style="padding: 1rem; font-weight: 600;">${count}</td>
+                                        <td style="padding: 1rem; color: var(--accent-green); font-weight: 600;">${pct}%</td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                `;
+            } catch (err) {
+                console.error("Final fetch error:", err);
+            }
+        }
+
+        fetchFinalResults();
+    </script>
+</body>
+</html>

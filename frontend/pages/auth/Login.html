@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voter Login | E-Voting Platform</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <nav>
+        <a href="/" class="logo">🗳️ E-Voting Platform</a>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/pages/spectator/LiveCounting.html">Live Results</a>
+        </div>
+    </nav>
+
+    <div class="container" style="max-width: 450px; margin-top: 4rem;">
+        <div class="card">
+            <h2 style="text-align: center; margin-bottom: 0.5rem;">Voter Authentication</h2>
+            <p style="text-align: center; margin-bottom: 2rem;">Log in with your Voter ID to cast your vote.</p>
+
+            <div id="error-alert" style="display: none; background: rgba(239, 68, 68, 0.2); border: 1px solid #EF4444; color: #FCA5A5; padding: 0.75rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.9rem;"></div>
+
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="voterId">Voter ID</label>
+                    <input type="text" id="voterId" placeholder="e.g. voter1" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn" style="width: 100%;">Sign In & Vote</button>
+            </form>
+
+            <div style="margin-top: 1.5rem; text-align: center; font-size: 0.85rem; color: var(--text-muted);">
+                Demo Credentials: <strong>voter1</strong> / <strong>password123</strong>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/main.js"></script>
+    <script>
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const voterId = document.getElementById('voterId').value;
+            const password = document.getElementById('password').value;
+            const errorAlert = document.getElementById('error-alert');
+
+            try {
+                const res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ voterId, password })
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    errorAlert.innerText = data.error || data.message || 'Login failed';
+                    errorAlert.style.display = 'block';
+                    return;
+                }
+
+                setToken(data.token);
+                window.location.href = '/pages/voter/VotePage.html';
+            } catch (err) {
+                errorAlert.innerText = 'Server connection error. Please try again.';
+                errorAlert.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
