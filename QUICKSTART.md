@@ -25,13 +25,14 @@ A complete, beginner-friendly online voting application with a Node.js/Express b
 ```bash
 cd backend
 npm install
+cd ..
 ```
 
 ### 2. Start the Server
 
 **Default (SQLite, local testing):**
 ```bash
-node src/server.js
+npm start
 ```
 
 **Using MySQL:**
@@ -42,7 +43,7 @@ $env:DB_PORT='3306'
 $env:DB_NAME='Vote_Test'
 $env:DB_USER='root'
 $env:DB_PASS='YOUR_PASSWORD'
-node src/server.js
+npm start
 ```
 
 The server will:
@@ -63,11 +64,11 @@ The server will:
 
 | Page | URL |
 |------|-----|
-| Home | `http://localhost:4000/frontend/index.html` |
-| Login | `http://localhost:4000/frontend/pages/auth/Login.html` |
-| Vote | `http://localhost:4000/frontend/pages/voter/VotePage.html` |
-| Live Results | `http://localhost:4000/frontend/pages/spectator/LiveCounting.html` |
-| Final Results | `http://localhost:4000/frontend/pages/spectator/FinalResult.html` |
+| Home | `http://localhost:4000/` |
+| Login | `http://localhost:4000/pages/auth/Login.html` |
+| Vote | `http://localhost:4000/pages/voter/VotePage.html` |
+| Live Results | `http://localhost:4000/pages/spectator/LiveCounting.html` |
+| Final Results | `http://localhost:4000/pages/spectator/FinalResult.html` |
 
 ### User Flow
 
