@@ -53,11 +53,17 @@ app.use('/img', express.static(path.join(__dirname, '../../frontend/img')));
 // app.use('/assets', express.static(path.join(__dirname, '../../frontend/assets')));
 
 // 6. START THE SERVER
-const PORT = 4000;
+const PORT = process.env.PORT || 4000;
 
 sequelize.sync().then(() => {
   console.log("Database synced");
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-  });
+  if (!process.env.VERCEL) {
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  }
+}).catch(err => {
+  console.error("Database sync error:", err);
 });
+
+module.exports = app;

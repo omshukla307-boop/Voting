@@ -1,36 +1,45 @@
-// SQL (Sequelize) connection placeholder
-// Responsibilities:
-// - Export a configured Sequelize instance and a connect helper
-// - Default to an in-memory SQL DB for quick hackathon setup
-
 const { Sequelize } = require('sequelize');
 const path = require('path');
 
-// Simple DB setup for beginners.
-// - If you want to use MySQL, set DB_DIALECT=mysql and provide DB_HOST, DB_NAME, DB_USER, DB_PASS.
-// - Otherwise this uses a local SQLite file located at ./data/database.sqlite for easy testing.
-
-// -----------------------------------------------------------------------------
-// LOCAL TEST CREDENTIALS (FOR BEGINNERS ONLY)
-// If you prefer to hardcode credentials for quick local testing, fill these
-// values below. Do NOT commit real credentials to source control.
-// Uncomment and edit the lines below, or set the same values via environment vars.
-// -----------------------------------------------------------------------------
-/*
-process.env.DB_DIALECT = 'mysql';
-process.env.DB_HOST = 'localhost';
-process.env.DB_PORT = '3306';
-process.env.DB_NAME = 'Vote_Test';
-process.env.DB_USER = 'root';
-process.env.DB_PASS = 'YOURPASS';
-*/
-
-const useMySQL = (process.env.DB_DIALECT || '').toLowerCase() === 'mysql';
+const dialect = (process.env.DB_DIALECT || '').toLowerCase();
+const isPostgres = dialect === 'postgres' || dialect === 'postgresql' || !!process.env.DATABASE_URL;
+const isMySQL = dialect === 'mysql';
 
 let sequelize;
 
-if (useMySQL) {
-    // Basic MySQL connection using env vars
+if (isPostgres) {
+    if (process.env.DATABASE_URL) {
+        sequelize = new Sequelize(process.env.DATABASE_URL, {
+            dialect: 'postgres',
+            protocol: 'postgres',
+            dialectOptions: {
+                ssl: process.env.DB_SSL === 'false' ? false : {
+                    require: true,
+                    rejectUnauthorized: false
+                }
+            },
+            logging: false,
+        });
+    } else {
+        sequelize = new Sequelize(
+            process.env.DB_NAME || 'postgres',
+            process.env.DB_USER || 'postgres',
+            process.env.DB_PASS || '',
+            {
+                host: process.env.DB_HOST || 'localhost',
+                port: process.env.DB_PORT ? Number(process.env.DB_PORT) : 5432,
+                dialect: 'postgres',
+                dialectOptions: {
+                    ssl: process.env.DB_SSL === 'false' ? false : {
+                        require: true,
+                        rejectUnauthorized: false
+                    }
+                },
+                logging: false,
+            }
+        );
+    }
+} else if (isMySQL) {
     sequelize = new Sequelize(process.env.DB_NAME || 'Vote_Test', process.env.DB_USER || 'root', process.env.DB_PASS || '', {
         host: process.env.DB_HOST || 'localhost',
         port: process.env.DB_PORT ? Number(process.env.DB_PORT) : 3306,
@@ -38,7 +47,6 @@ if (useMySQL) {
         logging: false,
     });
 } else {
-    // Simple SQLite file for local development
     const storagePath = path.join(__dirname, '..', '..', 'data', 'database.sqlite');
     const fs = require('fs');
     const dir = path.dirname(storagePath);
@@ -54,11 +62,11 @@ if (useMySQL) {
 async function connectDB() {
     try {
         await sequelize.authenticate();
-        console.log(useMySQL ? 'Connected to MySQL database' : 'Connected to SQLite database');
+        console.log(`Connected to ${sequelize.getDialect()} database`);
     } catch (err) {
-        console.error('SQL DB connection error', err);
+        console.error('SQL DB connection error:', err);
         throw err;
     }
 }
 
-module.exports = { sequelize, connectDB };
+module.exports = { sequelize, connectDB };

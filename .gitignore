@@ -1,2 +1,5 @@
 node_modules/
-ai-backend/.env
+.env
+*.env
+backend/.env
+ai-backend/.env
