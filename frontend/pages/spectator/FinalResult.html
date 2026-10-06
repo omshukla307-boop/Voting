@@ -32,7 +32,7 @@
     <script>
         async function fetchFinalResults() {
             try {
-                const res = await fetch('/api/spectator/final');
+                const res = await fetch(apiUrl('/spectator/final'));
                 const data = await res.json();
                 const results = data.results || data.candidates || [];
 

@@ -40,7 +40,7 @@
     <script>
         async function fetchLiveResults() {
             try {
-                const res = await fetch('/api/spectator/live');
+                const res = await fetch(apiUrl('/spectator/live'));
                 const data = await res.json();
                 const results = data.results || data.candidates || [];
 

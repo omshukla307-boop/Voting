@@ -37,7 +37,7 @@
         async function loadCandidates() {
             const container = document.getElementById('candidates-container');
             try {
-                const res = await fetch('/api/spectator/candidates');
+                const res = await fetch(apiUrl('/spectator/candidates'));
                 const data = await res.json();
 
                 const candidates = data.candidates || data;
@@ -70,7 +70,7 @@
             if (!confirm("Are you sure you want to cast your vote for this candidate?")) return;
 
             try {
-                const res = await fetch('/api/voter/vote', {
+                const res = await fetch(apiUrl('/voter/vote'), {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
