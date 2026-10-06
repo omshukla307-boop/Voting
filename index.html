@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VoteIn | Blockchain Digital Voting Platform</title>
-    <link rel="stylesheet" href="/css/styles.css?v=20260615">
+    <link rel="stylesheet" href="/css/styles.css?v=20261007">
     <!-- HTML5 QR Code Scanner Library -->
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 </head>
@@ -16,9 +16,9 @@
             voteIn
         </a>
 
-        <!-- Scanner Pill Button at Top of App -->
-        <button type="button" class="top-scanner-btn" onclick="navigateToStep('step-auth'); startQRScanner();">
-            📷 Scan QR Code
+        <!-- Camera and QR tools -->
+        <button type="button" class="top-scanner-btn" onclick="navigateToStep('step-auth')">
+            📷 Camera &amp; QR
         </button>
 
         <div class="nav-links">
@@ -214,7 +214,7 @@
         </div>
 
         <!-- ========================================== -->
-        <!-- SCREEN 3: BIOMETRIC & QR SCANNER           -->
+        <!-- SCREEN 3: LIVE PHOTO & QR SCANNER          -->
         <!-- ========================================== -->
         <div id="step-auth" class="app-screen" style="display: none;">
             <div class="votein-card" style="text-align: center;">
@@ -223,37 +223,37 @@
                     <h3 style="font-size: 1.3rem; font-weight: 800; margin: 0;">Authentication</h3>
                 </div>
 
-                <!-- Fingerprint Scanner Card -->
-                <div class="biometric-box">
-                    <div class="fingerprint-icon">☝️</div>
-                    <p style="font-size: 0.82rem; color: var(--text-muted); font-weight: 600;">Make sure to scan your thumb before proceeding for voting</p>
-                </div>
+                <div class="camera-tools-grid">
+                    <section class="biometric-box camera-tool-card" aria-labelledby="live-photo-title">
+                        <h4 id="live-photo-title">Take a live photo</h4>
+                        <p>Use your camera to take a photo. It stays in this browser and is not uploaded or used to verify identity.</p>
+                        <video id="live-camera-preview" class="camera-preview" autoplay playsinline muted hidden></video>
+                        <canvas id="live-photo-canvas" hidden></canvas>
+                        <img id="live-photo-result" class="camera-preview" alt="Photo captured in this browser" hidden>
+                        <div class="camera-tool-actions">
+                            <button id="start-live-camera" type="button" class="btn-vote-now camera-action">Start live camera</button>
+                            <button id="capture-live-photo" type="button" class="btn-vote-now camera-action" disabled>Take photo</button>
+                        </div>
+                        <p id="camera-status" class="camera-status" role="status">Camera is off.</p>
+                    </section>
 
-                <!-- Live Camera QR Code Scanner -->
-                <div class="biometric-box">
-                    <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.5rem;">Live Camera & QR Scanner</h4>
-                    
-                    <div id="qr-reader" style="width: 100%; border-radius: 12px; overflow: hidden; margin-bottom: 0.75rem;"></div>
-
-                    <div style="display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap;">
-                        <button type="button" class="btn-vote-now" onclick="startQRScanner()" style="padding: 0.6rem 1rem; font-size: 0.85rem; width: auto;">
-                            📷 Start Camera Scanner
-                        </button>
-                        <button type="button" class="btn-vote-now" onclick="simulateQRScan()" style="padding: 0.6rem 1rem; font-size: 0.85rem; width: auto; background: var(--votein-maroon);">
-                            ⚡ Auto Verify QR Code
-                        </button>
-                    </div>
-
-                    <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.75rem;">After biometric verification proceed with face and voter ID verification.</p>
+                    <section class="biometric-box camera-tool-card" aria-labelledby="qr-scan-title">
+                        <h4 id="qr-scan-title">Scan account QR code</h4>
+                        <p>Scan a QR code containing only your demo account ID. Passwords and identity-document QR codes are not accepted.</p>
+                        <div id="qr-reader" class="qr-reader"></div>
+                        <button id="start-qr-scanner" type="button" class="btn-vote-now camera-action">Start QR scanner</button>
+                        <p id="qr-status" class="camera-status" role="status">Scanner is off.</p>
+                        <div id="qr-account-result" class="qr-account-result" role="status" hidden>
+                            <p>Account ID detected: <strong id="qr-account-id"></strong></p>
+                            <a id="qr-login-link" class="btn-maroon" href="/pages/auth/Login.html">Continue to sign in</a>
+                        </div>
+                    </section>
                 </div>
 
                 <div style="margin-bottom: 1.25rem;">
                     <a href="javascript:void(0)" onclick="showToast('Need help? Contact Election Helpline: 1950', 'info')" style="font-size: 0.82rem; color: var(--text-muted); text-decoration: underline;">Need help? Click here.</a>
                 </div>
-
-                <button type="button" class="btn-maroon" onclick="navigateToStep('step-pin')">
-                    Next ➔
-                </button>
+                <p class="camera-demo-notice">This is a demo account lookup only. QR scanning and photos do not authenticate a voter or establish voting eligibility.</p>
             </div>
         </div>
 
@@ -442,7 +442,7 @@
             <span class="bottom-nav-icon">🔍</span>
             Elections
         </a>
-        <a href="javascript:void(0)" onclick="navigateToStep('step-auth'); startQRScanner();" class="bottom-nav-item">
+        <a href="javascript:void(0)" onclick="navigateToStep('step-auth')" class="bottom-nav-item">
             <div class="bottom-nav-center-btn">📷</div>
         </a>
         <a href="/pages/spectator/ElectionNews.html" class="bottom-nav-item">
@@ -497,6 +497,10 @@
         });
 
         function navigateToStep(stepId) {
+            if (stepId !== 'step-auth') {
+                stopLiveCamera();
+                stopQRScanner();
+            }
             document.querySelectorAll('.app-screen').forEach(s => s.style.display = 'none');
             const target = document.getElementById(stepId);
             if (target) target.style.display = 'block';
@@ -504,28 +508,151 @@
         }
 
         let html5QrcodeScanner = null;
+        let cameraStream = null;
+        let qrScanHandled = false;
 
-        function startQRScanner() {
-            try {
-                if (!html5QrcodeScanner) {
-                    html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", { fps: 10, qrbox: 200 });
-                }
-                html5QrcodeScanner.render((decodedText) => {
-                    showToast(`QR Code Scanned: ${decodedText}`, 'success');
-                    html5QrcodeScanner.clear();
-                    navigateToStep('step-pin');
-                }, (error) => {});
-            } catch (err) {
-                simulateQRScan();
+        function stopLiveCamera() {
+            const wasStreaming = Boolean(cameraStream);
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+                cameraStream = null;
+            }
+            const video = document.getElementById('live-camera-preview');
+            if (video) {
+                video.srcObject = null;
+                video.hidden = true;
+            }
+            const captureButton = document.getElementById('capture-live-photo');
+            if (captureButton) captureButton.disabled = true;
+            const status = document.getElementById('camera-status');
+            if (status && wasStreaming) {
+                status.textContent = document.getElementById('live-photo-result').hidden
+                    ? 'Camera is off.'
+                    : 'Photo captured locally. It was not uploaded.';
             }
         }
 
-        function simulateQRScan() {
-            showToast("✅ Biometric & QR Code Verified!", "success");
-            setTimeout(() => {
-                navigateToStep('step-pin');
-            }, 600);
+        async function startLiveCamera() {
+            const status = document.getElementById('camera-status');
+            const video = document.getElementById('live-camera-preview');
+            if (!navigator.mediaDevices?.getUserMedia) {
+                status.textContent = 'Live camera is not available in this browser. Open the site over HTTPS and allow camera access.';
+                return;
+            }
+
+            stopLiveCamera();
+            try {
+                cameraStream = await navigator.mediaDevices.getUserMedia({
+                    audio: false,
+                    video: { facingMode: 'user' }
+                });
+                video.srcObject = cameraStream;
+                video.hidden = false;
+                await video.play();
+                document.getElementById('capture-live-photo').disabled = false;
+                status.textContent = 'Camera is live. Take a photo when ready.';
+            } catch (err) {
+                status.textContent = err.name === 'NotAllowedError'
+                    ? 'Camera permission was denied. Allow camera access in your browser settings and try again.'
+                    : 'Could not start the camera. Check that a camera is connected and try again.';
+                console.error('Live camera error:', err);
+            }
         }
+
+        function captureLivePhoto() {
+            const video = document.getElementById('live-camera-preview');
+            const canvas = document.getElementById('live-photo-canvas');
+            const image = document.getElementById('live-photo-result');
+            if (!cameraStream || !video.videoWidth || !video.videoHeight) {
+                document.getElementById('camera-status').textContent = 'Start the live camera and wait for the preview before taking a photo.';
+                return;
+            }
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+            image.src = canvas.toDataURL('image/jpeg', 0.88);
+            image.hidden = false;
+            video.hidden = true;
+            stopLiveCamera();
+            document.getElementById('camera-status').textContent = 'Photo captured locally. It was not uploaded.';
+        }
+
+        function getAccountIdFromQr(decodedText) {
+            let accountId = decodedText.trim();
+            try {
+                const payload = JSON.parse(accountId);
+                if (!payload || typeof payload !== 'object' || Array.isArray(payload)
+                    || Object.keys(payload).length !== 1 || typeof payload.accountId !== 'string') {
+                    return null;
+                }
+                accountId = payload.accountId.trim();
+            } catch {
+                // A plain demo account ID is also a valid QR payload.
+            }
+            return /^[A-Za-z0-9_-]{1,64}$/.test(accountId) ? accountId : null;
+        }
+
+        async function stopQRScanner() {
+            if (!html5QrcodeScanner) return;
+            const scanner = html5QrcodeScanner;
+            html5QrcodeScanner = null;
+            try {
+                await scanner.clear();
+            } catch (err) {
+                console.error('Could not stop QR scanner cleanly:', err);
+            }
+        }
+
+        async function startQRScanner() {
+            const status = document.getElementById('qr-status');
+            if (typeof Html5QrcodeScanner === 'undefined') {
+                status.textContent = 'QR scanner could not load. Check your connection and refresh the page.';
+                return;
+            }
+            stopLiveCamera();
+            await stopQRScanner();
+            qrScanHandled = false;
+            sessionStorage.removeItem('votein.pendingAccountId');
+            document.getElementById('qr-account-result').hidden = true;
+            status.textContent = 'Starting camera… allow camera access to scan your account QR.';
+            try {
+                html5QrcodeScanner = new Html5QrcodeScanner('qr-reader', {
+                    fps: 10,
+                    qrbox: { width: 220, height: 220 },
+                    rememberLastUsedCamera: true
+                });
+                html5QrcodeScanner.render(async decodedText => {
+                    if (qrScanHandled) return;
+                    qrScanHandled = true;
+                    const accountId = getAccountIdFromQr(decodedText);
+                    await stopQRScanner();
+                    if (!accountId) {
+                        status.textContent = 'That QR does not contain a valid demo account ID. For safety, scan a QR with only the ID (or {"accountId":"your-id"}); passwords and identity QR codes are not accepted.';
+                        return;
+                    }
+                    stopLiveCamera();
+                    document.getElementById('qr-account-id').textContent = accountId;
+                    document.getElementById('qr-account-result').hidden = false;
+                    sessionStorage.setItem('votein.pendingAccountId', accountId);
+                    status.textContent = 'Account ID scanned. Continue to sign in with your password.';
+                }, () => {});
+                status.textContent = 'Point the camera at your demo account QR code.';
+            } catch (err) {
+                status.textContent = 'Could not start the QR scanner. Check that a camera is connected and allow camera access.';
+                console.error('QR scanner error:', err);
+                await stopQRScanner();
+            }
+        }
+
+        document.getElementById('start-live-camera').addEventListener('click', startLiveCamera);
+        document.getElementById('capture-live-photo').addEventListener('click', captureLivePhoto);
+        document.getElementById('start-qr-scanner').addEventListener('click', startQRScanner);
+        document.getElementById('qr-login-link').addEventListener('click', event => {
+            if (!sessionStorage.getItem('votein.pendingAccountId')) {
+                event.preventDefault();
+                document.getElementById('qr-status').textContent = 'Scan a valid demo account QR before continuing.';
+            }
+        });
 
         function openVoteModal(id, name, party, symbol) {
             selectedCandidateObj = { id, name, party, symbol };

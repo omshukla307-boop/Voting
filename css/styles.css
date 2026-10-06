@@ -346,10 +346,107 @@ nav {
     background: #FFFFFF;
 }
 
-.fingerprint-icon {
-    font-size: 3.5rem;
-    color: var(--votein-maroon);
+.camera-tools-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.camera-tool-card {
+    min-width: 0;
+    margin-bottom: 1.25rem;
+}
+
+.camera-tool-card h4 {
     margin-bottom: 0.5rem;
+    color: var(--text-dark);
+    font-size: 1rem;
+}
+
+.camera-tool-card > p {
+    margin-bottom: 0.85rem;
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    line-height: 1.55;
+}
+
+.camera-preview {
+    display: block;
+    width: 100%;
+    max-height: 340px;
+    margin: 0 auto 0.85rem;
+    border-radius: 12px;
+    background: #111827;
+    object-fit: contain;
+}
+
+.camera-preview[hidden] {
+    display: none;
+}
+
+.camera-tool-actions {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.camera-action {
+    width: auto;
+    padding: 0.65rem 0.9rem;
+    font-size: 0.84rem;
+}
+
+.camera-action:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+.camera-status {
+    margin-top: 0.75rem;
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    line-height: 1.5;
+}
+
+.qr-reader {
+    width: 100%;
+    margin: 0 auto 0.75rem;
+    overflow: hidden;
+    border-radius: 12px;
+}
+
+.qr-reader video {
+    max-width: 100%;
+    border-radius: 12px;
+}
+
+.qr-account-result {
+    margin-top: 0.85rem;
+    padding: 0.85rem;
+    border: 1px solid #A7F3D0;
+    border-radius: 12px;
+    background: #ECFDF5;
+    color: #065F46;
+    overflow-wrap: anywhere;
+}
+
+.qr-account-result p {
+    margin-bottom: 0.75rem;
+}
+
+.qr-account-result .btn-maroon {
+    display: inline-block;
+    padding: 0.6rem 0.9rem;
+    text-decoration: none;
+}
+
+.camera-demo-notice {
+    max-width: 720px;
+    margin: 0 auto;
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    line-height: 1.55;
 }
 
 /* Slide to Vote Interactive Slider */
@@ -1322,6 +1419,10 @@ nav {
 }
 
 @media (max-width: 760px) {
+    .camera-tools-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
     .news-grid {
         grid-template-columns: minmax(0, 1fr);
     }
