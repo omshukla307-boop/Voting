@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Official Final Election Results | E-Voting Platform</title>
-    <link rel="stylesheet" href="/css/styles.css?v=20261006">
+    <title>Demo Election Results | E-Voting Platform</title>
+    <link rel="stylesheet" href="/css/styles.css?v=20261007">
 </head>
 <body>
     <nav>
@@ -24,10 +24,10 @@
         <div class="card" style="padding: 2rem 2.25rem;">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
                 <div>
-                    <span class="badge badge-purple" style="margin-bottom: 0.5rem;">OFFICIAL CERTIFIED TALLY</span>
-                    <h2 style="font-size: 1.8rem; font-weight: 800; margin: 0.2rem 0 0.3rem 0;">National General Election Final Results</h2>
+                    <span class="badge badge-purple" style="margin-bottom: 0.5rem;">DEMO TALLY</span>
+                    <h2 id="final-results-title" style="font-size: 1.8rem; font-weight: 800; margin: 0.2rem 0 0.3rem 0;">Election Results</h2>
                     <p style="margin: 0; color: var(--text-secondary); font-size: 0.95rem;">
-                        Certified final vote count, candidate rankings, and vote share breakdown.
+                        Sample app results for the active demo election. Not an official or certified election count.
                     </p>
                 </div>
                 <div style="display: flex; gap: 0.75rem;">
@@ -45,13 +45,13 @@
         <div id="final-results-container">
             <div class="card" style="text-align: center; padding: 4rem 1rem; color: var(--text-secondary);">
                 <div class="logo-icon" style="margin: 0 auto 1rem auto; animation: pulse 1.5s infinite;">🏆</div>
-                <p style="font-size: 1.1rem; font-weight: 600;">Loading certified final election tally...</p>
+                <p style="font-size: 1.1rem; font-weight: 600;">Loading demo election results...</p>
             </div>
         </div>
     </div>
 
     <footer>
-        <p>&copy; 2026 E-Voting Platform. Certified Cryptographic Election Tallies.</p>
+        <p>&copy; 2026 E-Voting Platform. Demo results only — not an official election tally.</p>
     </footer>
 
     <script src="/js/main.js?v=20261006"></script>
@@ -64,6 +64,9 @@
                 const data = await res.json();
                 const results = data.results || data.candidates || [];
                 cachedResults = results;
+                if (data.election) {
+                    document.getElementById('final-results-title').textContent = `${data.election.name} Results`;
+                }
 
                 let total = 0;
                 results.forEach(r => total += (r.votes || r.voteCount || 0));
@@ -73,7 +76,7 @@
                 if (results.length === 0) {
                     container.innerHTML = `
                         <div class="card" style="text-align: center; padding: 3rem;">
-                            <p style="color: var(--text-secondary);">No election results available yet.</p>
+                            <p style="color: var(--text-secondary);">${data.election ? 'No candidates are listed for the active demo election yet.' : 'There is no active demo election right now.'}</p>
                         </div>
                     `;
                     return;
@@ -90,7 +93,7 @@
                     <div class="card" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(139, 92, 246, 0.15) 100%); border-color: var(--primary); padding: 3rem 2rem; text-align: center; margin-bottom: 2rem;">
                         <div style="font-size: 3.5rem; margin-bottom: 0.75rem;">🏆</div>
                         <span class="badge badge-live" style="background: rgba(245, 158, 11, 0.2); color: var(--accent-amber); border-color: var(--accent-amber); margin-bottom: 0.75rem;">
-                            ELECTION WINNER PROJECTED
+                            LEADING CANDIDATE IN DEMO TALLY
                         </span>
                         <h2 style="font-size: 2.2rem; font-weight: 800; color: var(--text-primary); margin-bottom: 0.4rem;">
                             ${winner.name}
@@ -110,7 +113,7 @@
                         </div>
                     </div>
 
-                    <!-- Certified Leaderboard Table -->
+                    <!-- Demo leaderboard -->
                     <div class="card" style="padding: 2rem;">
                         <h3 style="font-size: 1.3rem; margin-bottom: 1.5rem;">Complete Candidates Leaderboard</h3>
 
@@ -178,7 +181,7 @@
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'Official_Election_Final_Results_2026.csv';
+            a.download = 'Demo_Election_Results.csv';
             a.click();
             showToast('CSV Report Downloaded!', 'success');
         }

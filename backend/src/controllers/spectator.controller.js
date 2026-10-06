@@ -2,35 +2,45 @@
 const { Candidate, Election, User } = require("../models");
 const { Op } = require("sequelize");
 
+async function findActiveElection() {
+    const now = new Date();
+    return Election.findOne({
+        where: {
+            [Op.or]: [
+                { status: "live" },
+                {
+                    startTime: { [Op.lte]: now },
+                    endTime: { [Op.gte]: now }
+                }
+            ]
+        },
+        order: [["startTime", "DESC"], ["id", "DESC"]]
+    });
+}
+
 exports.getCandidates = async (req, res) => {
     try {
-        const candidates = await Candidate.findAll({
-            order: [["voteCount", "DESC"]],
-        });
+        const election = await findActiveElection();
+        const candidates = election
+            ? await Candidate.findAll({
+                where: { electionId: election.id },
+                order: [["voteCount", "DESC"]]
+            })
+            : [];
         return res.status(200).json({
             success: true,
-            candidates,
+            election: election ? { id: election.id, name: election.name } : null,
+            candidates
         });
     } catch (error) {
-        return res.status(500).json({ error: error.message });
+        console.error("Candidate lookup failed:", error);
+        return res.status(500).json({ error: "Could not load candidates for the active election." });
     }
 };
 
 exports.getLiveResults = async (req, res) => {
     try {
-        const now = new Date();
-        const election = await Election.findOne({
-            where: {
-                [Op.or]: [
-                    { status: "live" },
-                    {
-                        startTime: { [Op.lte]: now },
-                        endTime: { [Op.gte]: now }
-                    }
-                ]
-            },
-            order: [["startTime", "DESC"], ["id", "DESC"]]
-        });
+        const election = await findActiveElection();
 
         if (!election) {
             return res.status(200).json({ success: true, election: null, candidates: [] });
@@ -53,9 +63,13 @@ exports.getLiveResults = async (req, res) => {
 
 exports.getFinalResults = async (req, res) => {
     try {
-        const candidates = await Candidate.findAll({
-            order: [["voteCount", "DESC"]],
-        });
+        const election = await findActiveElection();
+        const candidates = election
+            ? await Candidate.findAll({
+                where: { electionId: election.id },
+                order: [["voteCount", "DESC"]]
+            })
+            : [];
 
         const results = candidates.map((c) => ({
             id: c.id,
@@ -69,10 +83,12 @@ exports.getFinalResults = async (req, res) => {
 
         return res.status(200).json({
             success: true,
+            election: election ? { id: election.id, name: election.name } : null,
             results,
             totalVoters // Send the real count back to the frontend
         });
     } catch (error) {
-        return res.status(500).json({ error: error.message });
+        console.error("Final results lookup failed:", error);
+        return res.status(500).json({ error: "Could not load results for the active election." });
     }
 };
