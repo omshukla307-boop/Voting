@@ -6,6 +6,7 @@ const cors = require("cors");
 const ejs = require('ejs');
 const path = require("path");
 const { sequelize } = require("./models");
+const { assertDatabaseConfig } = require("./config/db");
 const { seed } = require("./scripts/seed");
 
 const authRoutes = require("./routes/auth.routes");
@@ -17,6 +18,37 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+let databaseReady;
+
+function initializeDatabase() {
+  if (!databaseReady) {
+    databaseReady = (async () => {
+      assertDatabaseConfig();
+      await sequelize.sync();
+      console.log("Database synced");
+      try {
+        await seed();
+      } catch (seedErr) {
+        console.warn("Seeding notice:", seedErr.message);
+      }
+    })();
+  }
+  return databaseReady;
+}
+
+app.use("/api", async (req, res, next) => {
+  try {
+    await initializeDatabase();
+    next();
+  } catch (err) {
+    console.error("Database initialization error:", err.message);
+    const error = err.code === "DATABASE_CONFIG_MISSING"
+      ? err.message
+      : "Database unavailable";
+    res.status(503).json({ error });
+  }
+});
 
 const frontendPath = path.join(__dirname, '../../frontend');
 
@@ -60,21 +92,14 @@ app.get('*', (req, res, next) => {
 
 const PORT = process.env.PORT || 4000;
 
-sequelize.sync().then(async () => {
-  console.log("Database synced");
-  try {
-    await seed();
-  } catch (seedErr) {
-    console.warn("Seeding notice:", seedErr.message);
-  }
-
-  if (!process.env.VERCEL) {
+if (!process.env.VERCEL) {
+  initializeDatabase().then(() => {
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });
-  }
-}).catch(err => {
-  console.error("Database sync error:", err);
-});
+  }).catch(() => {
+    process.exitCode = 1;
+  });
+}
 
 module.exports = app;

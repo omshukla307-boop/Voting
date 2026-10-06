@@ -200,6 +200,14 @@ curl -X POST http://localhost:4000/api/voter/vote \
 - Kill the process: `taskkill /PID <pid> /F` (Windows) or `kill <pid>` (Unix)
 - Or run on a different port by modifying `src/server.js` line changing `PORT = 4000`
 
+**Server connection error in the browser?**
+- Check `https://<your-deployment-domain>/api/health`; a healthy deployment returns JSON.
+- Ensure the backend changes are pushed and the latest deployment completed.
+- In Vercel Project Settings → Environment Variables, configure `DATABASE_URL` with Supabase's IPv4-compatible Transaction Pooler URI (from Supabase Dashboard → Connect → Transaction Pooler; typically port 6543) and set `JWT_SECRET`, then redeploy. The direct `db.<project-ref>.supabase.co` address may be IPv6-only and unreachable from Vercel.
+- Do not use SQLite for Vercel deployments.
+- Locally, confirm the backend is running: `npm --prefix backend start`.
+- For a preview or alternate host, set `window.__VOTING_API_BASE__` to the backend's full API URL before loading `/js/main.js`.
+
 **Cannot login?**
 - Confirm test voter was created: Check server output for "Created test voter"
 - Try credentials: `voter1` / `password123`

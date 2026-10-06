@@ -1,8 +1,26 @@
 // Main Frontend API & State Handler
 
-const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:')
-    ? 'http://localhost:4000/api'
-    : '/api';
+function normalizeApiBase(base) {
+    if (!base) return '/api';
+    const value = String(base).trim().replace(/\/+$/, '');
+    return value.endsWith('/api') ? value : `${value}/api`;
+}
+
+function resolveApiBase() {
+    const fromGlobal = window.__VOTING_API_BASE__ || window.__API_BASE__;
+    if (fromGlobal) return normalizeApiBase(fromGlobal);
+
+    const hostname = window.location.hostname || '';
+    const isLocalHostname = ['localhost', '127.0.0.1', '0.0.0.0', '::1', '[::1]'].includes(hostname);
+
+    if (window.location.protocol === 'file:' || isLocalHostname) {
+        return 'http://localhost:4000/api';
+    }
+
+    return `${window.location.origin}/api`;
+}
+
+const API_BASE = resolveApiBase();
 
 function apiUrl(path) {
     return `${API_BASE}${path.startsWith('/') ? path : `/${path}`}`;
