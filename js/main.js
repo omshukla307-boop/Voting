@@ -44,7 +44,7 @@ function logout() {
 function checkAuth() {
     const token = getToken();
     const path = window.location.pathname;
-    const isPublic = path.includes('Login.html') || path.endsWith('index.html') || path === '/' || path.includes('/spectator/');
+    const isPublic = path.includes('Login.html') || path.includes('Signup.html') || path.endsWith('index.html') || path === '/' || path.includes('/spectator/');
     
     if (!token && !isPublic) {
         window.location.href = '/pages/auth/Login.html';
@@ -92,10 +92,10 @@ function updateNavAuthState() {
             userBadge.style.alignItems = 'center';
             userBadge.style.gap = '0.75rem';
             userBadge.innerHTML = `
-                <a href="/pages/voter/VotePage.html" class="btn btn-secondary" style="padding: 0.4rem 1rem; font-size: 0.85rem;">🗳️ Cast Vote</a>
-                <span class="badge badge-purple" style="font-size: 0.8rem;">👤 ${user.id}</span>
+                <span id="nav-user-id" class="badge badge-purple" style="font-size: 0.8rem;"></span>
                 <button id="logout-btn" class="btn btn-secondary" style="padding: 0.4rem 0.9rem; font-size: 0.85rem; background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.3); color: #FCA5A5;">Logout</button>
             `;
+            userBadge.querySelector('#nav-user-id').textContent = `👤 ${user.id}`;
             navLinks.appendChild(userBadge);
 
             const logoutBtn = document.getElementById('logout-btn');
@@ -189,4 +189,7 @@ function initSlideToVote(onConfirm) {
 document.addEventListener('DOMContentLoaded', () => {
     checkAuth();
     updateNavAuthState();
+    const greeting = document.getElementById('user-greeting');
+    const user = getUserInfo();
+    if (greeting && user && user.name) greeting.textContent = `Welcome, ${user.name}`;
 });

@@ -3,185 +3,180 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Results Spectator | E-Voting Platform</title>
-    <link rel="stylesheet" href="/css/styles.css?v=20261006">
+    <meta name="description" content="Live demo election results ranked by recorded votes.">
+    <title>Live Leaderboard | voteIn</title>
+    <link rel="stylesheet" href="/css/styles.css?v=20260615">
 </head>
 <body>
     <nav>
-        <a href="/" class="logo">
-            <div class="logo-icon">🗳️</div>
-            E-Voting Platform
-        </a>
+        <a href="/" class="logo"><span class="logo-brand-icon">👆</span> voteIn</a>
         <div class="nav-links">
             <a href="/">Home</a>
-            <a href="/pages/spectator/LiveCounting.html" class="active">Live Counting</a>
+            <a href="/pages/spectator/LiveCounting.html" class="active">Live Leaderboard</a>
             <a href="/pages/spectator/FinalResult.html">Final Results</a>
         </div>
     </nav>
 
-    <div class="container">
-        <!-- Live Header Banner -->
-        <div class="card" style="padding: 2rem 2.25rem;">
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+    <main class="leaderboard-main">
+        <section class="leaderboard-hero">
+            <div>
+                <p class="leaderboard-eyebrow"><span class="live-indicator"></span> LIVE DEMO RESULTS</p>
+                <h1>Vote leaderboard</h1>
+                <p>Ranked by votes recorded in this demo. Results refresh automatically every five seconds.</p>
+            </div>
+            <button id="refresh-results" class="leaderboard-refresh" type="button">↻ <span>Refresh</span></button>
+        </section>
+
+        <section class="leaderboard-stats" aria-label="Live result summary">
+            <article class="leaderboard-stat">
+                <span>Total votes counted</span>
+                <strong id="stat-total-votes">—</strong>
+            </article>
+            <article class="leaderboard-stat">
+                <span>Current top candidate</span>
+                <strong id="stat-leading-candidate">Waiting for results</strong>
+            </article>
+            <article class="leaderboard-stat">
+                <span>Candidates ranked</span>
+                <strong id="stat-candidate-count">—</strong>
+            </article>
+            <article class="leaderboard-stat">
+                <span>Last updated</span>
+                <strong id="stat-updated">Waiting</strong>
+            </article>
+        </section>
+
+        <section class="leaderboard-section" aria-labelledby="top-candidates-title">
+            <div class="leaderboard-section-heading">
                 <div>
-                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.4rem;">
-                        <h2 style="font-size: 1.8rem; font-weight: 800; margin: 0;">Live Election Tally</h2>
-                        <span class="badge badge-live">LIVE FEED</span>
-                    </div>
-                    <p style="margin: 0; color: var(--text-secondary); font-size: 0.95rem;">
-                        Real-time vote counting telemetry (auto-syncing every 3 seconds).
-                    </p>
+                    <p class="leaderboard-eyebrow">THE CURRENT STANDINGS</p>
+                    <h2 id="top-candidates-title">Leading candidates</h2>
                 </div>
-
-                <div style="display: flex; align-items: center; gap: 1rem;">
-                    <div style="text-align: right;">
-                        <span style="font-size: 0.78rem; color: var(--text-muted); display: block; font-weight: 700;">AUTO SYNC</span>
-                        <span id="sync-timer" class="badge badge-purple">3s</span>
-                    </div>
-                    <button type="button" class="btn btn-secondary" onclick="fetchLiveResults()" style="padding: 0.6rem 1.1rem; font-size: 0.9rem;">
-                        🔄 Refresh Now
-                    </button>
-                </div>
+                <span class="leaderboard-demo-label">Demo tally</span>
             </div>
+            <div id="leaderboard-podium" class="leaderboard-podium" aria-live="polite">
+                <p class="leaderboard-state">Loading vote counts…</p>
+            </div>
+            <div id="leaderboard-list" class="leaderboard-list" aria-live="polite"></div>
+            <p id="leaderboard-note" class="leaderboard-note">Counts reflect recorded demo ballots only. This is not an official election result.</p>
+            <p id="leaderboard-error" class="leaderboard-error" role="alert" hidden></p>
+        </section>
+
+        <div class="leaderboard-sync">
+            <span class="live-indicator"></span>
+            <span>Next refresh in <strong id="sync-timer">5s</strong></span>
         </div>
+    </main>
 
-        <!-- Metrics Dashboard -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <span class="stat-label">Total Votes Cast</span>
-                <span class="stat-value" id="stat-total-votes">0</span>
-            </div>
-            <div class="stat-card">
-                <span class="stat-label">Leading Candidate</span>
-                <span class="stat-value" id="stat-leading-candidate" style="font-size: 1.3rem; color: var(--accent-green); margin-top: 0.6rem;">---</span>
-            </div>
-            <div class="stat-card">
-                <span class="stat-label">Voter Turnout</span>
-                <span class="stat-value" id="stat-turnout-pct" style="color: var(--accent-cyan);">0%</span>
-            </div>
-            <div class="stat-card">
-                <span class="stat-label">System Health</span>
-                <span class="stat-value" style="font-size: 1.3rem; color: var(--accent-blue); margin-top: 0.6rem;">🟢 Operational</span>
-            </div>
-        </div>
+    <footer><p>voteIn · Live demo leaderboard</p></footer>
 
-        <!-- Live Candidate Progress Cards -->
-        <div class="card">
-            <h3 style="font-size: 1.3rem; margin-bottom: 1.5rem;">Live Candidate Vote Share</h3>
-
-            <div id="live-results-container">
-                <div style="text-align: center; padding: 3rem 1rem; color: var(--text-secondary);">
-                    <div class="logo-icon" style="margin: 0 auto 1rem auto; animation: pulse 1.5s infinite;">📊</div>
-                    <p style="font-size: 1.1rem; font-weight: 600;">Fetching live vote tallies from database...</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Live Activity Audit Trail -->
-        <div class="card">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
-                <h3 style="font-size: 1.2rem; margin: 0;">Anonymized Vote Audit Log</h3>
-                <span class="badge badge-purple">SECURE LOG</span>
-            </div>
-
-            <div id="vote-audit-log" style="font-family: monospace; font-size: 0.88rem; color: var(--text-secondary); max-height: 200px; overflow-y: auto; background: rgba(11, 15, 25, 0.8); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem;">
-                <div style="color: var(--text-muted);">[SYSTEM] Listening for live vote events...</div>
-            </div>
-        </div>
-    </div>
-
-    <footer>
-        <p>&copy; 2026 E-Voting Platform. Live Spectator Telemetry Stream.</p>
-    </footer>
-
-    <script src="/js/main.js?v=20261006"></script>
+    <script src="/js/main.js?v=20260615"></script>
     <script>
-        let countdown = 3;
+        const refreshIntervalSeconds = 5;
+        let countdown = refreshIntervalSeconds;
+        const podium = document.getElementById('leaderboard-podium');
+        const leaderboard = document.getElementById('leaderboard-list');
+        const errorMessage = document.getElementById('leaderboard-error');
 
-        async function fetchLiveResults() {
-            countdown = 3;
-            try {
-                const res = await fetch(apiUrl('/spectator/live'));
-                const data = await res.json();
-                const results = data.results || data.candidates || [];
+        function escapeHtml(value) {
+            return String(value).replace(/[&<>"']/g, (character) => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            })[character]);
+        }
 
-                let total = 0;
-                results.forEach(r => total += (r.voteCount || r.votes || 0));
+        function renderResults(candidates) {
+            const ranked = candidates.map((candidate) => {
+                const votes = Number(candidate.voteCount ?? candidate.votes ?? 0);
+                return {
+                    name: String(candidate.name || 'Candidate'),
+                    party: String(candidate.party || 'Independent'),
+                    symbol: String(candidate.symbol || '🗳️'),
+                    votes: Number.isFinite(votes) && votes > 0 ? votes : 0
+                };
+            }).sort((first, second) => second.votes - first.votes || first.name.localeCompare(second.name));
 
-                document.getElementById('stat-total-votes').innerText = total;
+            const totalVotes = ranked.reduce((sum, candidate) => sum + candidate.votes, 0);
+            const leaderVotes = ranked.length ? ranked[0].votes : 0;
+            const leaders = leaderVotes > 0 ? ranked.filter((candidate) => candidate.votes === leaderVotes) : [];
+            document.getElementById('stat-total-votes').textContent = totalVotes.toLocaleString();
+            document.getElementById('stat-candidate-count').textContent = ranked.length.toLocaleString();
+            document.getElementById('stat-leading-candidate').textContent = leaders.length === 0
+                ? 'No votes yet'
+                : leaders.length > 1 ? 'Tied leaders' : leaders[0].name;
+            document.getElementById('stat-updated').textContent = new Date().toLocaleTimeString([], {
+                hour: 'numeric', minute: '2-digit', second: '2-digit'
+            });
 
-                // Total voters for turnout calculations
-                const totalVoters = data.totalVoters || 4;
-                const turnoutPct = totalVoters > 0 ? ((total / totalVoters) * 100).toFixed(1) : 0;
-                document.getElementById('stat-turnout-pct').innerText = turnoutPct + '%';
+            if (ranked.length === 0) {
+                podium.innerHTML = '<p class="leaderboard-state">No candidates are available yet.</p>';
+                leaderboard.replaceChildren();
+                return;
+            }
 
-                // Find leader
-                if (results.length > 0) {
-                    const sorted = [...results].sort((a,b) => (b.voteCount || b.votes || 0) - (a.voteCount || a.votes || 0));
-                    const leader = sorted[0];
-                    if ((leader.voteCount || leader.votes || 0) > 0) {
-                        document.getElementById('stat-leading-candidate').innerText = `${leader.name} (${leader.party})`;
-                    } else {
-                        document.getElementById('stat-leading-candidate').innerText = 'No votes yet';
-                    }
-                }
-
-                const container = document.getElementById('live-results-container');
-
-                if (results.length === 0) {
-                    container.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 2rem;">No candidates or votes recorded yet.</p>';
-                    return;
-                }
-
-                const maxVotes = Math.max(...results.map(r => r.voteCount || r.votes || 0), 1);
-
-                container.innerHTML = results.map(r => {
-                    const count = r.voteCount || r.votes || 0;
-                    const pct = total > 0 ? ((count / total) * 100).toFixed(1) : 0;
-                    const isLeader = count === maxVotes && count > 0;
-
+            if (totalVotes === 0) {
+                podium.innerHTML = '<p class="leaderboard-state">No votes have been recorded yet. Rankings will appear as demo ballots are counted.</p>';
+            } else {
+                podium.innerHTML = ranked.slice(0, 3).map((candidate, index) => {
+                    const percent = ((candidate.votes / totalVotes) * 100).toFixed(1);
                     return `
-                        <div style="margin-bottom: 1.5rem; background: rgba(11, 15, 25, 0.8); padding: 1.4rem 1.6rem; border-radius: var(--radius-md); border: 1px solid ${isLeader ? 'rgba(16, 185, 129, 0.4)' : 'var(--border-color)'};">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem; flex-wrap: wrap; gap: 0.5rem;">
-                                <div style="display: flex; align-items: center; gap: 0.75rem;">
-                                    <span style="font-size: 1.5rem;">${r.symbol || '🗳️'}</span>
-                                    <div>
-                                        <strong style="font-size: 1.1rem; color: var(--text-primary);">${r.name}</strong>
-                                        <span style="color: var(--primary); font-size: 0.88rem; font-weight: 600; margin-left: 0.5rem;">${r.party}</span>
-                                    </div>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 0.75rem;">
-                                    ${isLeader ? '<span class="badge badge-live">LEADER</span>' : ''}
-                                    <span style="font-size: 1.1rem; font-weight: 800; color: var(--text-primary);">${count} <span style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 500;">votes (${pct}%)</span></span>
-                                </div>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: ${pct}%; background: ${isLeader ? 'linear-gradient(90deg, #10B981, #06B6D4)' : 'linear-gradient(90deg, #6366F1, #3B82F6)'};"></div>
+                        <article class="podium-card${index === 0 ? ' podium-first' : ''}">
+                            <span class="podium-rank">#${index + 1}</span>
+                            <span class="podium-symbol" aria-hidden="true">${escapeHtml(candidate.symbol)}</span>
+                            <h3>${escapeHtml(candidate.name)}</h3>
+                            <p>${escapeHtml(candidate.party)}</p>
+                            <strong>${candidate.votes.toLocaleString()} <span>votes</span></strong>
+                            <div class="podium-bar" aria-hidden="true"><span style="width:${percent}%"></span></div>
+                            <small>${percent}% of counted votes</small>
+                        </article>`;
+                }).join('');
+            }
+
+            leaderboard.innerHTML = ranked.map((candidate, index) => {
+                const percent = totalVotes > 0 ? (candidate.votes / totalVotes) * 100 : 0;
+                return `
+                    <article class="leaderboard-row">
+                        <span class="leaderboard-rank">${String(index + 1).padStart(2, '0')}</span>
+                        <span class="leaderboard-row-symbol" aria-hidden="true">${escapeHtml(candidate.symbol)}</span>
+                        <div class="leaderboard-row-candidate">
+                            <strong>${escapeHtml(candidate.name)}</strong>
+                            <span>${escapeHtml(candidate.party)}</span>
+                            <div class="rank-progress" role="progressbar" aria-label="${escapeHtml(candidate.name)} vote share" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${percent.toFixed(1)}">
+                                <span style="width:${percent}%"></span>
                             </div>
                         </div>
-                    `;
-                }).join('');
+                        <div class="leaderboard-row-count">
+                            <strong>${candidate.votes.toLocaleString()}</strong>
+                            <span>${percent.toFixed(1)}%</span>
+                        </div>
+                    </article>`;
+            }).join('');
+        }
 
-                // Update audit log line
-                const auditLog = document.getElementById('vote-audit-log');
-                const nowStr = new Date().toLocaleTimeString();
-                const logEntry = document.createElement('div');
-                logEntry.innerHTML = `<span style="color: var(--accent-cyan);">[${nowStr}]</span> Telemetry sync complete. Total votes logged: <strong style="color: white;">${total}</strong>`;
-                auditLog.prepend(logEntry);
-
-            } catch (err) {
-                console.error("Live fetch error:", err);
+        async function fetchLiveResults() {
+            countdown = refreshIntervalSeconds;
+            errorMessage.hidden = true;
+            try {
+                const response = await fetch(apiUrl('/spectator/live'), { cache: 'no-store' });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error || 'Could not load live results.');
+                if (!Array.isArray(data.candidates)) throw new Error('The results service returned an invalid response.');
+                renderResults(data.candidates);
+            } catch (error) {
+                console.error('Live leaderboard refresh failed:', error);
+                errorMessage.textContent = error.message || 'Could not load live results. Try refreshing.';
+                errorMessage.hidden = false;
             }
         }
 
+        document.getElementById('refresh-results').addEventListener('click', fetchLiveResults);
         fetchLiveResults();
 
-        setInterval(() => {
-            countdown--;
+        window.setInterval(() => {
+            countdown -= 1;
             if (countdown <= 0) {
                 fetchLiveResults();
             } else {
-                document.getElementById('sync-timer').innerText = countdown + 's';
+                document.getElementById('sync-timer').textContent = `${countdown}s`;
             }
         }, 1000);
     </script>

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VoteIn | Blockchain Digital Voting Platform</title>
-    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/styles.css?v=20260615">
     <!-- HTML5 QR Code Scanner Library -->
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 </head>
@@ -24,7 +24,6 @@
         <div class="nav-links">
             <a href="/" class="active">Home</a>
             <a href="javascript:void(0)" onclick="navigateToStep('step-aadhaar')">Authentication</a>
-            <a href="javascript:void(0)" onclick="navigateToStep('step-ballot')">Vote Ballot</a>
             <a href="/pages/spectator/LiveCounting.html">Live Spectator</a>
             <a href="/pages/spectator/FinalResult.html">Results</a>
             <a href="/pages/auth/Login.html" id="login-link" class="btn-maroon" style="padding: 0.45rem 0.9rem; font-size: 0.85rem; width: auto;">Sign In</a>
@@ -45,8 +44,8 @@
                         👩‍💼
                     </div>
                     <div>
-                        <h3 id="user-greeting" style="font-size: 1.1rem; font-weight: 800; color: var(--text-dark);">Hey, Manishi !</h3>
-                        <p style="font-size: 0.78rem; color: var(--text-muted);">You will be voting for the Rajya Sabha 2024 Elections.</p>
+                        <h3 id="user-greeting" style="font-size: 1.1rem; font-weight: 800; color: var(--text-dark);">Welcome!</h3>
+                        <p style="font-size: 0.78rem; color: var(--text-muted);">Explore a sample election experience.</p>
                     </div>
                 </div>
                 <div style="width: 38px; height: 38px; border-radius: 50%; background: #FFFFFF; border: 1px solid #E5E7EB; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; cursor: pointer;" onclick="showToast('Notifications: General Election voting is live!', 'info')">
@@ -56,13 +55,13 @@
 
             <!-- Hero Live Timer Banner -->
             <div class="hero-timer-banner">
-                <div class="timer-live-badge">Voting is live</div>
-                
-                <div id="live-countdown-text" class="timer-countdown-title">8 hrs : 50 mins : 10 sec Remaining</div>
-                <p style="font-size: 0.82rem; color: var(--text-muted); font-weight: 600;">Voting time 6:00 AM - 6:00 PM</p>
-                
+                <div class="timer-live-badge">Demo environment</div>
+
+                <div class="timer-countdown-title">Explore a sample ballot</div>
+                <p style="font-size: 0.82rem; color: var(--text-muted); font-weight: 600;">This is a demo interface. No official election is in progress.</p>
+
                 <div class="timer-area-stat">
-                    80,000+ people have voted in your area
+                    Sample data only — no official vote or turnout figures.
                 </div>
 
                 <button type="button" class="btn-vote-now" onclick="navigateToStep('step-aadhaar')">
@@ -73,12 +72,11 @@
             <!-- Prominent Indian Leaders Candidates Area List -->
             <div style="margin-bottom: 5rem;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem;">
-                    <h3 style="font-size: 1.05rem; font-weight: 800; color: var(--text-dark);">See candidates from your area</h3>
-                    <span style="font-size: 0.85rem; color: var(--votein-maroon); font-weight: 700;">📍 Agra</span>
+                    <h3 style="font-size: 1.05rem; font-weight: 800; color: var(--text-dark);">Public leader profiles</h3>
                 </div>
 
                 <div id="home-candidate-rows">
-                    <div class="candidate-row" onclick="navigateToStep('step-ballot')">
+                    <button type="button" class="candidate-row leader-profile-trigger" data-profile="narendra-modi" aria-label="View Narendra Modi's profile">
                         <div class="candidate-row-left">
                             <span class="candidate-party-logo">🪷</span>
                             <div class="candidate-row-info">
@@ -87,9 +85,9 @@
                             </div>
                         </div>
                         <span style="font-weight: 800; color: var(--text-muted);">›</span>
-                    </div>
+                    </button>
 
-                    <div class="candidate-row" onclick="navigateToStep('step-ballot')">
+                    <button type="button" class="candidate-row leader-profile-trigger" data-profile="rahul-gandhi" aria-label="View Rahul Gandhi's profile">
                         <div class="candidate-row-left">
                             <span class="candidate-party-logo">✋</span>
                             <div class="candidate-row-info">
@@ -98,9 +96,9 @@
                             </div>
                         </div>
                         <span style="font-weight: 800; color: var(--text-muted);">›</span>
-                    </div>
+                    </button>
 
-                    <div class="candidate-row" onclick="navigateToStep('step-ballot')">
+                    <button type="button" class="candidate-row leader-profile-trigger" data-profile="arvind-kejriwal" aria-label="View Arvind Kejriwal's profile">
                         <div class="candidate-row-left">
                             <span class="candidate-party-logo">🧹</span>
                             <div class="candidate-row-info">
@@ -109,9 +107,9 @@
                             </div>
                         </div>
                         <span style="font-weight: 800; color: var(--text-muted);">›</span>
-                    </div>
+                    </button>
 
-                    <div class="candidate-row" onclick="navigateToStep('step-ballot')">
+                    <button type="button" class="candidate-row leader-profile-trigger" data-profile="akhilesh-yadav" aria-label="View Akhilesh Yadav's profile">
                         <div class="candidate-row-left">
                             <span class="candidate-party-logo">🚲</span>
                             <div class="candidate-row-info">
@@ -120,9 +118,9 @@
                             </div>
                         </div>
                         <span style="font-weight: 800; color: var(--text-muted);">›</span>
-                    </div>
+                    </button>
 
-                    <div class="candidate-row" onclick="navigateToStep('step-ballot')">
+                    <button type="button" class="candidate-row leader-profile-trigger" data-profile="mayawati" aria-label="View Mayawati's profile">
                         <div class="candidate-row-left">
                             <span class="candidate-party-logo">🐘</span>
                             <div class="candidate-row-info">
@@ -131,9 +129,9 @@
                             </div>
                         </div>
                         <span style="font-weight: 800; color: var(--text-muted);">›</span>
-                    </div>
+                    </button>
 
-                    <div class="candidate-row" onclick="navigateToStep('step-ballot')">
+                    <button type="button" class="candidate-row leader-profile-trigger" data-profile="mamata-banerjee" aria-label="View Mamata Banerjee's profile">
                         <div class="candidate-row-left">
                             <span class="candidate-party-logo">🌸</span>
                             <div class="candidate-row-info">
@@ -142,10 +140,21 @@
                             </div>
                         </div>
                         <span style="font-weight: 800; color: var(--text-muted);">›</span>
-                    </div>
+                    </button>
                 </div>
             </div>
         </div>
+
+        <dialog id="leader-profile-dialog" class="leader-profile-dialog" aria-labelledby="leader-profile-name">
+            <button type="button" class="leader-profile-close" aria-label="Close profile">×</button>
+            <p class="leader-profile-eyebrow">PUBLIC PROFILE</p>
+            <h2 id="leader-profile-name"></h2>
+            <p id="leader-profile-party" class="leader-profile-party"></p>
+            <p id="leader-profile-dob" class="leader-profile-dob"></p>
+            <h3>Political journey &amp; milestones</h3>
+            <ul id="leader-profile-highlights"></ul>
+            <a id="leader-profile-source" class="leader-profile-source" target="_blank" rel="noopener noreferrer">Read a reference biography ↗</a>
+        </dialog>
 
         <!-- ========================================== -->
         <!-- SCREEN 2: AADHAAR VERIFICATION            -->
@@ -446,7 +455,7 @@
         </a>
     </div>
 
-    <script src="/js/main.js"></script>
+    <script src="/js/main.js?v=20260615"></script>
     <script>
         let selectedCandidateObj = null;
 
@@ -599,15 +608,77 @@
             showToast("Printing PDF Receipt...", "info");
         }
 
-        let totalSecs = 8 * 3600 + 50 * 60 + 10;
-        setInterval(() => {
-            if (totalSecs > 0) totalSecs--;
-            const hrs = Math.floor(totalSecs / 3600);
-            const mins = Math.floor((totalSecs % 3600) / 60);
-            const secs = totalSecs % 60;
-            const timerEl = document.getElementById('live-countdown-text');
-            if (timerEl) timerEl.innerText = `${hrs} hrs : ${mins} mins : ${secs} sec Remaining`;
-        }, 1000);
+    </script>
+    <script>
+        const leaderProfiles = {
+            'narendra-modi': {
+                name: 'Narendra Modi',
+                party: 'Bharatiya Janata Party (BJP)',
+                dob: 'Born 17 September 1950',
+                highlights: ['Joined the Bharatiya Janata Party in 1987.', 'Became Chief Minister of Gujarat in 2001.', 'Became Prime Minister of India in 2014.'],
+                source: 'https://www.britannica.com/biography/Narendra-Modi'
+            },
+            'rahul-gandhi': {
+                name: 'Rahul Gandhi',
+                party: 'Indian National Congress (INC)',
+                dob: 'Born 19 June 1970',
+                highlights: ['Entered electoral politics with the Indian National Congress in 2004, winning the Amethi Lok Sabha seat.', 'Served as party president from 2017 to 2019.', 'Became Leader of the Opposition in the Lok Sabha in 2024.'],
+                source: 'https://www.britannica.com/biography/Rahul-Gandhi'
+            },
+            'arvind-kejriwal': {
+                name: 'Arvind Kejriwal',
+                party: 'Aam Aadmi Party (AAP)',
+                dob: 'Born 16 August 1968',
+                highlights: ['Worked in the Indian Revenue Service before entering full-time politics.', 'Co-founded the Aam Aadmi Party in 2012 and became its national convener.', 'Served multiple terms as Chief Minister of Delhi.'],
+                source: 'https://www.britannica.com/biography/Arvind-Kejriwal'
+            },
+            'akhilesh-yadav': {
+                name: 'Akhilesh Yadav',
+                party: 'Samajwadi Party (SP)',
+                dob: 'Born 1 July 1973',
+                highlights: ['Entered Parliament as a Samajwadi Party member in 2000.', 'Served as Chief Minister of Uttar Pradesh from 2012 to 2017.', 'Became national president of the Samajwadi Party in 2017.'],
+                source: 'https://www.britannica.com/biography/Akhilesh-Yadav'
+            },
+            mayawati: {
+                name: 'Mayawati',
+                party: 'Bahujan Samaj Party (BSP)',
+                dob: 'Born 15 January 1956',
+                highlights: ['Joined the Bahujan Samaj Party in 1984, the year it was founded.', 'Became Chief Minister of Uttar Pradesh for the first time in 1995.', 'Served four terms as Chief Minister of Uttar Pradesh.'],
+                source: 'https://www.britannica.com/biography/Mayawati'
+            },
+            'mamata-banerjee': {
+                name: 'Mamata Banerjee',
+                party: 'All India Trinamool Congress (AITC)',
+                dob: 'Born 5 January 1955',
+                highlights: ['Began her political career with the Indian National Congress.', 'Founded the All India Trinamool Congress in 1998.', 'Became Chief Minister of West Bengal in 2011.'],
+                source: 'https://www.britannica.com/biography/Mamata-Banerjee'
+            }
+        };
+        const profileDialog = document.getElementById('leader-profile-dialog');
+
+        document.querySelectorAll('.leader-profile-trigger').forEach((button) => {
+            button.addEventListener('click', () => {
+                const profile = leaderProfiles[button.dataset.profile];
+                if (!profile) return;
+                document.getElementById('leader-profile-name').textContent = profile.name;
+                document.getElementById('leader-profile-party').textContent = profile.party;
+                document.getElementById('leader-profile-dob').textContent = profile.dob;
+                const highlights = document.getElementById('leader-profile-highlights');
+                highlights.replaceChildren(...profile.highlights.map((item) => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = item;
+                    return listItem;
+                }));
+                const source = document.getElementById('leader-profile-source');
+                source.href = profile.source;
+                profileDialog.showModal();
+            });
+        });
+
+        document.querySelector('.leader-profile-close').addEventListener('click', () => profileDialog.close());
+        profileDialog.addEventListener('click', (event) => {
+            if (event.target === profileDialog) profileDialog.close();
+        });
     </script>
 </body>
 </html>
