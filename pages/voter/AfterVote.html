@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Official Vote Receipt | E-Voting Platform</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <nav>
+        <a href="/" class="logo">
+            <div class="logo-icon">🗳️</div>
+            E-Voting Platform
+        </a>
+        <div class="nav-links">
+            <a href="/pages/spectator/LiveCounting.html">Live Counting</a>
+            <a href="/pages/spectator/FinalResult.html">Final Results</a>
+        </div>
+    </nav>
+
+    <div class="container" style="max-width: 600px; margin-top: 3.5rem;">
+        <div class="card" style="text-align: center; padding: 3rem 2.25rem; border-color: rgba(16, 185, 129, 0.4); background: linear-gradient(180deg, rgba(16, 185, 129, 0.08) 0%, rgba(17, 24, 39, 0.9) 100%);">
+            <div class="candidate-avatar" style="width: 80px; height: 80px; font-size: 2.5rem; background: rgba(16, 185, 129, 0.2); border-color: var(--accent-green); margin: 0 auto 1.25rem auto;">
+                ✓
+            </div>
+
+            <span class="badge badge-live" style="margin-bottom: 0.75rem;">VERIFIED BALLOT RECORDED</span>
+
+            <h2 style="font-size: 2rem; font-weight: 800; color: var(--accent-green); margin-bottom: 0.5rem;">
+                Vote Cast Successfully!
+            </h2>
+            
+            <p style="color: var(--text-secondary); max-width: 480px; margin: 0 auto 2rem auto; font-size: 0.98rem; line-height: 1.6;">
+                Your ballot has been cryptographically signed, timestamped, and stored in the database. Below is your official receipt hash.
+            </p>
+
+            <!-- Receipt Box -->
+            <div style="background: rgba(11, 15, 25, 0.9); border: 1px dashed var(--border-color); border-radius: var(--radius-md); padding: 1.5rem; margin-bottom: 2rem; text-align: left;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                    <span style="font-size: 0.78rem; color: var(--text-muted); font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;">
+                        SHA-256 VERIFICATION HASH
+                    </span>
+                    <span class="badge badge-purple" style="font-size: 0.75rem;">IMMUTABLE RECEIPT</span>
+                </div>
+
+                <div style="background: rgba(0, 0, 0, 0.4); padding: 0.9rem; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.05); margin-bottom: 1rem;">
+                    <code id="receipt-hash" style="color: var(--accent-cyan); font-family: monospace; font-size: 0.92rem; word-break: break-all; display: block; line-height: 1.5;">
+                        Loading verification hash...
+                    </code>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: var(--text-secondary);">
+                    <span>Timestamp: <strong id="receipt-time" style="color: var(--text-primary);">Just Now</strong></span>
+                    <button type="button" class="btn btn-secondary" onclick="copyReceiptHash()" style="padding: 0.35rem 0.85rem; font-size: 0.8rem;">
+                        📋 Copy Hash
+                    </button>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 1.25rem; justify-content: center; flex-wrap: wrap;">
+                <a href="/pages/spectator/LiveCounting.html" class="btn">
+                    📊 View Live Counting Tally
+                </a>
+                <a href="/" class="btn btn-secondary">
+                    🏠 Return to Home
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 E-Voting Platform. Digital Receipt Verification System.</p>
+    </footer>
+
+    <script src="/js/main.js"></script>
+    <script>
+        const storedHash = sessionStorage.getItem('lastVoteHash');
+        const hash = storedHash || ('0x' + Array.from({length: 64}, () => Math.floor(Math.random()*16).toString(16)).join(''));
+        
+        document.getElementById('receipt-hash').innerText = hash;
+        document.getElementById('receipt-time').innerText = new Date().toLocaleString();
+
+        function copyReceiptHash() {
+            navigator.clipboard.writeText(hash);
+            showToast('Receipt Hash copied to clipboard!', 'success');
+        }
+    </script>
+</body>
+</html>

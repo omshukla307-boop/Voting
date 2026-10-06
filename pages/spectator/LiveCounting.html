@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Results Spectator | E-Voting Platform</title>
+    <link rel="stylesheet" href="/css/styles.css?v=20261006">
+</head>
+<body>
+    <nav>
+        <a href="/" class="logo">
+            <div class="logo-icon">🗳️</div>
+            E-Voting Platform
+        </a>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/pages/spectator/LiveCounting.html" class="active">Live Counting</a>
+            <a href="/pages/spectator/FinalResult.html">Final Results</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Live Header Banner -->
+        <div class="card" style="padding: 2rem 2.25rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.4rem;">
+                        <h2 style="font-size: 1.8rem; font-weight: 800; margin: 0;">Live Election Tally</h2>
+                        <span class="badge badge-live">LIVE FEED</span>
+                    </div>
+                    <p style="margin: 0; color: var(--text-secondary); font-size: 0.95rem;">
+                        Real-time vote counting telemetry (auto-syncing every 3 seconds).
+                    </p>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div style="text-align: right;">
+                        <span style="font-size: 0.78rem; color: var(--text-muted); display: block; font-weight: 700;">AUTO SYNC</span>
+                        <span id="sync-timer" class="badge badge-purple">3s</span>
+                    </div>
+                    <button type="button" class="btn btn-secondary" onclick="fetchLiveResults()" style="padding: 0.6rem 1.1rem; font-size: 0.9rem;">
+                        🔄 Refresh Now
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Metrics Dashboard -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-label">Total Votes Cast</span>
+                <span class="stat-value" id="stat-total-votes">0</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Leading Candidate</span>
+                <span class="stat-value" id="stat-leading-candidate" style="font-size: 1.3rem; color: var(--accent-green); margin-top: 0.6rem;">---</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Voter Turnout</span>
+                <span class="stat-value" id="stat-turnout-pct" style="color: var(--accent-cyan);">0%</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">System Health</span>
+                <span class="stat-value" style="font-size: 1.3rem; color: var(--accent-blue); margin-top: 0.6rem;">🟢 Operational</span>
+            </div>
+        </div>
+
+        <!-- Live Candidate Progress Cards -->
+        <div class="card">
+            <h3 style="font-size: 1.3rem; margin-bottom: 1.5rem;">Live Candidate Vote Share</h3>
+
+            <div id="live-results-container">
+                <div style="text-align: center; padding: 3rem 1rem; color: var(--text-secondary);">
+                    <div class="logo-icon" style="margin: 0 auto 1rem auto; animation: pulse 1.5s infinite;">📊</div>
+                    <p style="font-size: 1.1rem; font-weight: 600;">Fetching live vote tallies from database...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Live Activity Audit Trail -->
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+                <h3 style="font-size: 1.2rem; margin: 0;">Anonymized Vote Audit Log</h3>
+                <span class="badge badge-purple">SECURE LOG</span>
+            </div>
+
+            <div id="vote-audit-log" style="font-family: monospace; font-size: 0.88rem; color: var(--text-secondary); max-height: 200px; overflow-y: auto; background: rgba(11, 15, 25, 0.8); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem;">
+                <div style="color: var(--text-muted);">[SYSTEM] Listening for live vote events...</div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 E-Voting Platform. Live Spectator Telemetry Stream.</p>
+    </footer>
+
+    <script src="/js/main.js?v=20261006"></script>
+    <script>
+        let countdown = 3;
+
+        async function fetchLiveResults() {
+            countdown = 3;
+            try {
+                const res = await fetch(apiUrl('/spectator/live'));
+                const data = await res.json();
+                const results = data.results || data.candidates || [];
+
+                let total = 0;
+                results.forEach(r => total += (r.voteCount || r.votes || 0));
+
+                document.getElementById('stat-total-votes').innerText = total;
+
+                // Total voters for turnout calculations
+                const totalVoters = data.totalVoters || 4;
+                const turnoutPct = totalVoters > 0 ? ((total / totalVoters) * 100).toFixed(1) : 0;
+                document.getElementById('stat-turnout-pct').innerText = turnoutPct + '%';
+
+                // Find leader
+                if (results.length > 0) {
+                    const sorted = [...results].sort((a,b) => (b.voteCount || b.votes || 0) - (a.voteCount || a.votes || 0));
+                    const leader = sorted[0];
+                    if ((leader.voteCount || leader.votes || 0) > 0) {
+                        document.getElementById('stat-leading-candidate').innerText = `${leader.name} (${leader.party})`;
+                    } else {
+                        document.getElementById('stat-leading-candidate').innerText = 'No votes yet';
+                    }
+                }
+
+                const container = document.getElementById('live-results-container');
+
+                if (results.length === 0) {
+                    container.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 2rem;">No candidates or votes recorded yet.</p>';
+                    return;
+                }
+
+                const maxVotes = Math.max(...results.map(r => r.voteCount || r.votes || 0), 1);
+
+                container.innerHTML = results.map(r => {
+                    const count = r.voteCount || r.votes || 0;
+                    const pct = total > 0 ? ((count / total) * 100).toFixed(1) : 0;
+                    const isLeader = count === maxVotes && count > 0;
+
+                    return `
+                        <div style="margin-bottom: 1.5rem; background: rgba(11, 15, 25, 0.8); padding: 1.4rem 1.6rem; border-radius: var(--radius-md); border: 1px solid ${isLeader ? 'rgba(16, 185, 129, 0.4)' : 'var(--border-color)'};">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem; flex-wrap: wrap; gap: 0.5rem;">
+                                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                    <span style="font-size: 1.5rem;">${r.symbol || '🗳️'}</span>
+                                    <div>
+                                        <strong style="font-size: 1.1rem; color: var(--text-primary);">${r.name}</strong>
+                                        <span style="color: var(--primary); font-size: 0.88rem; font-weight: 600; margin-left: 0.5rem;">${r.party}</span>
+                                    </div>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                    ${isLeader ? '<span class="badge badge-live">LEADER</span>' : ''}
+                                    <span style="font-size: 1.1rem; font-weight: 800; color: var(--text-primary);">${count} <span style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 500;">votes (${pct}%)</span></span>
+                                </div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${pct}%; background: ${isLeader ? 'linear-gradient(90deg, #10B981, #06B6D4)' : 'linear-gradient(90deg, #6366F1, #3B82F6)'};"></div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                // Update audit log line
+                const auditLog = document.getElementById('vote-audit-log');
+                const nowStr = new Date().toLocaleTimeString();
+                const logEntry = document.createElement('div');
+                logEntry.innerHTML = `<span style="color: var(--accent-cyan);">[${nowStr}]</span> Telemetry sync complete. Total votes logged: <strong style="color: white;">${total}</strong>`;
+                auditLog.prepend(logEntry);
+
+            } catch (err) {
+                console.error("Live fetch error:", err);
+            }
+        }
+
+        fetchLiveResults();
+
+        setInterval(() => {
+            countdown--;
+            if (countdown <= 0) {
+                fetchLiveResults();
+            } else {
+                document.getElementById('sync-timer').innerText = countdown + 's';
+            }
+        }, 1000);
+    </script>
+</body>
+</html>

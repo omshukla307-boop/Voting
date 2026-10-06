@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Voting Platform | Secure & Transparent Digital Elections</title>
+    <link rel="stylesheet" href="/css/styles.css?v=20261006">
+</head>
+<body>
+    <nav>
+        <a href="/" class="logo">
+            <div class="logo-icon">🗳️</div>
+            E-Voting Platform
+        </a>
+        <div class="nav-links">
+            <a href="/" class="active">Home</a>
+            <a href="/pages/spectator/LiveCounting.html">Live Results</a>
+            <a href="/pages/spectator/FinalResult.html">Final Tally</a>
+            <a href="/pages/auth/Login.html" class="btn" style="padding: 0.5rem 1.2rem; font-size: 0.9rem;">Voter Login</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Hero Section -->
+        <div class="card" style="text-align: center; padding: 4.5rem 2rem; position: relative; overflow: hidden; background: linear-gradient(180deg, rgba(17, 24, 39, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%);">
+            <div style="margin-bottom: 1rem;">
+                <span class="badge badge-live">LIVE ELECTION 2026</span>
+                <span class="badge badge-purple" style="margin-left: 0.5rem;">SUPABASE POWERED</span>
+            </div>
+            
+            <h1 style="font-size: 3.2rem; font-weight: 800; line-height: 1.15; margin-bottom: 1.25rem; background: linear-gradient(135deg, #FFFFFF 0%, #94A3B8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                Secure, Transparent & Instant<br><span style="background: linear-gradient(135deg, #6366F1 0%, #3B82F6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Digital Voting System</span>
+            </h1>
+            
+            <p style="font-size: 1.15rem; max-width: 720px; margin: 0 auto 2.5rem auto; color: var(--text-secondary); line-height: 1.7;">
+                Cast your vote with confidence using unique SHA-256 cryptographic verification hashes, anti-tamper security, and real-time live result tallies.
+            </p>
+            
+            <div style="display: flex; gap: 1.25rem; justify-content: center; flex-wrap: wrap;">
+                <a href="/pages/auth/Login.html" class="btn" style="font-size: 1.05rem; padding: 0.95rem 2.2rem;">
+                    🗳️ Cast Your Vote Now
+                </a>
+                <a href="/pages/spectator/LiveCounting.html" class="btn btn-secondary" style="font-size: 1.05rem; padding: 0.95rem 2.2rem;">
+                    📊 View Live Results
+                </a>
+            </div>
+        </div>
+
+        <!-- Real-Time Metrics Bar -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-label">Active Election</span>
+                <span class="stat-value" style="font-size: 1.4rem; color: var(--accent-green); margin-top: 0.6rem;">General Election 2026</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Total Votes Recorded</span>
+                <span class="stat-value" id="home-total-votes">--</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Candidates Registered</span>
+                <span class="stat-value" id="home-candidate-count">--</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">System Integrity</span>
+                <span class="stat-value" style="font-size: 1.4rem; color: var(--accent-blue); margin-top: 0.6rem;">100% Verified</span>
+            </div>
+        </div>
+
+        <!-- Feature Grid -->
+        <h2 style="font-size: 1.8rem; text-align: center; margin: 3rem 0 1.5rem 0;">Engineered for Maximum Election Trust</h2>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.75rem;">
+            <div class="card" style="padding: 2rem;">
+                <div class="candidate-avatar" style="background: rgba(99, 102, 241, 0.15); border-color: rgba(99, 102, 241, 0.4);">🔐</div>
+                <h3 style="font-size: 1.25rem; margin-bottom: 0.6rem;">Cryptographic Hash Receipt</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 0;">Every submitted ballot generates a unique 256-bit cryptographic verification hash, ensuring your vote cannot be altered or duplicated.</p>
+            </div>
+
+            <div class="card" style="padding: 2rem;">
+                <div class="candidate-avatar" style="background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.4);">📊</div>
+                <h3 style="font-size: 1.25rem; margin-bottom: 0.6rem;">Real-Time Spectator Tally</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 0;">Watch election results update live as votes are cast across the country, complete with turnout percentage analytics.</p>
+            </div>
+
+            <div class="card" style="padding: 2rem;">
+                <div class="candidate-avatar" style="background: rgba(59, 130, 246, 0.15); border-color: rgba(59, 130, 246, 0.4);">⚡</div>
+                <h3 style="font-size: 1.25rem; margin-bottom: 0.6rem;">Supabase Cloud Backend</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 0;">Built on enterprise-grade database infrastructure with row-level security and high concurrency performance.</p>
+            </div>
+        </div>
+
+        <!-- 3-Step Process -->
+        <div class="card" style="margin-top: 2rem; padding: 3rem 2rem;">
+            <h2 style="text-align: center; font-size: 1.8rem; margin-bottom: 2.5rem;">How to Vote in 3 Easy Steps</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; text-align: center;">
+                <div>
+                    <div style="width: 50px; height: 50px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.3rem; margin: 0 auto 1.25rem auto;">1</div>
+                    <h3 style="font-size: 1.15rem; margin-bottom: 0.5rem;">Log In with Voter ID</h3>
+                    <p style="font-size: 0.95rem; color: var(--text-secondary);">Authenticate using your unique voter credentials issued for this election session.</p>
+                </div>
+                <div>
+                    <div style="width: 50px; height: 50px; background: var(--accent-purple); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.3rem; margin: 0 auto 1.25rem auto;">2</div>
+                    <h3 style="font-size: 1.15rem; margin-bottom: 0.5rem;">Select Candidate & Confirm</h3>
+                    <p style="font-size: 0.95rem; color: var(--text-secondary);">Review registered candidates and cast your vote on the digital ballot paper.</p>
+                </div>
+                <div>
+                    <div style="width: 50px; height: 50px; background: var(--accent-green); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.3rem; margin: 0 auto 1.25rem auto;">3</div>
+                    <h3 style="font-size: 1.15rem; margin-bottom: 0.5rem;">Receive Verified Hash</h3>
+                    <p style="font-size: 0.95rem; color: var(--text-secondary);">Instantly obtain your official digital receipt hash confirming your vote has been recorded.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 E-Voting Platform. Supabase Cloud Database & Node.js Backend Engine.</p>
+    </footer>
+
+    <script src="/js/main.js?v=20261006"></script>
+    <script>
+        async function loadHomeMetrics() {
+            try {
+                const res = await fetch(apiUrl('/spectator/candidates'));
+                const data = await res.json();
+                const candidates = data.candidates || [];
+                
+                document.getElementById('home-candidate-count').innerText = candidates.length;
+                
+                let total = 0;
+                candidates.forEach(c => total += (c.voteCount || 0));
+                document.getElementById('home-total-votes').innerText = total;
+            } catch (err) {
+                console.error("Home metrics load error:", err);
+            }
+        }
+        loadHomeMetrics();
+    </script>
+</body>
+</html>

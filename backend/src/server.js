@@ -19,15 +19,16 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Resolve frontend path robustly for both local and Vercel environments
+// Resolve frontend static directory path
 function getFrontendPath() {
   const candidates = [
     path.join(__dirname, '../../frontend'),
+    path.join(__dirname, '../../'),
     path.join(process.cwd(), 'frontend'),
-    path.join(__dirname, '../frontend'),
+    process.cwd()
   ];
   for (const p of candidates) {
-    if (fs.existsSync(p)) return p;
+    if (fs.existsSync(path.join(p, 'index.html'))) return p;
   }
   return candidates[0];
 }
@@ -73,7 +74,7 @@ app.use(async (req, res, next) => {
   }
 });
 
-// Serve all static assets from frontend
+// Serve static assets
 app.use(express.static(frontendPath));
 
 // API Routes

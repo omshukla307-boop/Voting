@@ -1,0 +1,190 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Official Ballot | E-Voting Platform</title>
+    <link rel="stylesheet" href="/css/styles.css?v=20261006">
+</head>
+<body>
+    <nav>
+        <a href="/" class="logo">
+            <div class="logo-icon">ðŸ—³ï¸</div>
+            E-Voting Platform
+        </a>
+        <div class="nav-links">
+            <a href="/pages/spectator/LiveCounting.html">Live Counting</a>
+            <a href="/pages/spectator/FinalResult.html">Final Results</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Voter Session Header -->
+        <div class="card" style="padding: 1.75rem 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <div>
+                <span class="badge badge-live">OFFICIAL DIGITAL BALLOT PAPER</span>
+                <h2 style="font-size: 1.6rem; font-weight: 800; margin-top: 0.4rem; margin-bottom: 0.2rem;">National General Election 2026</h2>
+                <p style="margin: 0; color: var(--text-secondary); font-size: 0.95rem;">Select your chosen candidate and confirm your vote. Each voter is entitled to 1 vote.</p>
+            </div>
+            <div id="voter-badge-box" style="text-align: right;">
+                <span style="font-size: 0.8rem; color: var(--text-muted); display: block; text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em;">AUTHENTICATED VOTER</span>
+                <span id="voter-id-display" class="badge badge-purple" style="font-size: 0.95rem; margin-top: 0.25rem;">Loading...</span>
+            </div>
+        </div>
+
+        <div id="vote-alert" class="alert" style="display: none;"></div>
+
+        <!-- Ballot Container -->
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 0.5rem;">
+                <h3 style="font-size: 1.3rem; margin: 0;">Registered Candidates</h3>
+                <span style="font-size: 0.85rem; color: var(--text-secondary);">ðŸ”’ Cryptographically Secured Ballot</span>
+            </div>
+
+            <div id="candidates-container" class="candidate-grid">
+                <div style="grid-column: 1/-1; text-align: center; padding: 4rem 1rem; color: var(--text-secondary);">
+                    <div class="logo-icon" style="margin: 0 auto 1rem auto; animation: pulse 1.5s infinite;">ðŸ—³ï¸</div>
+                    <p style="font-size: 1.1rem; font-weight: 600;">Loading official candidates list from database...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vote Confirmation Modal -->
+    <div id="confirm-modal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(8px); z-index: 1000; align-items: center; justify-content: center; padding: 1.5rem;">
+        <div class="card" style="max-width: 500px; width: 100%; margin: 0; text-align: center; border-color: var(--primary);">
+            <div class="candidate-avatar" style="margin: 0 auto 1rem auto; background: rgba(99, 102, 241, 0.2);">ðŸ—³ï¸</div>
+            <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem;">Confirm Your Selection</h3>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem; font-size: 0.95rem;">
+                Are you sure you want to cast your official vote for:
+                <br><strong id="modal-candidate-name" style="color: var(--text-primary); font-size: 1.2rem; display: block; margin-top: 0.5rem;">---</strong>
+                <span id="modal-candidate-party" style="color: var(--primary); font-weight: 700; display: block;">---</span>
+            </p>
+            <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #FCA5A5; padding: 0.75rem; border-radius: 8px; font-size: 0.85rem; margin-bottom: 1.5rem;">
+                âš ï¸ Warning: Once cast, your vote is cryptographically locked and cannot be changed.
+            </div>
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                <button type="button" id="modal-submit-btn" class="btn btn-success" style="padding: 0.8rem 1.8rem;">Confirm & Submit Vote âž”</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 E-Voting Platform. Double-Vote Anti-Tamper Engine.</p>
+    </footer>
+
+    <script src="/js/main.js?v=20261006"></script>
+    <script>
+        let selectedCandidate = null;
+
+        const user = getUserInfo();
+        if (user && user.id) {
+            document.getElementById('voter-id-display').innerText = 'ðŸ‘¤ ' + user.id;
+        }
+
+        async function loadCandidates() {
+            const container = document.getElementById('candidates-container');
+            try {
+                const res = await fetch(apiUrl('/spectator/candidates'));
+                const data = await res.json();
+                const candidates = data.candidates || data || [];
+
+                if (!candidates || candidates.length === 0) {
+                    container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--text-secondary);">No registered candidates found in the database.</div>';
+                    return;
+                }
+
+                container.innerHTML = candidates.map(c => `
+                    <div class="candidate-card" id="candidate-card-${c.id}">
+                        <div class="candidate-avatar">${c.symbol || 'ðŸ—³ï¸'}</div>
+                        <h3 class="candidate-name">${c.name}</h3>
+                        <div class="candidate-party">${c.party}</div>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+                            Constituency: <strong style="color: var(--text-secondary);">${c.constituency || 'General'}</strong>
+                        </p>
+                        <button class="btn btn-full" onclick="openConfirmModal(${c.id}, '${c.name.replace(/'/g, "\\'")}', '${c.party.replace(/'/g, "\\'")}', ${c.electionId || 1})">
+                            Vote for ${c.name}
+                        </button>
+                    </div>
+                `).join('');
+            } catch (err) {
+                container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--accent-red); padding: 3rem;">âŒ Failed to load candidates. Server connection error.</div>';
+            }
+        }
+
+        function openConfirmModal(id, name, party, electionId) {
+            selectedCandidate = { id, name, party, electionId };
+            document.getElementById('modal-candidate-name').innerText = name;
+            document.getElementById('modal-candidate-party').innerText = party;
+            const modal = document.getElementById('confirm-modal');
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('confirm-modal').style.display = 'none';
+        }
+
+        document.getElementById('modal-submit-btn').addEventListener('click', async () => {
+            if (!selectedCandidate) return;
+            const { id, electionId } = selectedCandidate;
+            closeModal();
+            await executeVote(id, electionId);
+        });
+
+        async function executeVote(candidateId, electionId) {
+            const token = getToken();
+            const alert = document.getElementById('vote-alert');
+
+            if (!token) {
+                window.location.href = '/pages/auth/Login.html';
+                return;
+            }
+
+            try {
+                const res = await fetch(apiUrl('/voter/vote'), {
+                    method: 'POST',
+                                        headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+
+                    },
+                    body: JSON.stringify({ candidateId, electionId })
+                });
+
+                const data = await res.json();
+
+
+                if (!res.ok) {
+                    alert.className = 'alert alert-error';
+                    alert.style.display = 'flex';
+                    alert.innerHTML = `<span>âš ï¸ ${data.error || data.message || 'Voting failed'}</span>`;
+                    showToast(data.error || 'Voting failed', 'error');
+                    
+                    if (data.error && data.error.includes('already')) {
+                        setTimeout(() => {
+                            window.location.href = '/pages/spectator/LiveCounting.html';
+                        }, 2500);
+                    }
+                    return;
+                }
+
+                sessionStorage.setItem('lastVoteHash', data.voteHash || 'VOTE-REC-2026-OK');
+                showToast('Vote cast successfully!', 'success');
+
+                setTimeout(() => {
+                    window.location.href = '/pages/voter/AfterVote.html';
+                }, 600);
+
+            } catch (err) {
+                alert.className = 'alert alert-error';
+                alert.style.display = 'flex';
+                alert.innerHTML = '<span>âŒ Network connection error. Please try again.</span>';
+                showToast('Vote submission failed', 'error');
+            }
+        }
+
+        loadCandidates();
+    </script>
+</body>
+</html>
