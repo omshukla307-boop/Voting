@@ -1,4 +1,5 @@
 const { Sequelize } = require('sequelize');
+const pg = require('pg');
 const path = require('path');
 const fs = require('fs');
 
@@ -22,6 +23,24 @@ const dialect = (process.env.DB_DIALECT || 'sqlite').toLowerCase();
 const isPostgres = dialect === 'postgres' || dialect === 'postgresql' || !!process.env.DATABASE_URL;
 const isMySQL = dialect === 'mysql';
 
+function getDatabaseUrl() {
+    const databaseUrl = process.env.DATABASE_URL;
+    const poolerHost = process.env.SUPABASE_DB_POOLER_HOST;
+    if (!databaseUrl || !poolerHost) return databaseUrl;
+
+    const url = new URL(databaseUrl);
+    const project = url.hostname.match(/^db\.([a-z0-9]+)\.supabase\.co$/i);
+    if (!project) return databaseUrl;
+    if (!/^[a-z0-9-]+\.pooler\.supabase\.com$/i.test(poolerHost)) {
+        throw new Error('SUPABASE_DB_POOLER_HOST must be a Supabase transaction pooler hostname.');
+    }
+
+    url.hostname = poolerHost;
+    url.port = '6543';
+    url.username = `postgres.${project[1]}`;
+    return url.toString();
+}
+
 let sequelize;
 
 if (isPostgres) {
@@ -41,13 +60,14 @@ if (isPostgres) {
         },
         logging: false,
     };
-    sequelize = process.env.DATABASE_URL 
-        ? new Sequelize(process.env.DATABASE_URL, {
+    sequelize = process.env.DATABASE_URL
+        ? new Sequelize(getDatabaseUrl(), {
             dialect: 'postgres',
+            dialectModule: pg,
             dialectOptions: { connectTimeout: 5000, ssl: process.env.DB_SSL === 'false' ? false : { require: true, rejectUnauthorized: false } },
             logging: false
         })
-        : new Sequelize(config);
+        : new Sequelize({ ...config, dialectModule: pg });
 } else if (isMySQL) {
     sequelize = new Sequelize(process.env.DB_NAME || 'Vote_Test', process.env.DB_USER || 'root', process.env.DB_PASS || '', {
         host: process.env.DB_HOST || 'localhost',

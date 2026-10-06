@@ -63,8 +63,8 @@ async function ensureDB() {
   await initPromise;
 }
 
-// Middleware to ensure DB connection before request handling
-app.use(async (req, res, next) => {
+// Keep static pages available even when the database is unreachable.
+app.use("/api", async (req, res, next) => {
   try {
     await ensureDB();
     next();
