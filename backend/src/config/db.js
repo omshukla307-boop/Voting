@@ -47,7 +47,9 @@ if (isPostgres) {
         logging: false,
     });
 } else {
-    const storagePath = path.join(__dirname, '..', '..', 'data', 'database.sqlite');
+    const storagePath = process.env.VERCEL
+        ? path.join('/tmp', 'voting.sqlite')
+        : path.join(__dirname, '..', '..', 'data', 'database.sqlite');
     const fs = require('fs');
     const dir = path.dirname(storagePath);
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });

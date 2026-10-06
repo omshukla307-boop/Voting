@@ -1,0 +1,7 @@
+.env
+*.env
+**/.env
+**/*.env
+backend/data/database.sqlite
+node_modules
+**/node_modules
