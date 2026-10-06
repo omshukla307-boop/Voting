@@ -47,6 +47,22 @@ async function seed() {
             console.log('Created test voter: voter1 / password123');
         }
 
+        const panDemoVoterId = 'TXPPS1893L';
+        const panDemoVoter = await User.findByPk(panDemoVoterId);
+        if (!panDemoVoter) {
+            await User.create({
+                voterId: panDemoVoterId,
+                aadharNo: 'PAN-TXPPS1893L',
+                name: 'Demo PAN Voter',
+                email: 'txpps1893l@voting.app',
+                role: 'voter',
+                gender: 'other',
+                mobileNo: '9000001893',
+                password: 'password123'
+            });
+            console.log(`Created demo voter: ${panDemoVoterId} / password123`);
+        }
+
         const voters = [
             { voterId: 'voter2', name: 'Rahul Kumar', password: '123456' },
             { voterId: 'voter3', name: 'Priya Singh', password: '123456' }

@@ -59,6 +59,8 @@ The server will:
 ### Demo Credentials
 - **Voter ID:** `voter1`
 - **Password:** `password123`
+- **PAN demo Voter ID:** `TXPPS1893L`
+- **PAN demo password:** `password123`
 
 ### Access Points
 
