@@ -3,53 +3,148 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Voter Login | E-Voting Platform</title>
+    <title>Voter Authentication | VoteIn</title>
     <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
     <nav>
-        <a href="/" class="logo">🗳️ E-Voting Platform</a>
+        <a href="/" class="logo">
+            <div class="logo-brand-icon">👆</div>
+            voteIn
+        </a>
         <div class="nav-links">
             <a href="/">Home</a>
             <a href="/pages/spectator/LiveCounting.html">Live Results</a>
+            <a href="/pages/spectator/FinalResult.html">Final Results</a>
         </div>
     </nav>
 
-    <div class="container" style="max-width: 450px; margin-top: 4rem;">
-        <div class="card">
-            <h2 style="text-align: center; margin-bottom: 0.5rem;">Voter Authentication</h2>
-            <p style="text-align: center; margin-bottom: 2rem;">Log in with your Voter ID to cast your vote.</p>
-
-            <div id="error-alert" style="display: none; background: rgba(239, 68, 68, 0.2); border: 1px solid #EF4444; color: #FCA5A5; padding: 0.75rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.9rem;"></div>
-
-            <form id="login-form">
-                <div class="form-group">
-                    <label for="voterId">Voter ID</label>
-                    <input type="text" id="voterId" placeholder="e.g. voter1" required>
-                </div>
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" placeholder="••••••••" required>
-                </div>
-                <button type="submit" class="btn" style="width: 100%;">Sign In & Vote</button>
-            </form>
-
-            <div style="margin-top: 1.5rem; text-align: center; font-size: 0.85rem; color: var(--text-muted);">
-                Demo Credentials: <strong>voter1</strong> / <strong>password123</strong>
+    <div class="main-wrapper" style="max-width: 440px; margin-top: 2rem;">
+        <div class="votein-card" style="padding: 2.25rem 1.75rem;">
+            
+            <!-- Auth Tab Switcher -->
+            <div style="display: flex; border-bottom: 2px solid #E5E7EB; margin-bottom: 1.5rem;">
+                <button type="button" id="tab-login" class="btn-tab active" onclick="switchAuthTab('login')" style="flex: 1; padding: 0.75rem; background: none; border: none; font-weight: 800; font-size: 1rem; color: var(--votein-maroon); border-bottom: 3px solid var(--votein-maroon); cursor: pointer;">
+                    Sign In
+                </button>
+                <button type="button" id="tab-signup" class="btn-tab" onclick="switchAuthTab('signup')" style="flex: 1; padding: 0.75rem; background: none; border: none; font-weight: 700; font-size: 1rem; color: var(--text-muted); border-bottom: 3px solid transparent; cursor: pointer;">
+                    Create Account
+                </button>
             </div>
+
+            <!-- LOGIN FORM -->
+            <div id="form-login-container">
+                <div style="text-align: center; margin-bottom: 1.5rem;">
+                    <h3 style="font-size: 1.4rem; font-weight: 800; color: var(--text-dark);">Welcome to VoteIn</h3>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">Enter your Voter ID and password to access the digital ballot box.</p>
+                </div>
+
+                <form id="login-form">
+                    <div style="margin-bottom: 1rem;">
+                        <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-dark);">Voter ID</label>
+                        <input type="text" id="login-voterId" class="form-control-input" placeholder="e.g. voter1" required>
+                    </div>
+                    
+                    <div style="margin-bottom: 1.5rem;">
+                        <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-dark);">Password</label>
+                        <input type="password" id="login-password" class="form-control-input" placeholder="••••••••" required>
+                    </div>
+
+                    <button type="submit" id="login-submit-btn" class="btn-maroon" style="margin-bottom: 1rem;">
+                        Sign In & Vote ➔
+                    </button>
+                </form>
+
+                <div style="border-top: 1px solid #E5E7EB; padding-top: 1.25rem; margin-top: 1rem;">
+                    <span style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.5rem;">⚡ Quick Demo Login Accounts:</span>
+                    <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
+                        <button type="button" onclick="fillDemo('voter1', 'password123')" style="padding: 0.35rem 0.65rem; border-radius: 20px; border: 1px solid #D1D5DB; background: #F9FAFB; font-size: 0.78rem; cursor: pointer; font-weight: 600;">voter1 (Test Voter 1)</button>
+                        <button type="button" onclick="fillDemo('voter2', '123456')" style="padding: 0.35rem 0.65rem; border-radius: 20px; border: 1px solid #D1D5DB; background: #F9FAFB; font-size: 0.78rem; cursor: pointer; font-weight: 600;">voter2 (Test Voter 2)</button>
+                        <button type="button" onclick="fillDemo('admin1', 'admin123')" style="padding: 0.35rem 0.65rem; border-radius: 20px; border: 1px solid #D1D5DB; background: #F9FAFB; font-size: 0.78rem; cursor: pointer; font-weight: 600;">admin1 (Admin)</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SIGNUP FORM -->
+            <div id="form-signup-container" style="display: none;">
+                <div style="text-align: center; margin-bottom: 1.5rem;">
+                    <h3 style="font-size: 1.4rem; font-weight: 800; color: var(--text-dark);">Register New Voter</h3>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">Create your VoteIn digital voter identity synced to Supabase Cloud.</p>
+                </div>
+
+                <form id="signup-form">
+                    <div style="margin-bottom: 0.85rem;">
+                        <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-dark);">Full Name</label>
+                        <input type="text" id="signup-name" class="form-control-input" placeholder="e.g. Manishi Sharma" required>
+                    </div>
+
+                    <div style="margin-bottom: 0.85rem;">
+                        <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-dark);">Voter ID (Username)</label>
+                        <input type="text" id="signup-voterId" class="form-control-input" placeholder="e.g. voter_manishi" required>
+                    </div>
+
+                    <div style="margin-bottom: 0.85rem;">
+                        <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-dark);">Aadhaar Number (12 Digits)</label>
+                        <input type="text" id="signup-aadharNo" class="form-control-input" placeholder="4444 3333 6666" value="444433336666">
+                    </div>
+
+                    <div style="margin-bottom: 0.85rem;">
+                        <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-dark);">Email Address</label>
+                        <input type="email" id="signup-email" class="form-control-input" placeholder="manishi@example.com">
+                    </div>
+
+                    <div style="margin-bottom: 1.25rem;">
+                        <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-dark);">Create Password</label>
+                        <input type="password" id="signup-password" class="form-control-input" placeholder="••••••••" required>
+                    </div>
+
+                    <button type="submit" id="signup-submit-btn" class="btn-vote-now">
+                        Create Account & Sync to Supabase ➔
+                    </button>
+                </form>
+            </div>
+
         </div>
     </div>
 
     <script src="/js/main.js"></script>
     <script>
+        function fillDemo(id, pw) {
+            document.getElementById('login-voterId').value = id;
+            document.getElementById('login-password').value = pw;
+            showToast(`Filled demo account: ${id}`, 'info');
+        }
+
+        function switchAuthTab(tab) {
+            if (tab === 'login') {
+                document.getElementById('form-login-container').style.display = 'block';
+                document.getElementById('form-signup-container').style.display = 'none';
+                document.getElementById('tab-login').style.color = 'var(--votein-maroon)';
+                document.getElementById('tab-login').style.borderBottomColor = 'var(--votein-maroon)';
+                document.getElementById('tab-signup').style.color = 'var(--text-muted)';
+                document.getElementById('tab-signup').style.borderBottomColor = 'transparent';
+            } else {
+                document.getElementById('form-login-container').style.display = 'none';
+                document.getElementById('form-signup-container').style.display = 'block';
+                document.getElementById('tab-signup').style.color = 'var(--votein-maroon)';
+                document.getElementById('tab-signup').style.borderBottomColor = 'var(--votein-maroon)';
+                document.getElementById('tab-login').style.color = 'var(--text-muted)';
+                document.getElementById('tab-login').style.borderBottomColor = 'transparent';
+            }
+        }
+
+        // Handle Login
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const voterId = document.getElementById('voterId').value;
-            const password = document.getElementById('password').value;
-            const errorAlert = document.getElementById('error-alert');
+            const voterId = document.getElementById('login-voterId').value.trim();
+            const password = document.getElementById('login-password').value;
+            const btn = document.getElementById('login-submit-btn');
+
+            btn.disabled = true;
+            btn.innerText = 'Authenticating...';
 
             try {
-                const res = await fetch(apiUrl('/auth/login'), {
+                const res = await fetch('/api/auth/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ voterId, password })
@@ -58,16 +153,60 @@
                 const data = await res.json();
 
                 if (!res.ok) {
-                    errorAlert.innerText = data.error || data.message || 'Login failed';
-                    errorAlert.style.display = 'block';
+                    showToast(data.error || "Login failed", "error");
+                    btn.disabled = false;
+                    btn.innerText = 'Sign In & Vote ➔';
                     return;
                 }
 
                 setToken(data.token);
-                window.location.href = '/pages/voter/VotePage.html';
+                showToast("✅ Login successful!", "success");
+                setTimeout(() => window.location.href = '/', 500);
+
             } catch (err) {
-                errorAlert.innerText = 'Server connection error. Please try again.';
-                errorAlert.style.display = 'block';
+                showToast("Server connection error", "error");
+                btn.disabled = false;
+                btn.innerText = 'Sign In & Vote ➔';
+            }
+        });
+
+        // Handle Sign Up
+        document.getElementById('signup-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('signup-name').value.trim();
+            const voterId = document.getElementById('signup-voterId').value.trim();
+            const aadharNo = document.getElementById('signup-aadharNo').value.trim();
+            const email = document.getElementById('signup-email').value.trim();
+            const password = document.getElementById('signup-password').value;
+            const btn = document.getElementById('signup-submit-btn');
+
+            btn.disabled = true;
+            btn.innerText = 'Creating Account & Syncing Supabase...';
+
+            try {
+                const res = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, voterId, aadharNo, email, password })
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    showToast(data.error || "Registration failed", "error");
+                    btn.disabled = false;
+                    btn.innerText = 'Create Account & Sync to Supabase ➔';
+                    return;
+                }
+
+                setToken(data.token);
+                showToast("🎉 Account created & synced to Supabase!", "success");
+                setTimeout(() => window.location.href = '/', 600);
+
+            } catch (err) {
+                showToast("Server connection error during sign up", "error");
+                btn.disabled = false;
+                btn.innerText = 'Create Account & Sync to Supabase ➔';
             }
         });
     </script>

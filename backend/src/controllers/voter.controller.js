@@ -1,17 +1,14 @@
 // backend/src/controllers/voter.controller.js
-
 const { Vote, Candidate, Election } = require("../models");
 const { sequelize } = require("../models");
 const crypto = require("crypto");
-
-
+const supabase = require("../config/supabaseClient");
 
 exports.castVote = async (req, res) => {
   const t = await sequelize.transaction();
 
   try {
-
-    const voterId = req.user.id;  //----- Assuming user ID is available in req.user -----//
+    const voterId = req.user.id;
     const { candidateId, electionId, txHash } = req.body;
 
     if (!candidateId || !electionId) {
@@ -20,14 +17,18 @@ exports.castVote = async (req, res) => {
     }
 
     const election = await Election.findByPk(electionId);
-
-    console.log("Incoming electionId:", electionId);
-    console.log("Election found:", election);
-
     const now = new Date();
-    if (!election || now < election.startTime || now > election.endTime) {
+
+    if (!election) {
       await t.rollback();
-      return res.status(400).json({ error: "Election is not within the active time window" });
+      return res.status(404).json({ error: "Election not found" });
+    }
+
+    // Check active election window
+    const isTimeActive = now >= new Date(election.startTime) && now <= new Date(election.endTime);
+    if (election.status !== 'live' && !isTimeActive) {
+      await t.rollback();
+      return res.status(400).json({ error: "Election is not currently active" });
     }
 
     const existingVote = await Vote.findOne({
@@ -36,7 +37,7 @@ exports.castVote = async (req, res) => {
 
     if (existingVote) {
       await t.rollback();
-      return res.status(400).json({ error: "You have already voted" });
+      return res.status(400).json({ error: "You have already cast your vote in this election" });
     }
 
     const candidate = await Candidate.findOne({
@@ -45,12 +46,13 @@ exports.castVote = async (req, res) => {
 
     if (!candidate) {
       await t.rollback();
-      return res.status(400).json({ error: "Invalid candidate" });
+      return res.status(400).json({ error: "Invalid candidate selected" });
     }
 
-    await Vote.create(
-      // Save the real txHash into your database's voteHash column!
-      { voterId, candidateId, electionId, voteHash: txHash },
+    const generatedHash = txHash || ('0x' + crypto.randomBytes(32).toString('hex'));
+
+    const newVote = await Vote.create(
+      { voterId, candidateId, electionId, voteHash: generatedHash },
       { transaction: t }
     );
 
@@ -61,9 +63,24 @@ exports.castVote = async (req, res) => {
 
     await t.commit();
 
+    // Async sync vote record to Supabase Cloud Database (Votes table)
+    try {
+      await supabase.from('Votes').upsert([{
+        id: newVote.id,
+        voterId,
+        candidateId,
+        electionId,
+        voteHash: generatedHash
+      }]);
+      console.log(`✅ Synced vote hash ${generatedHash} to Supabase`);
+    } catch (supaErr) {
+      console.warn("Supabase vote sync notice:", supaErr.message);
+    }
+
     return res.status(200).json({
       success: true,
       message: "Vote cast successfully",
+      voteHash: generatedHash
     });
 
   } catch (error) {
@@ -71,4 +88,3 @@ exports.castVote = async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 };
-

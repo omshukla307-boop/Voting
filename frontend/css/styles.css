@@ -1,213 +1,493 @@
-/* Unified Styles for E-Voting Platform */
+/* VoteIn - Official Modern App Design System */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap');
+
 :root {
-    --primary: #4F46E5;
-    --primary-hover: #4338CA;
-    --bg-dark: #0F172A;
-    --card-bg: #1E293B;
-    --text-light: #F8FAFC;
-    --text-muted: #94A3B8;
-    --accent-green: #10B981;
-    --accent-blue: #3B82F6;
-    --border-color: #334155;
+    --votein-maroon: #800000;
+    --votein-maroon-dark: #600000;
+    --votein-maroon-light: #A00000;
+    --votein-green: #0F766E;
+    --votein-green-hover: #0D655D;
+    --votein-accent-green: #10B981;
+    --votein-cream-bg: #FAF8F5;
+    
+    --card-bg-white: #FFFFFF;
+    --card-bg-dark: #1E1E1E;
+    --card-border: #E5E7EB;
+    
+    --text-dark: #111827;
+    --text-muted: #6B7280;
+    --text-light: #F9FAFB;
+    
+    --radius-sm: 8px;
+    --radius-md: 14px;
+    --radius-lg: 20px;
+    --radius-full: 9999px;
+    
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 16px 40px rgba(128, 0, 0, 0.15);
 }
 
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: 'Plus Jakarta Sans', 'Outfit', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
 }
 
 body {
-    background-color: var(--bg-dark);
-    color: var(--text-light);
+    background-color: var(--votein-cream-bg);
+    color: var(--text-dark);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
 }
 
+/* Header & Top Bar */
 nav {
-    background: var(--card-bg);
-    padding: 1rem 2rem;
+    background: #FFFFFF;
+    border-bottom: 1px solid #E5E7EB;
+    padding: 0.9rem 1.75rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
 }
 
 .logo {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--text-light);
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--votein-maroon);
+    text-decoration: none;
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    text-decoration: none;
+    letter-spacing: -0.03em;
+}
+
+.logo-brand-icon {
+    width: 36px;
+    height: 36px;
+    background: var(--votein-maroon);
+    color: white;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
 }
 
 .nav-links {
     display: flex;
-    gap: 1.5rem;
     align-items: center;
+    gap: 1rem;
 }
 
 .nav-links a {
     color: var(--text-muted);
     text-decoration: none;
-    font-weight: 500;
-    transition: color 0.2s;
+    font-weight: 600;
+    font-size: 0.92rem;
+    padding: 0.5rem 0.85rem;
+    border-radius: var(--radius-sm);
+    transition: all 0.2s ease;
 }
 
 .nav-links a:hover, .nav-links a.active {
-    color: var(--text-light);
+    color: var(--votein-maroon);
+    background: rgba(128, 0, 0, 0.06);
 }
 
-.container {
-    max-width: 1100px;
-    margin: 2rem auto;
+/* Screen Wrapper */
+.main-wrapper {
+    max-width: 480px;
+    width: 100%;
+    margin: 1.5rem auto;
     padding: 0 1rem;
     flex: 1;
 }
 
-.card {
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 2rem;
+.desktop-container {
+    max-width: 1100px;
+    width: 100%;
+    margin: 1.5rem auto;
+    padding: 0 1.5rem;
+}
+
+/* VoteIn Cards */
+.votein-card {
+    background: #FFFFFF;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--card-border);
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.25s ease;
+}
+
+.votein-card:hover {
+    box-shadow: var(--shadow-md);
+}
+
+/* Red / Maroon Hero Countdown Banner */
+.hero-timer-banner {
+    background: #FFF5F5;
+    border: 1px solid #FFE0E0;
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
     margin-bottom: 1.5rem;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    position: relative;
 }
 
-h1, h2, h3 {
-    margin-bottom: 1rem;
+.timer-live-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: #FEE2E2;
+    color: #DC2626;
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--radius-full);
+    font-size: 0.78rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
 }
 
-p {
-    color: var(--text-muted);
-    line-height: 1.6;
-    margin-bottom: 1.5rem;
+.timer-live-badge::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    background: #DC2626;
+    border-radius: 50%;
+    animation: pulse 1.5s infinite;
 }
 
-.btn {
-    display: inline-block;
-    background: var(--primary);
+.timer-countdown-title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--text-dark);
+    margin-bottom: 0.25rem;
+}
+
+.timer-area-stat {
+    background: #FEE2E2;
+    color: #991B1B;
+    padding: 0.5rem 0.9rem;
+    border-radius: var(--radius-md);
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin: 0.85rem 0 1rem 0;
+    text-align: center;
+}
+
+.btn-vote-now {
+    width: 100%;
+    background: var(--votein-green);
     color: white;
-    padding: 0.75rem 1.5rem;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: 600;
+    padding: 0.9rem;
+    border-radius: var(--radius-md);
+    font-weight: 800;
+    font-size: 1.05rem;
     border: none;
     cursor: pointer;
-    transition: background 0.2s, transform 0.1s;
+    box-shadow: 0 4px 12px rgba(15, 118, 110, 0.3);
+    transition: all 0.2s ease;
 }
 
-.btn:hover {
-    background: var(--primary-hover);
+.btn-vote-now:hover {
+    background: var(--votein-green-hover);
+    transform: translateY(-2px);
 }
 
-.btn-secondary {
-    background: transparent;
-    border: 1px solid var(--border-color);
-    color: var(--text-light);
+.btn-maroon {
+    width: 100%;
+    background: var(--votein-maroon);
+    color: white;
+    padding: 0.9rem;
+    border-radius: var(--radius-md);
+    font-weight: 800;
+    font-size: 1.05rem;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(128, 0, 0, 0.3);
+    transition: all 0.2s ease;
 }
 
-.btn-secondary:hover {
-    background: var(--border-color);
+.btn-maroon:hover {
+    background: var(--votein-maroon-dark);
+    transform: translateY(-2px);
 }
 
-.form-group {
+/* Candidate List Rows */
+.candidate-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #FFFFFF;
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-md);
+    padding: 1rem 1.25rem;
+    margin-bottom: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.candidate-row:hover {
+    border-color: var(--votein-maroon);
+    transform: translateX(4px);
+    box-shadow: var(--shadow-sm);
+}
+
+.candidate-row-left {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+}
+
+.candidate-img-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #F3F4F6;
+    border: 1px solid #E5E7EB;
+}
+
+.candidate-party-logo {
+    font-size: 1.4rem;
+}
+
+.candidate-row-info h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-dark);
+}
+
+.candidate-row-info p {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+}
+
+/* Aadhaar Card Preview Box */
+.aadhaar-preview-box {
+    background: #F9FAFB;
+    border: 2px dashed #D1D5DB;
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+    text-align: center;
     margin-bottom: 1.25rem;
 }
 
-label {
-    display: block;
-    margin-bottom: 0.5rem;
-    color: var(--text-muted);
-    font-size: 0.9rem;
-}
-
-input, select {
+.aadhaar-card-graphic {
     width: 100%;
-    padding: 0.75rem;
-    background: #090D16;
-    border: 1px solid var(--border-color);
+    max-width: 280px;
+    height: auto;
     border-radius: 8px;
-    color: white;
-    font-size: 1rem;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 0.75rem;
 }
 
-input:focus, select:focus {
-    outline: none;
-    border-color: var(--primary);
-}
-
-.candidate-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1.5rem;
-    margin-top: 1.5rem;
-}
-
-.candidate-card {
-    background: #090D16;
-    border: 1px solid var(--border-color);
-    border-radius: 10px;
+/* Biometric & QR Frame Graphic */
+.biometric-box {
+    border: 1px solid #E5E7EB;
+    border-radius: var(--radius-md);
     padding: 1.5rem;
     text-align: center;
-    transition: transform 0.2s, border-color 0.2s;
+    margin-bottom: 1.25rem;
+    background: #FFFFFF;
 }
 
-.candidate-card:hover {
-    transform: translateY(-4px);
-    border-color: var(--primary);
+.fingerprint-icon {
+    font-size: 3.5rem;
+    color: var(--votein-maroon);
+    margin-bottom: 0.5rem;
 }
 
-.symbol-badge {
-    width: 60px;
-    height: 60px;
-    background: var(--card-bg);
+.scanner-viewport-frame {
+    width: 100%;
+    max-width: 260px;
+    height: 200px;
+    border: 2px solid #EF4444;
+    border-radius: 16px;
+    margin: 1rem auto;
+    position: relative;
+    overflow: hidden;
+    background: #000000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Slide to Vote Interactive Slider */
+.slide-to-vote-container {
+    position: relative;
+    height: 54px;
+    background: #E5E7EB;
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    padding: 4px;
+    user-select: none;
+    overflow: hidden;
+}
+
+.slide-to-vote-text {
+    width: 100%;
+    text-align: center;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--text-muted);
+}
+
+.slide-to-vote-thumb {
+    position: absolute;
+    left: 4px;
+    width: 46px;
+    height: 46px;
+    background: var(--votein-maroon);
+    color: white;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.8rem;
-    margin: 0 auto 1rem auto;
+    cursor: grab;
+    font-weight: 800;
+    box-shadow: 0 2px 8px rgba(128, 0, 0, 0.4);
+    transition: background 0.2s ease;
 }
 
-.progress-bar {
+.slide-to-vote-thumb:active {
+    cursor: grabbing;
+}
+
+/* Bottom App Navigation Bar */
+.bottom-app-nav {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: 480px;
     width: 100%;
-    height: 12px;
-    background: #090D16;
-    border-radius: 6px;
-    overflow: hidden;
-    margin-top: 0.5rem;
+    background: #FFFFFF;
+    border-top: 1px solid #E5E7EB;
+    display: flex;
+    justify-content: space-around;
+    padding: 0.6rem 0;
+    z-index: 99;
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
 }
 
-.progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--primary), var(--accent-blue));
-    width: 0%;
-    transition: width 0.5s ease;
-}
-
-.badge {
-    display: inline-block;
-    padding: 0.25rem 0.75rem;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 600;
-}
-
-.badge-live {
-    background: rgba(16, 185, 129, 0.2);
-    color: var(--accent-green);
-    border: 1px solid var(--accent-green);
-}
-
-footer {
-    text-align: center;
-    padding: 1.5rem;
+.bottom-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     color: var(--text-muted);
-    border-top: 1px solid var(--border-color);
-    font-size: 0.85rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-decoration: none;
+    gap: 0.25rem;
+}
+
+.bottom-nav-item.active {
+    color: var(--votein-maroon);
+}
+
+.bottom-nav-icon {
+    font-size: 1.25rem;
+}
+
+.bottom-nav-center-btn {
+    width: 44px;
+    height: 44px;
+    background: var(--votein-maroon);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    margin-top: -16px;
+    box-shadow: 0 4px 10px rgba(128, 0, 0, 0.4);
+}
+
+/* Form Controls */
+.form-control-input {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    border: 1px solid #D1D5DB;
+    border-radius: var(--radius-md);
+    font-size: 0.95rem;
+    margin-top: 0.35rem;
+}
+
+.form-control-input:focus {
+    outline: none;
+    border-color: var(--votein-maroon);
+    box-shadow: 0 0 0 3px rgba(128, 0, 0, 0.15);
+}
+
+/* Security PIN Boxes */
+.pin-boxes-container {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    margin: 1rem 0;
+}
+
+.pin-box-input {
+    width: 50px;
+    height: 54px;
+    background: #F3F4F6;
+    border: 1px solid #D1D5DB;
+    border-radius: 12px;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--votein-maroon);
+}
+
+.pin-box-input:focus {
+    outline: none;
+    border-color: var(--votein-maroon);
+    background: #FFFFFF;
+}
+
+/* Toast Notifications */
+#toast-container {
+    position: fixed;
+    top: 1.5rem;
+    right: 1.5rem;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.toast {
+    background: #111827;
+    color: #FFFFFF;
+    padding: 0.85rem 1.3rem;
+    border-radius: var(--radius-md);
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    box-shadow: var(--shadow-lg);
+    animation: slideInDown 0.3s ease;
+}
+
+@keyframes slideInDown {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.4; }
+    100% { opacity: 1; }
 }

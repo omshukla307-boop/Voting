@@ -3,3 +3,4 @@ node_modules/
 *.env
 backend/.env
 ai-backend/.env
+.vercel
