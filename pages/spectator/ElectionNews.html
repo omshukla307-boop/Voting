@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Recent Indian election news from The Indian Express, with links to the original reporting.">
+    <title>Election News | voteIn</title>
+    <link rel="stylesheet" href="/css/styles.css?v=20261007">
+</head>
+<body>
+    <nav class="home-primary-nav">
+        <a href="/" class="logo"><span class="logo-brand-icon">👆</span> voteIn</a>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/pages/spectator/ElectionNews.html" class="active">Election News</a>
+            <a href="/pages/spectator/LiveCounting.html">Live Leaderboard</a>
+            <a href="/pages/spectator/FinalResult.html">Final Results</a>
+        </div>
+    </nav>
+
+    <main class="news-main">
+        <header class="news-hero">
+            <div>
+                <p class="leaderboard-eyebrow">INDIA · ELECTION COVERAGE</p>
+                <h1>Election news</h1>
+                <p>Recent election stories from The Indian Express. Open any headline to read the full report at its source.</p>
+            </div>
+            <button id="news-refresh" class="leaderboard-refresh" type="button">↻ <span>Refresh</span></button>
+        </header>
+
+        <div class="news-feed-meta">
+            <span>Source: <a href="https://indianexpress.com/section/india/elections/" target="_blank" rel="noopener noreferrer">The Indian Express — Elections</a></span>
+            <span id="news-updated" aria-live="polite">Loading current stories…</span>
+        </div>
+
+        <section id="news-feed" class="news-grid" aria-label="Recent election news" aria-live="polite">
+            <p class="news-state">Loading election headlines…</p>
+        </section>
+        <p id="news-error" class="news-error" role="alert" hidden></p>
+    </main>
+
+    <div class="bottom-app-nav">
+        <a href="/" class="bottom-nav-item">
+            <span class="bottom-nav-icon">🏠</span>
+            Home
+        </a>
+        <a href="/pages/spectator/LiveCounting.html" class="bottom-nav-item">
+            <span class="bottom-nav-icon">📊</span>
+            Live
+        </a>
+        <a href="/pages/spectator/ElectionNews.html" class="bottom-nav-item active" aria-current="page">
+            <span class="bottom-nav-icon">📰</span>
+            News
+        </a>
+        <a href="/pages/spectator/FinalResult.html" class="bottom-nav-item">
+            <span class="bottom-nav-icon">☰</span>
+            Results
+        </a>
+    </div>
+
+    <footer><p>News articles belong to their original publishers. voteIn is not an official election authority.</p></footer>
+
+    <script>
+        const feed = document.getElementById('news-feed');
+        const updated = document.getElementById('news-updated');
+        const error = document.getElementById('news-error');
+        const refresh = document.getElementById('news-refresh');
+
+        function formatDate(value) {
+            const date = new Date(value);
+            return Number.isNaN(date.getTime())
+                ? 'Date unavailable'
+                : date.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+        }
+
+        function renderArticles(articles) {
+            feed.replaceChildren();
+            for (const article of articles) {
+                const card = document.createElement('article');
+                card.className = 'news-card';
+
+                const publisher = document.createElement('p');
+                publisher.className = 'news-publisher';
+                publisher.textContent = article.source;
+
+                const heading = document.createElement('h2');
+                const link = document.createElement('a');
+                link.href = article.url;
+                link.target = '_blank';
+                link.rel = 'noopener noreferrer';
+                link.textContent = article.title;
+                heading.append(link);
+
+                const summary = document.createElement('p');
+                summary.className = 'news-summary';
+                summary.textContent = article.description || 'Read the full report from the publisher.';
+
+                const date = document.createElement('time');
+                date.className = 'news-date';
+                const publishedDate = new Date(article.publishedAt);
+                date.dateTime = Number.isNaN(publishedDate.getTime()) ? '' : publishedDate.toISOString();
+                date.textContent = formatDate(article.publishedAt);
+
+                card.append(publisher, heading, summary, date);
+                feed.append(card);
+            }
+        }
+
+        async function loadNews() {
+            refresh.disabled = true;
+            error.hidden = true;
+            updated.textContent = 'Loading current stories…';
+            feed.replaceChildren();
+            const loading = document.createElement('p');
+            loading.className = 'news-state';
+            loading.textContent = 'Loading election headlines…';
+            feed.append(loading);
+
+            try {
+                const response = await fetch('/api/news/elections', { cache: 'no-store' });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error || 'Unable to load election news.');
+                renderArticles(data.articles);
+                updated.textContent = `Updated ${new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}`;
+            } catch (err) {
+                feed.replaceChildren();
+                updated.textContent = 'Stories could not be loaded';
+                error.textContent = `${err.message} You can visit The Indian Express election section directly using the source link above.`;
+                error.hidden = false;
+            } finally {
+                refresh.disabled = false;
+            }
+        }
+
+        refresh.addEventListener('click', loadNews);
+        loadNews();
+    </script>
+</body>
+</html>

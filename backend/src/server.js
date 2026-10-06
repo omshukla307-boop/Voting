@@ -39,6 +39,65 @@ app.engine('html', ejs.renderFile);
 app.set('view engine', 'html');
 app.set('views', frontendPath);
 
+function decodeXml(value) {
+  return value
+    .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1')
+    .replace(/&(#x[\da-f]+|#\d+|amp|lt|gt|quot|apos);/gi, (entity, code) => {
+      if (code[0] === '#') {
+        const isHex = code[1].toLowerCase() === 'x';
+        const point = Number.parseInt(code.slice(isHex ? 2 : 1), isHex ? 16 : 10);
+        return Number.isInteger(point) && point >= 0 && point <= 0x10ffff
+          ? String.fromCodePoint(point)
+          : entity;
+      }
+      return { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: '\u00a0' }[code.toLowerCase()] || entity;
+    })
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function readRssField(item, field) {
+  const match = item.match(new RegExp(`<${field}\\b[^>]*>([\\s\\S]*?)<\\/${field}\\s*>`, 'i'));
+  return match ? decodeXml(match[1]) : '';
+}
+
+app.get('/api/news/elections', async (req, res) => {
+  try {
+    const response = await fetch('https://indianexpress.com/section/india/elections/feed/', {
+      headers: { Accept: 'application/rss+xml, application/xml;q=0.9' },
+      signal: AbortSignal.timeout(10000)
+    });
+    if (!response.ok) {
+      throw new Error(`Election news feed returned HTTP ${response.status}`);
+    }
+
+    const xml = await response.text();
+    const articles = [...xml.matchAll(/<item\b[^>]*>([\s\S]*?)<\/item>/gi)]
+      .map(([, item]) => ({
+        title: readRssField(item, 'title'),
+        url: readRssField(item, 'link'),
+        publishedAt: readRssField(item, 'pubDate'),
+        description: readRssField(item, 'description'),
+        source: readRssField(item, 'source') || 'The Indian Express'
+      }))
+      .filter(article => article.title
+        && /\b(election|elections|electoral|polls?|voting|vote|assembly|constituency)\b/i.test(article.title)
+        && /^https?:\/\//i.test(article.url))
+      .slice(0, 15);
+
+    if (articles.length === 0) {
+      throw new Error('Election news feed did not contain any readable articles');
+    }
+
+    res.set('Cache-Control', 'public, max-age=0, s-maxage=300, stale-while-revalidate=600');
+    res.json({ source: 'The Indian Express', articles });
+  } catch (err) {
+    console.error('Election news feed error:', err);
+    res.status(502).json({ error: 'Election news is temporarily unavailable. Please try again shortly.' });
+  }
+});
+
 // Serverless DB Readiness Promise
 let isInitialized = false;
 let initPromise = null;
