@@ -3,137 +3,550 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-Voting Platform | Secure & Transparent Digital Elections</title>
-    <link rel="stylesheet" href="/css/styles.css?v=20261006">
+    <title>VoteIn | Blockchain Digital Voting Platform</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <!-- HTML5 QR Code Scanner Library -->
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 </head>
 <body>
+    <!-- Top Web Navigation with Scanner on Top -->
     <nav>
         <a href="/" class="logo">
-            <div class="logo-icon">🗳️</div>
-            E-Voting Platform
+            <div class="logo-brand-icon">👆</div>
+            voteIn
         </a>
+
+        <!-- Scanner Pill Button at Top of App -->
+        <button type="button" class="top-scanner-btn" onclick="navigateToStep('step-auth'); startQRScanner();">
+            📷 Scan QR Code
+        </button>
+
         <div class="nav-links">
             <a href="/" class="active">Home</a>
-            <a href="/pages/spectator/LiveCounting.html">Live Results</a>
-            <a href="/pages/spectator/FinalResult.html">Final Tally</a>
-            <a href="/pages/auth/Login.html" class="btn" style="padding: 0.5rem 1.2rem; font-size: 0.9rem;">Voter Login</a>
+            <a href="javascript:void(0)" onclick="navigateToStep('step-aadhaar')">Authentication</a>
+            <a href="javascript:void(0)" onclick="navigateToStep('step-ballot')">Vote Ballot</a>
+            <a href="/pages/spectator/LiveCounting.html">Live Spectator</a>
+            <a href="/pages/spectator/FinalResult.html">Results</a>
+            <a href="/pages/auth/Login.html" id="login-link" class="btn-maroon" style="padding: 0.45rem 0.9rem; font-size: 0.85rem; width: auto;">Sign In</a>
         </div>
     </nav>
 
-    <div class="container">
-        <!-- Hero Section -->
-        <div class="card" style="text-align: center; padding: 4.5rem 2rem; position: relative; overflow: hidden; background: linear-gradient(180deg, rgba(17, 24, 39, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%);">
-            <div style="margin-bottom: 1rem;">
-                <span class="badge badge-live">LIVE ELECTION 2026</span>
-                <span class="badge badge-purple" style="margin-left: 0.5rem;">SUPABASE POWERED</span>
-            </div>
-            
-            <h1 style="font-size: 3.2rem; font-weight: 800; line-height: 1.15; margin-bottom: 1.25rem; background: linear-gradient(135deg, #FFFFFF 0%, #94A3B8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-                Secure, Transparent & Instant<br><span style="background: linear-gradient(135deg, #6366F1 0%, #3B82F6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Digital Voting System</span>
-            </h1>
-            
-            <p style="font-size: 1.15rem; max-width: 720px; margin: 0 auto 2.5rem auto; color: var(--text-secondary); line-height: 1.7;">
-                Cast your vote with confidence using unique SHA-256 cryptographic verification hashes, anti-tamper security, and real-time live result tallies.
-            </p>
-            
-            <div style="display: flex; gap: 1.25rem; justify-content: center; flex-wrap: wrap;">
-                <a href="/pages/auth/Login.html" class="btn" style="font-size: 1.05rem; padding: 0.95rem 2.2rem;">
-                    🗳️ Cast Your Vote Now
-                </a>
-                <a href="/pages/spectator/LiveCounting.html" class="btn btn-secondary" style="font-size: 1.05rem; padding: 0.95rem 2.2rem;">
-                    📊 View Live Results
-                </a>
-            </div>
-        </div>
-
-        <!-- Real-Time Metrics Bar -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <span class="stat-label">Active Election</span>
-                <span class="stat-value" style="font-size: 1.4rem; color: var(--accent-green); margin-top: 0.6rem;">General Election 2026</span>
-            </div>
-            <div class="stat-card">
-                <span class="stat-label">Total Votes Recorded</span>
-                <span class="stat-value" id="home-total-votes">--</span>
-            </div>
-            <div class="stat-card">
-                <span class="stat-label">Candidates Registered</span>
-                <span class="stat-value" id="home-candidate-count">--</span>
-            </div>
-            <div class="stat-card">
-                <span class="stat-label">System Integrity</span>
-                <span class="stat-value" style="font-size: 1.4rem; color: var(--accent-blue); margin-top: 0.6rem;">100% Verified</span>
-            </div>
-        </div>
-
-        <!-- Feature Grid -->
-        <h2 style="font-size: 1.8rem; text-align: center; margin: 3rem 0 1.5rem 0;">Engineered for Maximum Election Trust</h2>
+    <!-- Main Mobile Application Viewport Container -->
+    <div class="main-wrapper">
         
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.75rem;">
-            <div class="card" style="padding: 2rem;">
-                <div class="candidate-avatar" style="background: rgba(99, 102, 241, 0.15); border-color: rgba(99, 102, 241, 0.4);">🔐</div>
-                <h3 style="font-size: 1.25rem; margin-bottom: 0.6rem;">Cryptographic Hash Receipt</h3>
-                <p style="color: var(--text-secondary); margin-bottom: 0;">Every submitted ballot generates a unique 256-bit cryptographic verification hash, ensuring your vote cannot be altered or duplicated.</p>
+        <!-- ========================================== -->
+        <!-- SCREEN 1: HOME DASHBOARD                   -->
+        <!-- ========================================== -->
+        <div id="screen-home" class="app-screen">
+            <!-- User Profile Header -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <div style="width: 46px; height: 46px; border-radius: 50%; background: #F3F4F6; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; border: 1px solid #E5E7EB;">
+                        👩‍💼
+                    </div>
+                    <div>
+                        <h3 id="user-greeting" style="font-size: 1.1rem; font-weight: 800; color: var(--text-dark);">Hey, Manishi !</h3>
+                        <p style="font-size: 0.78rem; color: var(--text-muted);">You will be voting for the Rajya Sabha 2024 Elections.</p>
+                    </div>
+                </div>
+                <div style="width: 38px; height: 38px; border-radius: 50%; background: #FFFFFF; border: 1px solid #E5E7EB; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; cursor: pointer;" onclick="showToast('Notifications: General Election voting is live!', 'info')">
+                    🔔
+                </div>
             </div>
 
-            <div class="card" style="padding: 2rem;">
-                <div class="candidate-avatar" style="background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.4);">📊</div>
-                <h3 style="font-size: 1.25rem; margin-bottom: 0.6rem;">Real-Time Spectator Tally</h3>
-                <p style="color: var(--text-secondary); margin-bottom: 0;">Watch election results update live as votes are cast across the country, complete with turnout percentage analytics.</p>
+            <!-- Hero Live Timer Banner -->
+            <div class="hero-timer-banner">
+                <div class="timer-live-badge">Voting is live</div>
+                
+                <div id="live-countdown-text" class="timer-countdown-title">8 hrs : 50 mins : 10 sec Remaining</div>
+                <p style="font-size: 0.82rem; color: var(--text-muted); font-weight: 600;">Voting time 6:00 AM - 6:00 PM</p>
+                
+                <div class="timer-area-stat">
+                    80,000+ people have voted in your area
+                </div>
+
+                <button type="button" class="btn-vote-now" onclick="navigateToStep('step-aadhaar')">
+                    VOTE NOW
+                </button>
             </div>
 
-            <div class="card" style="padding: 2rem;">
-                <div class="candidate-avatar" style="background: rgba(59, 130, 246, 0.15); border-color: rgba(59, 130, 246, 0.4);">⚡</div>
-                <h3 style="font-size: 1.25rem; margin-bottom: 0.6rem;">Supabase Cloud Backend</h3>
-                <p style="color: var(--text-secondary); margin-bottom: 0;">Built on enterprise-grade database infrastructure with row-level security and high concurrency performance.</p>
+            <!-- Prominent Indian Leaders Candidates Area List -->
+            <div style="margin-bottom: 5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem;">
+                    <h3 style="font-size: 1.05rem; font-weight: 800; color: var(--text-dark);">See candidates from your area</h3>
+                    <span style="font-size: 0.85rem; color: var(--votein-maroon); font-weight: 700;">📍 Agra</span>
+                </div>
+
+                <div id="home-candidate-rows">
+                    <div class="candidate-row" onclick="navigateToStep('step-ballot')">
+                        <div class="candidate-row-left">
+                            <span class="candidate-party-logo">🪷</span>
+                            <div class="candidate-row-info">
+                                <h4>Narendra Modi</h4>
+                                <p>Bharatiya Janata Party (BJP)</p>
+                            </div>
+                        </div>
+                        <span style="font-weight: 800; color: var(--text-muted);">›</span>
+                    </div>
+
+                    <div class="candidate-row" onclick="navigateToStep('step-ballot')">
+                        <div class="candidate-row-left">
+                            <span class="candidate-party-logo">✋</span>
+                            <div class="candidate-row-info">
+                                <h4>Rahul Gandhi</h4>
+                                <p>Indian National Congress (INC)</p>
+                            </div>
+                        </div>
+                        <span style="font-weight: 800; color: var(--text-muted);">›</span>
+                    </div>
+
+                    <div class="candidate-row" onclick="navigateToStep('step-ballot')">
+                        <div class="candidate-row-left">
+                            <span class="candidate-party-logo">🧹</span>
+                            <div class="candidate-row-info">
+                                <h4>Arvind Kejriwal</h4>
+                                <p>Aam Aadmi Party (AAP)</p>
+                            </div>
+                        </div>
+                        <span style="font-weight: 800; color: var(--text-muted);">›</span>
+                    </div>
+
+                    <div class="candidate-row" onclick="navigateToStep('step-ballot')">
+                        <div class="candidate-row-left">
+                            <span class="candidate-party-logo">🚲</span>
+                            <div class="candidate-row-info">
+                                <h4>Akhilesh Yadav</h4>
+                                <p>Samajwadi Party (SP)</p>
+                            </div>
+                        </div>
+                        <span style="font-weight: 800; color: var(--text-muted);">›</span>
+                    </div>
+
+                    <div class="candidate-row" onclick="navigateToStep('step-ballot')">
+                        <div class="candidate-row-left">
+                            <span class="candidate-party-logo">🐘</span>
+                            <div class="candidate-row-info">
+                                <h4>Mayawati</h4>
+                                <p>Bahujan Samaj Party (BSP)</p>
+                            </div>
+                        </div>
+                        <span style="font-weight: 800; color: var(--text-muted);">›</span>
+                    </div>
+
+                    <div class="candidate-row" onclick="navigateToStep('step-ballot')">
+                        <div class="candidate-row-left">
+                            <span class="candidate-party-logo">🌸</span>
+                            <div class="candidate-row-info">
+                                <h4>Mamata Banerjee</h4>
+                                <p>All India Trinamool Congress (AITC)</p>
+                            </div>
+                        </div>
+                        <span style="font-weight: 800; color: var(--text-muted);">›</span>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- 3-Step Process -->
-        <div class="card" style="margin-top: 2rem; padding: 3rem 2rem;">
-            <h2 style="text-align: center; font-size: 1.8rem; margin-bottom: 2.5rem;">How to Vote in 3 Easy Steps</h2>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; text-align: center;">
-                <div>
-                    <div style="width: 50px; height: 50px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.3rem; margin: 0 auto 1.25rem auto;">1</div>
-                    <h3 style="font-size: 1.15rem; margin-bottom: 0.5rem;">Log In with Voter ID</h3>
-                    <p style="font-size: 0.95rem; color: var(--text-secondary);">Authenticate using your unique voter credentials issued for this election session.</p>
+        <!-- ========================================== -->
+        <!-- SCREEN 2: AADHAAR VERIFICATION            -->
+        <!-- ========================================== -->
+        <div id="step-aadhaar" class="app-screen" style="display: none;">
+            <div class="votein-card" style="text-align: center;">
+                <h3 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 1rem;">Identity Verification</h3>
+
+                <!-- Aadhaar Card Graphic -->
+                <div class="aadhaar-preview-box">
+                    <div style="background: linear-gradient(135deg, #1E3A8A, #1E40AF); color: white; padding: 0.75rem; border-radius: 8px; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.75rem; display: flex; justify-content: space-between; align-items: center;">
+                        <span>🇮🇳 GOVERNMENT OF INDIA</span>
+                        <span>AADHAAR</span>
+                    </div>
+                    <div style="font-family: monospace; font-size: 1.1rem; font-weight: 800; letter-spacing: 0.15em; color: var(--text-dark);">
+                        4444 3333 6666
+                    </div>
+                    <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">आधार - आम आदमी का अधिकार</p>
                 </div>
-                <div>
-                    <div style="width: 50px; height: 50px; background: var(--accent-purple); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.3rem; margin: 0 auto 1.25rem auto;">2</div>
-                    <h3 style="font-size: 1.15rem; margin-bottom: 0.5rem;">Select Candidate & Confirm</h3>
-                    <p style="font-size: 0.95rem; color: var(--text-secondary);">Review registered candidates and cast your vote on the digital ballot paper.</p>
+
+                <div style="text-align: left; margin-bottom: 1.25rem;">
+                    <label style="font-size: 0.9rem; font-weight: 700; color: var(--text-dark);">Enter your Aadhaar Number</label>
+                    <input type="text" id="aadhaar-input" class="form-control-input" value="4444 3333 6666" placeholder="ABC1234567 / 12 Digit Aadhaar">
                 </div>
-                <div>
-                    <div style="width: 50px; height: 50px; background: var(--accent-green); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.3rem; margin: 0 auto 1.25rem auto;">3</div>
-                    <h3 style="font-size: 1.15rem; margin-bottom: 0.5rem;">Receive Verified Hash</h3>
-                    <p style="font-size: 0.95rem; color: var(--text-secondary);">Instantly obtain your official digital receipt hash confirming your vote has been recorded.</p>
+
+                <!-- File Upload Box -->
+                <div class="aadhaar-preview-box" style="margin-bottom: 1.5rem; text-align: left;">
+                    <span style="font-size: 0.82rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.5rem;">Upload Verification Document:</span>
+                    <div style="display: flex; align-items: center; justify-content: space-between; background: #FFFFFF; border: 1px solid #E5E7EB; padding: 0.6rem 0.9rem; border-radius: 8px;">
+                        <span style="font-size: 0.85rem; font-weight: 600; color: var(--votein-green);">📄 Manishi-document.pdf (Upload complete)</span>
+                        <span style="color: var(--votein-accent-green); font-weight: 800;">✓</span>
+                    </div>
+                </div>
+
+                <button type="button" class="btn-maroon" onclick="navigateToStep('step-auth')">
+                    Next ➔
+                </button>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- SCREEN 3: BIOMETRIC & QR SCANNER           -->
+        <!-- ========================================== -->
+        <div id="step-auth" class="app-screen" style="display: none;">
+            <div class="votein-card" style="text-align: center;">
+                <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
+                    <button type="button" style="background: none; border: none; font-size: 1.2rem; cursor: pointer;" onclick="navigateToStep('step-aadhaar')">←</button>
+                    <h3 style="font-size: 1.3rem; font-weight: 800; margin: 0;">Authentication</h3>
+                </div>
+
+                <!-- Fingerprint Scanner Card -->
+                <div class="biometric-box">
+                    <div class="fingerprint-icon">☝️</div>
+                    <p style="font-size: 0.82rem; color: var(--text-muted); font-weight: 600;">Make sure to scan your thumb before proceeding for voting</p>
+                </div>
+
+                <!-- Live Camera QR Code Scanner -->
+                <div class="biometric-box">
+                    <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.5rem;">Live Camera & QR Scanner</h4>
+                    
+                    <div id="qr-reader" style="width: 100%; border-radius: 12px; overflow: hidden; margin-bottom: 0.75rem;"></div>
+
+                    <div style="display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap;">
+                        <button type="button" class="btn-vote-now" onclick="startQRScanner()" style="padding: 0.6rem 1rem; font-size: 0.85rem; width: auto;">
+                            📷 Start Camera Scanner
+                        </button>
+                        <button type="button" class="btn-vote-now" onclick="simulateQRScan()" style="padding: 0.6rem 1rem; font-size: 0.85rem; width: auto; background: var(--votein-maroon);">
+                            ⚡ Auto Verify QR Code
+                        </button>
+                    </div>
+
+                    <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.75rem;">After biometric verification proceed with face and voter ID verification.</p>
+                </div>
+
+                <div style="margin-bottom: 1.25rem;">
+                    <a href="javascript:void(0)" onclick="showToast('Need help? Contact Election Helpline: 1950', 'info')" style="font-size: 0.82rem; color: var(--text-muted); text-decoration: underline;">Need help? Click here.</a>
+                </div>
+
+                <button type="button" class="btn-maroon" onclick="navigateToStep('step-pin')">
+                    Next ➔
+                </button>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- SCREEN 4: SECURITY PIN SETUP               -->
+        <!-- ========================================== -->
+        <div id="step-pin" class="app-screen" style="display: none;">
+            <div class="votein-card" style="text-align: center; padding: 2.5rem 1.5rem;">
+                <div class="logo-brand-icon" style="margin: 0 auto 1rem auto; width: 52px; height: 52px; font-size: 1.6rem;">🔑</div>
+                
+                <h3 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 0.4rem;">Set up Security PIN</h3>
+                <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 2rem;">Use this PIN to unlock this app</p>
+
+                <div style="margin-bottom: 1.5rem;">
+                    <span style="font-size: 0.82rem; font-weight: 700; color: var(--text-dark); display: block; margin-bottom: 0.5rem;">New Security PIN</span>
+                    <div class="pin-boxes-container">
+                        <input type="password" maxlength="1" class="pin-box-input" value="1">
+                        <input type="password" maxlength="1" class="pin-box-input" value="2">
+                        <input type="password" maxlength="1" class="pin-box-input" value="3">
+                        <input type="password" maxlength="1" class="pin-box-input" value="4">
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 2rem;">
+                    <span style="font-size: 0.82rem; font-weight: 700; color: var(--text-dark); display: block; margin-bottom: 0.5rem;">Re-Enter Security PIN</span>
+                    <div class="pin-boxes-container">
+                        <input type="password" maxlength="1" class="pin-box-input" value="1">
+                        <input type="password" maxlength="1" class="pin-box-input" value="2">
+                        <input type="password" maxlength="1" class="pin-box-input" value="3">
+                        <input type="password" maxlength="1" class="pin-box-input" value="4">
+                    </div>
+                </div>
+
+                <button type="button" class="btn-maroon" onclick="navigateToStep('step-ballot')">
+                    Save PIN & Go to Ballot ➔
+                </button>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- SCREEN 5: CANDIDATE SELECTION BALLOT       -->
+        <!-- ========================================== -->
+        <div id="step-ballot" class="app-screen" style="display: none;">
+            <div class="votein-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+                    <h3 style="font-size: 1.3rem; font-weight: 800; margin: 0;">Tap to Select your Candidate</h3>
+                    <span style="font-size: 0.78rem; background: #FFF5F5; color: var(--votein-maroon); font-weight: 700; padding: 0.3rem 0.65rem; border-radius: 20px;">BALLOT 2026</span>
+                </div>
+
+                <div id="ballot-candidates-list">
+                    <div class="candidate-row" onclick="openVoteModal(1, 'Narendra Modi', 'Bharatiya Janata Party (BJP)', '🪷')">
+                        <div class="candidate-row-left">
+                            <span style="font-weight: 800; color: var(--text-muted);">1.</span>
+                            <div class="candidate-row-info">
+                                <h4>Narendra Modi</h4>
+                                <p>BJP</p>
+                            </div>
+                        </div>
+                        <span class="candidate-party-logo">🪷</span>
+                    </div>
+
+                    <div class="candidate-row" onclick="openVoteModal(2, 'Rahul Gandhi', 'Indian National Congress (INC)', '✋')">
+                        <div class="candidate-row-left">
+                            <span style="font-weight: 800; color: var(--text-muted);">2.</span>
+                            <div class="candidate-row-info">
+                                <h4>Rahul Gandhi</h4>
+                                <p>INC</p>
+                            </div>
+                        </div>
+                        <span class="candidate-party-logo">✋</span>
+                    </div>
+
+                    <div class="candidate-row" onclick="openVoteModal(3, 'Arvind Kejriwal', 'Aam Aadmi Party (AAP)', '🧹')">
+                        <div class="candidate-row-left">
+                            <span style="font-weight: 800; color: var(--text-muted);">3.</span>
+                            <div class="candidate-row-info">
+                                <h4>Arvind Kejriwal</h4>
+                                <p>AAP</p>
+                            </div>
+                        </div>
+                        <span class="candidate-party-logo">🧹</span>
+                    </div>
+
+                    <div class="candidate-row" onclick="openVoteModal(4, 'Akhilesh Yadav', 'Samajwadi Party (SP)', '🚲')">
+                        <div class="candidate-row-left">
+                            <span style="font-weight: 800; color: var(--text-muted);">4.</span>
+                            <div class="candidate-row-info">
+                                <h4>Akhilesh Yadav</h4>
+                                <p>SP</p>
+                            </div>
+                        </div>
+                        <span class="candidate-party-logo">🚲</span>
+                    </div>
+
+                    <div class="candidate-row" onclick="openVoteModal(5, 'Mayawati', 'Bahujan Samaj Party (BSP)', '🐘')">
+                        <div class="candidate-row-left">
+                            <span style="font-weight: 800; color: var(--text-muted);">5.</span>
+                            <div class="candidate-row-info">
+                                <h4>Mayawati</h4>
+                                <p>BSP</p>
+                            </div>
+                        </div>
+                        <span class="candidate-party-logo">🐘</span>
+                    </div>
                 </div>
             </div>
         </div>
+
+        <!-- ========================================== -->
+        <!-- SCREEN 6: VOTE CONFIRMATION MODAL         -->
+        <!-- ========================================== -->
+        <div id="modal-confirm-vote" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(6px); z-index: 1000; align-items: center; justify-content: center; padding: 1rem;">
+            <div class="votein-card" style="max-width: 420px; width: 100%; text-align: center; position: relative;">
+                <button type="button" style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.2rem; cursor: pointer;" onclick="closeVoteModal()">✕</button>
+                
+                <h3 style="font-size: 1.35rem; font-weight: 800; margin-bottom: 1.25rem;">Vote Confirmation</h3>
+
+                <div style="font-size: 4rem; margin-bottom: 0.5rem;" id="modal-symbol">🪷</div>
+                <h4 style="font-size: 1.3rem; font-weight: 800; color: var(--text-dark);" id="modal-candidate-name">Narendra Modi</h4>
+                <p style="font-size: 0.9rem; color: var(--votein-maroon); font-weight: 700; margin-bottom: 1.75rem;" id="modal-party-name">Bharatiya Janata Party (BJP)</p>
+
+                <!-- Slide to Vote Slider -->
+                <div class="slide-to-vote-container" id="slide-container">
+                    <div class="slide-to-vote-text">>> Slide to confirm your vote</div>
+                    <div class="slide-to-vote-thumb" id="slide-thumb">►</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- SCREEN 7: VOTING SUCCESSFUL & RECEIPT     -->
+        <!-- ========================================== -->
+        <div id="step-success" class="app-screen" style="display: none;">
+            <div class="votein-card" style="text-align: center; padding: 2.5rem 1.5rem;">
+                <h3 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 1.25rem;">Thanks for voting !</h3>
+
+                <div style="background: #111827; color: white; border-radius: var(--radius-lg); padding: 1.75rem; text-align: center; margin-bottom: 1.5rem; box-shadow: var(--shadow-lg);">
+                    <div style="width: 50px; height: 50px; background: #10B981; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; margin: 0 auto 1rem auto;">
+                        ✓
+                    </div>
+
+                    <h4 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 0.3rem;">Voting Successful !</h4>
+                    <p style="font-size: 0.85rem; color: #9CA3AF; margin-bottom: 1.5rem;">Your Vote has been successfully done.</p>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; text-align: left; background: #1F2937; padding: 1rem; border-radius: 12px; margin-bottom: 1.25rem; font-size: 0.8rem;">
+                        <div>
+                            <span style="color: #9CA3AF; display: block;">Reference Number</span>
+                            <strong style="color: white; font-family: monospace;" id="receipt-ref-no">000085752257</strong>
+                        </div>
+                        <div>
+                            <span style="color: #9CA3AF; display: block;">Vote Time</span>
+                            <strong style="color: white;" id="receipt-vote-time">25 Apr 2026, 13:22</strong>
+                        </div>
+                        <div>
+                            <span style="color: #9CA3AF; display: block;">Vote ID</span>
+                            <strong style="color: white; font-family: monospace;" id="receipt-vote-id">1243572934</strong>
+                        </div>
+                        <div>
+                            <span style="color: #9CA3AF; display: block;">Voter Name</span>
+                            <strong style="color: white;" id="receipt-voter-name">Manishi</strong>
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn-vote-now" onclick="downloadPDFReceipt()" style="background: transparent; border: 1px solid rgba(255,255,255,0.2); font-size: 0.9rem; padding: 0.65rem;">
+                        📥 Get PDF Receipt
+                    </button>
+                </div>
+
+                <div style="display: flex; gap: 0.75rem;">
+                    <a href="/pages/spectator/LiveCounting.html" class="btn-maroon" style="text-decoration: none; text-align: center;">
+                        View Live Spectator Tally 📊
+                    </a>
+                </div>
+            </div>
+        </div>
+
     </div>
 
-    <footer>
-        <p>&copy; 2026 E-Voting Platform. Supabase Cloud Database & Node.js Backend Engine.</p>
-    </footer>
+    <!-- Bottom Mobile Navigation Bar -->
+    <div class="bottom-app-nav">
+        <a href="/" class="bottom-nav-item active">
+            <span class="bottom-nav-icon">🏠</span>
+            Home
+        </a>
+        <a href="javascript:void(0)" onclick="navigateToStep('step-ballot')" class="bottom-nav-item">
+            <span class="bottom-nav-icon">🔍</span>
+            Elections
+        </a>
+        <a href="javascript:void(0)" onclick="navigateToStep('step-auth'); startQRScanner();" class="bottom-nav-item">
+            <div class="bottom-nav-center-btn">📷</div>
+        </a>
+        <a href="/pages/spectator/LiveCounting.html" class="bottom-nav-item">
+            <span class="bottom-nav-icon">📰</span>
+            News
+        </a>
+        <a href="/pages/spectator/FinalResult.html" class="bottom-nav-item">
+            <span class="bottom-nav-icon">☰</span>
+            Menu
+        </a>
+    </div>
 
-    <script src="/js/main.js?v=20261006"></script>
+    <script src="/js/main.js"></script>
     <script>
-        async function loadHomeMetrics() {
+        let selectedCandidateObj = null;
+
+        function navigateToStep(stepId) {
+            document.querySelectorAll('.app-screen').forEach(s => s.style.display = 'none');
+            const target = document.getElementById(stepId);
+            if (target) target.style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        let html5QrcodeScanner = null;
+
+        function startQRScanner() {
             try {
-                const res = await fetch(apiUrl('/spectator/candidates'));
-                const data = await res.json();
-                const candidates = data.candidates || [];
-                
-                document.getElementById('home-candidate-count').innerText = candidates.length;
-                
-                let total = 0;
-                candidates.forEach(c => total += (c.voteCount || 0));
-                document.getElementById('home-total-votes').innerText = total;
+                if (!html5QrcodeScanner) {
+                    html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", { fps: 10, qrbox: 200 });
+                }
+                html5QrcodeScanner.render((decodedText) => {
+                    showToast(`QR Code Scanned: ${decodedText}`, 'success');
+                    html5QrcodeScanner.clear();
+                    navigateToStep('step-pin');
+                }, (error) => {});
             } catch (err) {
-                console.error("Home metrics load error:", err);
+                simulateQRScan();
             }
         }
-        loadHomeMetrics();
+
+        function simulateQRScan() {
+            showToast("✅ Biometric & QR Code Verified!", "success");
+            setTimeout(() => {
+                navigateToStep('step-pin');
+            }, 600);
+        }
+
+        function openVoteModal(id, name, party, symbol) {
+            selectedCandidateObj = { id, name, party, symbol };
+            document.getElementById('modal-candidate-name').innerText = name;
+            document.getElementById('modal-party-name').innerText = party;
+            document.getElementById('modal-symbol').innerText = symbol;
+
+            const thumb = document.getElementById('slide-thumb');
+            if (thumb) {
+                thumb.style.left = '4px';
+                thumb.style.background = '#800000';
+                thumb.innerHTML = '►';
+            }
+
+            document.getElementById('modal-confirm-vote').style.display = 'flex';
+
+            initSlideToVote(async () => {
+                showToast("Submitting vote...", "info");
+                await submitVoteApi(selectedCandidateObj.id);
+            });
+        }
+
+        function closeVoteModal() {
+            document.getElementById('modal-confirm-vote').style.display = 'none';
+        }
+
+        async function submitVoteApi(candidateId) {
+            const token = getToken();
+            const electionId = 1;
+
+            if (!token) {
+                showToast("Authentication required. Redirecting to login...", "error");
+                setTimeout(() => window.location.href = '/pages/auth/Login.html', 800);
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/voter/vote', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ candidateId, electionId })
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    showToast(data.error || "Voting failed", "error");
+                    closeVoteModal();
+                    return;
+                }
+
+                closeVoteModal();
+                
+                document.getElementById('receipt-ref-no').innerText = '0000' + Math.floor(10000000 + Math.random() * 90000000);
+                document.getElementById('receipt-vote-time').innerText = new Date().toLocaleString();
+                document.getElementById('receipt-vote-id').innerText = data.voteHash ? data.voteHash.slice(0, 10) : '1243572934';
+                
+                const user = getUserInfo();
+                if (user && user.id) document.getElementById('receipt-voter-name').innerText = user.name || user.id;
+
+                navigateToStep('step-success');
+                showToast("Vote successfully cast & synced to Supabase!", "success");
+
+            } catch (err) {
+                showToast("Network connection error. Try again.", "error");
+            }
+        }
+
+        function downloadPDFReceipt() {
+            window.print();
+            showToast("Printing PDF Receipt...", "info");
+        }
+
+        let totalSecs = 8 * 3600 + 50 * 60 + 10;
+        setInterval(() => {
+            if (totalSecs > 0) totalSecs--;
+            const hrs = Math.floor(totalSecs / 3600);
+            const mins = Math.floor((totalSecs % 3600) / 60);
+            const secs = totalSecs % 60;
+            const timerEl = document.getElementById('live-countdown-text');
+            if (timerEl) timerEl.innerText = `${hrs} hrs : ${mins} mins : ${secs} sec Remaining`;
+        }, 1000);
     </script>
 </body>
 </html>

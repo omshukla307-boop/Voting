@@ -2,56 +2,54 @@ const { sequelize, User, Election, Candidate } = require('../models');
 
 async function seed() {
     try {
-        // Do NOT call sequelize.sync() here. Server already syncs tables.
-
         // Create election if not exists
-        let election = await Election.findOne({ where: { name: 'Demo Election' } });
+        let election = await Election.findOne({ where: { name: 'National General Election 2026' } });
 
         if (!election) {
             election = await Election.create({
-                name: 'Demo Election',
+                name: 'National General Election 2026',
                 status: 'live',
                 startTime: new Date(),
                 endTime: new Date(Date.now() + 365 * 86400 * 1000),
-                level: 'local'
+                level: 'national'
             });
         } else {
             await election.update({
+                name: 'National General Election 2026',
                 status: 'live',
                 endTime: new Date(Date.now() + 365 * 86400 * 1000)
             });
         }
 
-        // Create candidates
+        // Prominent Indian Political Leaders Candidates List
         const candidates = [
-            { name: 'Alice Johnson', party: 'Progressive Alliance', symbol: 'A', electionId: election.id, constituency: 'Demo', constituencyType: 'general', state: 'DemoState' },
-            { name: 'Bob Smith', party: 'Democratic Union', symbol: 'B', electionId: election.id, constituency: 'Demo', constituencyType: 'general', state: 'DemoState' },
-            { name: 'Carol White', party: 'National Party', symbol: 'C', electionId: election.id, constituency: 'Demo', constituencyType: 'general', state: 'DemoState' },
-            { name: 'David Brown', party: 'People\'s Movement', symbol: 'D', electionId: election.id, constituency: 'Demo', constituencyType: 'general', state: 'DemoState' },
-            { name: 'Emma Davis', party: 'Reform League', symbol: 'E', electionId: election.id, constituency: 'Demo', constituencyType: 'general', state: 'DemoState' },
-            { name: 'Frank Miller', party: 'Independent', symbol: 'F', electionId: election.id, constituency: 'Demo', constituencyType: 'general', state: 'DemoState' },
+            { name: 'Narendra Modi', party: 'Bharatiya Janata Party (BJP)', symbol: '🪷', electionId: election.id, constituency: 'Varanasi', constituencyType: 'general', state: 'Uttar Pradesh' },
+            { name: 'Rahul Gandhi', party: 'Indian National Congress (INC)', symbol: '✋', electionId: election.id, constituency: 'Wayanad', constituencyType: 'general', state: 'Kerala' },
+            { name: 'Arvind Kejriwal', party: 'Aam Aadmi Party (AAP)', symbol: '🧹', electionId: election.id, constituency: 'New Delhi', constituencyType: 'general', state: 'Delhi' },
+            { name: 'Akhilesh Yadav', party: 'Samajwadi Party (SP)', symbol: '🚲', electionId: election.id, constituency: 'Kannauj', constituencyType: 'general', state: 'Uttar Pradesh' },
+            { name: 'Mayawati', party: 'Bahujan Samaj Party (BSP)', symbol: '🐘', electionId: election.id, constituency: 'Agra', constituencyType: 'general', state: 'Uttar Pradesh' },
+            { name: 'Mamata Banerjee', party: 'All India Trinamool Congress (AITC)', symbol: '🌸', electionId: election.id, constituency: 'Bhabanipur', constituencyType: 'general', state: 'West Bengal' }
         ];
 
         for (const c of candidates) {
             const exists = await Candidate.findOne({ where: { name: c.name, electionId: c.electionId } });
             if (!exists) {
                 await Candidate.create(c);
-                console.log('Created candidate', c.name);
+                console.log('Created candidate:', c.name, '(', c.party, ')');
             }
         }
 
-        // Create a test voter (password will be hashed by User model hook)
+        // Create test voters
         const voterId = 'voter1';
         let user = await User.findByPk(voterId);
         if (!user) {
-            await User.create({ voterId, aadharNo: '0000', name: 'Test Voter', email: 'voter@example.com', role: 'voter', gender: 'other', mobileNo: '0000000000', password: 'password123' });
+            await User.create({ voterId, aadharNo: '444433336666', name: 'Manishi Sharma', email: 'manishi@voting.app', role: 'voter', gender: 'female', mobileNo: '9876543210', password: 'password123' });
             console.log('Created test voter: voter1 / password123');
         }
-        // Create multiple test voters
+
         const voters = [
-            { voterId: 'voter2', password: '123456' },
-            { voterId: 'voter3', password: '123456' },
-            { voterId: 'voter4', password: '123456' }
+            { voterId: 'voter2', name: 'Rahul Kumar', password: '123456' },
+            { voterId: 'voter3', name: 'Priya Singh', password: '123456' }
         ];
 
         for (const v of voters) {
@@ -59,25 +57,22 @@ async function seed() {
             if (!exists) {
                 await User.create({
                     voterId: v.voterId,
-                    aadharNo: '1111' + v.voterId,
-                    name: 'Test ' + v.voterId,
-                    email: v.voterId + '@example.com',
+                    aadharNo: '8888' + v.voterId,
+                    name: v.name,
+                    email: v.voterId + '@voting.app',
                     role: 'voter',
                     gender: 'other',
-                    mobileNo: '99999' + Math.floor(Math.random() * 100000),
+                    mobileNo: '9999' + Math.floor(100000 + Math.random() * 900000),
                     password: v.password
                 });
-
-                console.log(`Created test voter: ${v.voterId} / ${v.password}`);
             }
         }
 
-        // Create a test admin (password will be hashed by User model hook)
+        // Create test admin
         const adminId = 'admin1';
         let admin = await User.findByPk(adminId);
         if (!admin) {
-            await User.create({ voterId: adminId, aadharNo: '9999', name: 'Test Admin', email: 'admin@example.com', role: 'admin', gender: 'other', mobileNo: '9999999999', password: 'admin123' });
-            console.log('Created test admin: admin1 / admin123');
+            await User.create({ voterId: adminId, aadharNo: '999999999999', name: 'Chief Election Admin', email: 'admin@voting.app', role: 'admin', gender: 'other', mobileNo: '9999999999', password: 'admin123' });
         }
 
         console.log('Seeding complete');
@@ -88,7 +83,6 @@ async function seed() {
 
 module.exports = { seed };
 
-// If script is run directly, seed (useful for manual runs)
 if (require.main === module) {
     seed().then(() => process.exit(0)).catch(() => process.exit(1));
 }
