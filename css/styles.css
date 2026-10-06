@@ -124,13 +124,62 @@ nav {
     background: rgba(128, 0, 0, 0.06);
 }
 
-/* Main Mobile Application Viewport Container */
-.main-wrapper {
-    max-width: 460px;
-    width: 100%;
-    margin: 1.5rem auto;
-    padding: 0 1rem;
+.container {
+    width: min(100% - 3rem, 1320px);
+    margin: 2rem auto;
     flex: 1;
+}
+
+/* Responsive application viewport */
+.main-wrapper {
+    width: min(100% - 3rem, 1320px);
+    max-width: none;
+    margin: 1.5rem auto 5.5rem;
+    padding: 0;
+    flex: 1;
+}
+
+#screen-home {
+    display: grid;
+    grid-template-columns: minmax(280px, 0.8fr) minmax(0, 1.5fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    align-items: stretch;
+    gap: 1.25rem;
+    min-height: min(62vh, 760px);
+}
+
+.home-user-header {
+    grid-column: 1 / -1;
+}
+
+.hero-timer-banner {
+    grid-column: 1;
+    grid-row: 2;
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.home-leaders {
+    display: flex;
+    flex-direction: column;
+    grid-column: 2;
+    grid-row: 2;
+    min-width: 0;
+    margin-bottom: 0 !important;
+}
+
+#home-candidate-rows {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: minmax(0, 1fr);
+    flex: 1;
+    gap: 0.8rem;
+}
+
+.candidate-row {
+    margin-bottom: 0;
 }
 
 /* VoteIn Cards */
@@ -391,8 +440,11 @@ nav {
     bottom: 0;
     left: 50%;
     transform: translateX(-50%);
-    max-width: 460px;
-    width: 100%;
+    width: min(100% - 3rem, 1320px);
+    max-width: none;
+    border: 1px solid #E5E7EB;
+    border-bottom: 0;
+    border-radius: 16px 16px 0 0;
     background: #FFFFFF;
     border-top: 1px solid #E5E7EB;
     display: flex;
@@ -509,7 +561,7 @@ nav {
 
 .login-main {
     width: 100%;
-    max-width: 660px;
+    max-width: 860px;
     margin: 1.5rem auto;
     padding: 1rem 1.25rem;
     flex: 1;
@@ -621,7 +673,7 @@ nav {
 
 .signup-main {
     width: 100%;
-    max-width: 660px;
+    max-width: 860px;
     margin: 2.5rem auto;
     padding: 0 1.25rem;
     flex: 1;
@@ -1154,15 +1206,81 @@ nav {
 }
 
 @media (max-width: 760px) {
+    nav {
+        padding: 0.75rem 1rem;
+    }
+
+    .home-primary-nav .nav-links,
+    .home-primary-nav .top-scanner-btn {
+        display: none;
+    }
+
+    .container,
+    .main-wrapper,
+    .bottom-app-nav {
+        width: min(100% - 2rem, 1320px);
+    }
+
+    #screen-home {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: auto;
+        min-height: 0;
+    }
+
+    .home-user-header {
+        grid-column: auto;
+    }
+
+    .home-leaders {
+        display: block;
+    }
+
+    .hero-timer-banner,
+    .home-leaders {
+        grid-column: 1;
+        grid-row: auto;
+    }
+
     .leaderboard-stats {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 
+@media (max-height: 800px) {
+    .login-main,
+    .signup-main {
+        align-items: flex-start;
+        margin-top: 1rem;
+    }
+}
+
 @media (max-width: 560px) {
+    nav {
+        padding: 0.65rem 0.75rem;
+    }
+
+    .logo {
+        font-size: 1.15rem;
+    }
+
+    .container,
+    .main-wrapper,
+    .bottom-app-nav {
+        width: calc(100% - 1rem);
+    }
+
+    #home-candidate-rows {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .main-wrapper {
+        margin-top: 0.75rem;
+    }
+
     .login-main {
         align-items: flex-start;
         margin: 1rem auto;
+        padding: 0 0.5rem;
     }
 
     .signup-main {
