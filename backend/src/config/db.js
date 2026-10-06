@@ -7,11 +7,31 @@ const isPostgres = dialect === 'postgres' || dialect === 'postgresql' || !!proce
 const isMySQL = dialect === 'mysql';
 const postgresDriver = isPostgres ? require('pg') : undefined;
 
+function getDatabaseUrl() {
+    const databaseUrl = process.env.DATABASE_URL;
+    const poolerHost = process.env.SUPABASE_DB_POOLER_HOST;
+    if (!databaseUrl || !poolerHost) return databaseUrl;
+
+    const url = new URL(databaseUrl);
+    const project = url.hostname.match(/^db\.([a-z0-9]+)\.supabase\.co$/i);
+    if (!project) return databaseUrl;
+
+    const pooler = new URL(`https://${poolerHost}`);
+    if (!pooler.hostname.endsWith('.pooler.supabase.com') || pooler.port || pooler.pathname !== '/') {
+        throw new Error('SUPABASE_DB_POOLER_HOST must be a Supabase transaction pooler hostname.');
+    }
+
+    url.hostname = pooler.hostname;
+    url.port = '6543';
+    url.username = `postgres.${project[1]}`;
+    return url.toString();
+}
+
 let sequelize;
 
 if (isPostgres) {
     if (process.env.DATABASE_URL) {
-        sequelize = new Sequelize(process.env.DATABASE_URL, {
+        sequelize = new Sequelize(getDatabaseUrl(), {
             dialect: 'postgres',
             dialectModule: postgresDriver,
             protocol: 'postgres',
