@@ -5,3 +5,4 @@ backend/.env
 ai-backend/.env
 *.sqlite
 backend/data/*.sqlite
+.vercel

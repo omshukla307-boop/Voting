@@ -1,18 +1,9 @@
 {
   "version": 2,
-  "builds": [
+  "rewrites": [
     {
-      "src": "backend/src/server.js",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": ["frontend/**"]
-      }
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "backend/src/server.js"
+      "source": "/(.*)",
+      "destination": "/api/index"
     }
   ]
 }
