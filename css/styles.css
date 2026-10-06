@@ -141,20 +141,20 @@ nav {
 
 #screen-home {
     display: grid;
-    grid-template-columns: minmax(280px, 0.8fr) minmax(0, 1.5fr);
-    grid-template-rows: auto minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto;
     align-items: stretch;
     gap: 1.25rem;
-    min-height: min(62vh, 760px);
+    min-height: 0;
 }
 
 .home-user-header {
-    grid-column: 1 / -1;
+    grid-column: 1;
 }
 
 .hero-timer-banner {
     grid-column: 1;
-    grid-row: 2;
+    grid-row: auto;
     align-self: stretch;
     display: flex;
     flex-direction: column;
@@ -164,8 +164,8 @@ nav {
 .home-leaders {
     display: flex;
     flex-direction: column;
-    grid-column: 2;
-    grid-row: 2;
+    grid-column: 1;
+    grid-row: auto;
     min-width: 0;
     margin-bottom: 0 !important;
 }
