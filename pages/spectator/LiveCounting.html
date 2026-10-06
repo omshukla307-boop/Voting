@@ -22,7 +22,7 @@
             <div>
                 <p class="leaderboard-eyebrow"><span class="live-indicator"></span> LIVE DEMO RESULTS</p>
                 <h1>Vote leaderboard</h1>
-                <p>Ranked by votes recorded in this demo. Results refresh automatically every five seconds.</p>
+                <p><span id="leaderboard-election-name">Current demo election</span> · Results refresh automatically every five seconds.</p>
             </div>
             <button id="refresh-results" class="leaderboard-refresh" type="button">↻ <span>Refresh</span></button>
         </section>
@@ -84,7 +84,8 @@
             })[character]);
         }
 
-        function renderResults(candidates) {
+        function renderResults(candidates, election) {
+            document.getElementById('leaderboard-election-name').textContent = election?.name || 'Current demo election';
             const ranked = candidates.map((candidate) => {
                 const votes = Number(candidate.voteCount ?? candidate.votes ?? 0);
                 return {
@@ -108,7 +109,7 @@
             });
 
             if (ranked.length === 0) {
-                podium.innerHTML = '<p class="leaderboard-state">No candidates are available yet.</p>';
+                podium.innerHTML = `<p class="leaderboard-state">${election ? 'No candidates are available for this election yet.' : 'There is no active demo election right now.'}</p>`;
                 leaderboard.replaceChildren();
                 return;
             }
@@ -160,7 +161,7 @@
                 const data = await response.json();
                 if (!response.ok) throw new Error(data.error || 'Could not load live results.');
                 if (!Array.isArray(data.candidates)) throw new Error('The results service returned an invalid response.');
-                renderResults(data.candidates);
+                renderResults(data.candidates, data.election);
             } catch (error) {
                 console.error('Live leaderboard refresh failed:', error);
                 errorMessage.textContent = error.message || 'Could not load live results. Try refreshing.';
