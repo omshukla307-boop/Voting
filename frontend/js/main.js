@@ -104,6 +104,87 @@ function updateNavAuthState() {
     }
 }
 
+function initSlideToVote(onConfirm) {
+    const container = document.getElementById('slide-container');
+    const thumb = document.getElementById('slide-thumb');
+    if (!container || !thumb) return;
+
+    thumb._onConfirm = onConfirm;
+    if (thumb.dataset.sliderReady) return;
+    thumb.dataset.sliderReady = 'true';
+
+    const resetSlider = () => {
+        thumb.style.left = '4px';
+        thumb.disabled = false;
+        thumb.setAttribute('aria-valuenow', '0');
+        const text = container.querySelector('.slide-to-vote-text');
+        if (text) text.textContent = '>> Slide to confirm your vote';
+    };
+
+    let startX = 0;
+    let startLeft = 4;
+    let dragging = false;
+    let submitting = false;
+
+    thumb.addEventListener('pointerdown', event => {
+        if (submitting || thumb.disabled) return;
+        dragging = true;
+        startX = event.clientX;
+        startLeft = parseFloat(thumb.style.left) || 4;
+        thumb.setPointerCapture(event.pointerId);
+        thumb.style.cursor = 'grabbing';
+        event.preventDefault();
+    });
+
+    thumb.addEventListener('pointermove', event => {
+        if (!dragging) return;
+        const maxLeft = Math.max(4, container.clientWidth - thumb.offsetWidth - 4);
+        const left = Math.min(maxLeft, Math.max(4, startLeft + event.clientX - startX));
+        thumb.style.left = `${left}px`;
+        thumb.setAttribute('aria-valuenow', String(Math.round(((left - 4) / Math.max(1, maxLeft - 4)) * 100)));
+    });
+
+    const finishDrag = async event => {
+        if (!dragging) return;
+        dragging = false;
+        thumb.style.cursor = 'grab';
+        if (thumb.hasPointerCapture(event.pointerId)) thumb.releasePointerCapture(event.pointerId);
+
+        const maxLeft = Math.max(4, container.clientWidth - thumb.offsetWidth - 4);
+        const currentLeft = parseFloat(thumb.style.left) || 4;
+        if (currentLeft < 4 + (maxLeft - 4) * 0.9) {
+            resetSlider();
+            return;
+        }
+
+        thumb.style.left = `${maxLeft}px`;
+        submitting = true;
+        thumb.disabled = true;
+        try {
+            const success = await thumb._onConfirm();
+            if (success !== true) resetSlider();
+            else {
+                const text = container.querySelector('.slide-to-vote-text');
+                if (text) text.textContent = 'Vote confirmed';
+                thumb.setAttribute('aria-valuenow', '100');
+            }
+        } catch (error) {
+            console.error('Slide-to-vote confirmation failed:', error);
+            showToast('Could not confirm the vote. Please try again.', 'error');
+            resetSlider();
+        } finally {
+            submitting = false;
+        }
+    };
+
+    thumb.addEventListener('pointerup', finishDrag);
+    thumb.addEventListener('pointercancel', () => {
+        dragging = false;
+        thumb.style.cursor = 'grab';
+        resetSlider();
+    });
+}
+
 // Global initialization
 document.addEventListener('DOMContentLoaded', () => {
     checkAuth();

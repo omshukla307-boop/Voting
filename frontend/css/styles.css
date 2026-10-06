@@ -313,6 +313,7 @@ nav {
     align-items: center;
     padding: 4px;
     user-select: none;
+    touch-action: pan-y;
     overflow: hidden;
 }
 
@@ -337,8 +338,51 @@ nav {
     justify-content: center;
     cursor: grab;
     font-weight: 800;
+    border: 0;
+    padding: 0;
+    touch-action: none;
+    user-select: none;
     box-shadow: 0 2px 8px rgba(128, 0, 0, 0.4);
     transition: background 0.2s ease;
+}
+
+.slide-to-vote-thumb:disabled {
+    cursor: not-allowed;
+    opacity: 0.8;
+}
+
+.nri-verification {
+    margin: 0 0 1.5rem;
+    padding: 1rem;
+    background: #F9FAFB;
+    border: 1px solid #E5E7EB;
+    border-radius: var(--radius-md);
+    text-align: left;
+}
+
+.nri-verification summary {
+    color: var(--votein-maroon);
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.nri-verification-fields {
+    display: grid;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.nri-verification-fields label {
+    margin-top: 0.35rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.nri-verification-fields p {
+    margin-top: 0.5rem;
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    line-height: 1.5;
 }
 
 /* Bottom App Navigation Bar */

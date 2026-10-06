@@ -180,6 +180,24 @@
                     </div>
                 </div>
 
+                <div class="aadhaar-preview-box" style="margin-bottom: 1.5rem; text-align: left;">
+                    <span style="font-size: 0.82rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.5rem;">PAN Card (demo)</span>
+                    <strong style="font-family: monospace; letter-spacing: 0.12em; color: var(--text-dark);">TXPPS1893L</strong>
+                    <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.35rem;">Sample only — this demo does not verify identity documents.</p>
+                </div>
+
+                <details class="nri-verification">
+                    <summary>Are you an NRI voter?</summary>
+                    <div class="nri-verification-fields">
+                        <label for="nri-passport">Passport ID</label>
+                        <input id="nri-passport" class="form-control-input" type="text" autocomplete="off" placeholder="Enter passport ID">
+                        <label for="nri-parent-name">Parent's name on voter registration</label>
+                        <input id="nri-parent-name" class="form-control-input" type="text" autocomplete="off" placeholder="Enter parent's full name">
+                        <p>Voter-roll lookup is not connected in this demo. Passport and parent details alone cannot verify voting eligibility, so this form will not unlock the ballot.</p>
+                        <button type="button" class="btn-maroon" disabled>Voter lookup unavailable</button>
+                    </div>
+                </details>
+
                 <button type="button" class="btn-maroon" onclick="navigateToStep('step-auth')">
                     Next ➔
                 </button>
@@ -243,24 +261,24 @@
                 <div style="margin-bottom: 1.5rem;">
                     <span style="font-size: 0.82rem; font-weight: 700; color: var(--text-dark); display: block; margin-bottom: 0.5rem;">New Security PIN</span>
                     <div class="pin-boxes-container">
-                        <input type="password" maxlength="1" class="pin-box-input" value="1">
-                        <input type="password" maxlength="1" class="pin-box-input" value="2">
-                        <input type="password" maxlength="1" class="pin-box-input" value="3">
-                        <input type="password" maxlength="1" class="pin-box-input" value="4">
+                        <input type="password" maxlength="1" inputmode="numeric" autocomplete="off" class="pin-box-input" aria-label="New PIN digit 1">
+                        <input type="password" maxlength="1" inputmode="numeric" autocomplete="off" class="pin-box-input" aria-label="New PIN digit 2">
+                        <input type="password" maxlength="1" inputmode="numeric" autocomplete="off" class="pin-box-input" aria-label="New PIN digit 3">
+                        <input type="password" maxlength="1" inputmode="numeric" autocomplete="off" class="pin-box-input" aria-label="New PIN digit 4">
                     </div>
                 </div>
 
                 <div style="margin-bottom: 2rem;">
                     <span style="font-size: 0.82rem; font-weight: 700; color: var(--text-dark); display: block; margin-bottom: 0.5rem;">Re-Enter Security PIN</span>
                     <div class="pin-boxes-container">
-                        <input type="password" maxlength="1" class="pin-box-input" value="1">
-                        <input type="password" maxlength="1" class="pin-box-input" value="2">
-                        <input type="password" maxlength="1" class="pin-box-input" value="3">
-                        <input type="password" maxlength="1" class="pin-box-input" value="4">
+                        <input type="password" maxlength="1" inputmode="numeric" autocomplete="off" class="pin-box-input" aria-label="Confirm PIN digit 1">
+                        <input type="password" maxlength="1" inputmode="numeric" autocomplete="off" class="pin-box-input" aria-label="Confirm PIN digit 2">
+                        <input type="password" maxlength="1" inputmode="numeric" autocomplete="off" class="pin-box-input" aria-label="Confirm PIN digit 3">
+                        <input type="password" maxlength="1" inputmode="numeric" autocomplete="off" class="pin-box-input" aria-label="Confirm PIN digit 4">
                     </div>
                 </div>
 
-                <button type="button" class="btn-maroon" onclick="navigateToStep('step-ballot')">
+                <button type="button" class="btn-maroon" onclick="savePinAndContinue()">
                     Save PIN & Go to Ballot ➔
                 </button>
             </div>
@@ -351,7 +369,7 @@
                 <!-- Slide to Vote Slider -->
                 <div class="slide-to-vote-container" id="slide-container">
                     <div class="slide-to-vote-text">>> Slide to confirm your vote</div>
-                    <div class="slide-to-vote-thumb" id="slide-thumb">►</div>
+                    <button type="button" class="slide-to-vote-thumb" id="slide-thumb" aria-label="Slide to confirm vote">►</button>
                 </div>
             </div>
         </div>
@@ -432,6 +450,43 @@
     <script>
         let selectedCandidateObj = null;
 
+        function savePinAndContinue() {
+            const groups = document.querySelectorAll('#step-pin .pin-boxes-container');
+            const pin = Array.from(groups[0].querySelectorAll('.pin-box-input'), input => input.value).join('');
+            const confirmation = Array.from(groups[1].querySelectorAll('.pin-box-input'), input => input.value).join('');
+            if (!/^\d{4}$/.test(pin) || !/^\d{4}$/.test(confirmation)) {
+                showToast('Enter all four digits in both PIN fields.', 'error');
+                return;
+            }
+            if (pin !== confirmation) {
+                showToast('The PIN entries do not match.', 'error');
+                return;
+            }
+            navigateToStep('step-ballot');
+        }
+
+        document.querySelectorAll('#step-pin .pin-box-input').forEach((input, index, inputs) => {
+            input.addEventListener('input', () => {
+                input.value = input.value.replace(/\D/g, '').slice(-1);
+                if (input.value && inputs[index + 1]) inputs[index + 1].focus();
+            });
+            input.addEventListener('keydown', event => {
+                if (event.key === 'Backspace' && !input.value && inputs[index - 1]) inputs[index - 1].focus();
+                if (event.key === 'ArrowLeft' && inputs[index - 1]) inputs[index - 1].focus();
+                if (event.key === 'ArrowRight' && inputs[index + 1]) inputs[index + 1].focus();
+            });
+            input.addEventListener('paste', event => {
+                const digits = (event.clipboardData.getData('text').match(/\d/g) || []).slice(0, 4);
+                if (!digits.length) return;
+                event.preventDefault();
+                const start = index < 4 ? 0 : 4;
+                digits.forEach((digit, offset) => {
+                    if (inputs[start + offset]) inputs[start + offset].value = digit;
+                });
+                inputs[Math.min(start + digits.length - 1, start + 3)].focus();
+            });
+        });
+
         function navigateToStep(stepId) {
             document.querySelectorAll('.app-screen').forEach(s => s.style.display = 'none');
             const target = document.getElementById(stepId);
@@ -474,13 +529,17 @@
                 thumb.style.left = '4px';
                 thumb.style.background = '#800000';
                 thumb.innerHTML = '►';
+                thumb.disabled = false;
+                thumb.setAttribute('aria-valuenow', '0');
+                const sliderText = document.querySelector('#slide-container .slide-to-vote-text');
+                if (sliderText) sliderText.textContent = '>> Slide to confirm your vote';
             }
 
             document.getElementById('modal-confirm-vote').style.display = 'flex';
 
             initSlideToVote(async () => {
                 showToast("Submitting vote...", "info");
-                await submitVoteApi(selectedCandidateObj.id);
+                return submitVoteApi(selectedCandidateObj.id);
             });
         }
 
@@ -495,7 +554,7 @@
             if (!token) {
                 showToast("Authentication required. Redirecting to login...", "error");
                 setTimeout(() => window.location.href = '/pages/auth/Login.html', 800);
-                return;
+                return false;
             }
 
             try {
@@ -513,7 +572,7 @@
                 if (!res.ok) {
                     showToast(data.error || "Voting failed", "error");
                     closeVoteModal();
-                    return;
+                    return false;
                 }
 
                 closeVoteModal();
@@ -527,9 +586,11 @@
 
                 navigateToStep('step-success');
                 showToast("Vote successfully cast & synced to Supabase!", "success");
+                return true;
 
             } catch (err) {
                 showToast("Network connection error. Try again.", "error");
+                return false;
             }
         }
 
