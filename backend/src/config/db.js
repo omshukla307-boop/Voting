@@ -19,8 +19,9 @@ function createSqliteSequelize() {
     });
 }
 
-const dialect = (process.env.DB_DIALECT || 'sqlite').toLowerCase();
-const isPostgres = dialect === 'postgres' || dialect === 'postgresql' || !!process.env.DATABASE_URL;
+const isVercel = Boolean(process.env.VERCEL);
+const dialect = (process.env.DB_DIALECT || (isVercel ? 'postgres' : 'sqlite')).toLowerCase();
+const isPostgres = dialect === 'postgres' || dialect === 'postgresql' || !!process.env.DATABASE_URL || isVercel;
 const isMySQL = dialect === 'mysql';
 
 function getDatabaseUrl() {
@@ -80,11 +81,15 @@ if (isPostgres) {
 }
 
 async function connectDB() {
+    if (isVercel && !process.env.DATABASE_URL) {
+        throw new Error('DATABASE_URL must be configured for Vercel deployments.');
+    }
+
     try {
         await sequelize.authenticate();
         console.log(`✅ Connected to ${sequelize.getDialect()} database`);
     } catch (err) {
-        if (isPostgres) {
+        if (isPostgres && !isVercel) {
             console.warn('⚠️ PostgreSQL unreachable. Falling back to SQLite...');
             sequelize = createSqliteSequelize();
             await sequelize.authenticate();
