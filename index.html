@@ -16,14 +16,9 @@
             voteIn
         </a>
 
-        <!-- Camera and QR tools -->
-        <button type="button" class="top-scanner-btn" onclick="navigateToStep('step-auth')">
-            📷 Camera &amp; QR
-        </button>
-
         <div class="nav-links">
             <a href="/" class="active">Home</a>
-            <a href="javascript:void(0)" onclick="navigateToStep('step-aadhaar')">Authentication</a>
+            <a href="javascript:void(0)" onclick="beginDemoVotingFlow()">Verify to vote</a>
             <a href="/pages/spectator/ElectionNews.html">News</a>
             <a href="/pages/spectator/FinalResult.html">Results</a>
             <a href="/pages/auth/Login.html" id="login-link" class="btn-maroon" style="padding: 0.45rem 0.9rem; font-size: 0.85rem; width: auto;">Sign In</a>
@@ -64,7 +59,7 @@
                     Sample data only — no official vote or turnout figures.
                 </div>
 
-                <button type="button" class="btn-vote-now" onclick="navigateToStep('step-aadhaar')">
+                <button type="button" class="btn-vote-now" onclick="beginDemoVotingFlow()">
                     VOTE NOW
                 </button>
             </div>
@@ -161,55 +156,43 @@
         <!-- ========================================== -->
         <div id="step-aadhaar" class="app-screen" style="display: none;">
             <div class="votein-card" style="text-align: center;">
-                <h3 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 1rem;">Identity Verification</h3>
+                <h3 class="verification-title">Demo identity details</h3>
+                <p class="verification-disclaimer">This is a demo only. There is no UIDAI connection, Aadhaar lookup, voter-roll check, or eligibility verification. Do not enter a real Aadhaar or PAN number.</p>
 
-                <!-- Aadhaar Card Graphic -->
-                <div class="aadhaar-preview-box">
-                    <div style="background: linear-gradient(135deg, #1E3A8A, #1E40AF); color: white; padding: 0.75rem; border-radius: 8px; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.75rem; display: flex; justify-content: space-between; align-items: center;">
-                        <span>🇮🇳 GOVERNMENT OF INDIA</span>
-                        <span>AADHAAR</span>
-                    </div>
-                    <div style="font-family: monospace; font-size: 1.1rem; font-weight: 800; letter-spacing: 0.15em; color: var(--text-dark);">
-                        4444 3333 6666
-                    </div>
-                    <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">आधार - आम आदमी का अधिकार</p>
-                </div>
-
-                <div style="text-align: left; margin-bottom: 1.25rem;">
-                    <label style="font-size: 0.9rem; font-weight: 700; color: var(--text-dark);">Enter your Aadhaar Number</label>
-                    <input type="text" id="aadhaar-input" class="form-control-input" value="4444 3333 6666" placeholder="ABC1234567 / 12 Digit Aadhaar">
-                </div>
-
-                <!-- File Upload Box -->
-                <div class="aadhaar-preview-box" style="margin-bottom: 1.5rem; text-align: left;">
-                    <span style="font-size: 0.82rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.5rem;">Upload Verification Document:</span>
-                    <div style="display: flex; align-items: center; justify-content: space-between; background: #FFFFFF; border: 1px solid #E5E7EB; padding: 0.6rem 0.9rem; border-radius: 8px;">
-                        <span style="font-size: 0.85rem; font-weight: 600; color: var(--votein-green);">📄 Manishi-document.pdf (Upload complete)</span>
-                        <span style="color: var(--votein-accent-green); font-weight: 800;">✓</span>
-                    </div>
-                </div>
-
-                <div class="aadhaar-preview-box" style="margin-bottom: 1.5rem; text-align: left;">
-                    <span style="font-size: 0.82rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.5rem;">PAN Card (demo)</span>
-                    <strong style="font-family: monospace; letter-spacing: 0.12em; color: var(--text-dark);">TXPPS1893L</strong>
-                    <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.35rem;">Sample only — this demo does not verify identity documents.</p>
-                </div>
+                <form id="demo-aadhaar-form" class="verification-form">
+                    <label for="aadhaar-input">Sample Aadhaar number</label>
+                    <input id="aadhaar-input" class="form-control-input" type="password" inputmode="numeric" autocomplete="off" maxlength="12" placeholder="Enter a 12-digit demo number" required>
+                    <p class="verification-help">The number is checked only in this browser and cleared immediately. Use a made-up 12-digit test value.</p>
+                    <button type="submit" class="btn-maroon">Show demo account details</button>
+                </form>
 
                 <details class="nri-verification">
-                    <summary>Are you an NRI voter?</summary>
+                    <summary>NRI demo account?</summary>
                     <div class="nri-verification-fields">
-                        <label for="nri-passport">Passport ID</label>
-                        <input id="nri-passport" class="form-control-input" type="text" autocomplete="off" placeholder="Enter passport ID">
-                        <label for="nri-parent-name">Parent's name on voter registration</label>
-                        <input id="nri-parent-name" class="form-control-input" type="text" autocomplete="off" placeholder="Enter parent's full name">
-                        <p>Voter-roll lookup is not connected in this demo. Passport and parent details alone cannot verify voting eligibility, so this form will not unlock the ballot.</p>
-                        <button type="button" class="btn-maroon" disabled>Voter lookup unavailable</button>
+                        <p>NRI passport and parent details are not checked against any voter roll in this demo. Do not enter real identity details.</p>
+                        <label for="nri-passport">Sample passport ID</label>
+                        <input id="nri-passport" class="form-control-input" type="text" autocomplete="off" placeholder="Demo passport ID only">
+                        <label for="nri-parent-name">Parent name (sample)</label>
+                        <input id="nri-parent-name" class="form-control-input" type="text" autocomplete="off" placeholder="Demo name only">
                     </div>
                 </details>
 
-                <button type="button" class="btn-maroon" onclick="navigateToStep('step-auth')">
-                    Next ➔
-                </button>
+                <section id="demo-account-details" class="demo-account-details" aria-live="polite" hidden>
+                    <p class="verification-eyebrow">DEMO ACCOUNT PROFILE · NOT AN AADHAAR LOOKUP</p>
+                    <dl>
+                        <div><dt>Name</dt><dd id="verification-account-name"></dd></div>
+                        <div><dt>Account ID</dt><dd id="verification-account-id"></dd></div>
+                    </dl>
+                </section>
+
+                <form id="demo-details-form" class="verification-form" hidden>
+                    <label for="demo-location">Location (city or district)</label>
+                    <input id="demo-location" class="form-control-input" type="text" autocomplete="off" maxlength="80" placeholder="e.g. Lucknow, Uttar Pradesh" required>
+                    <label for="demo-pan">Sample PAN number</label>
+                    <input id="demo-pan" class="form-control-input" type="text" autocomplete="off" maxlength="10" placeholder="ABCDE1234F" required>
+                    <p class="verification-help">Location and PAN are kept only in this page session; they are not uploaded or saved.</p>
+                    <button type="submit" class="btn-maroon">Continue to camera and QR ➔</button>
+                </form>
             </div>
         </div>
 
@@ -226,7 +209,7 @@
                 <div class="camera-tools-grid">
                     <section class="biometric-box camera-tool-card" aria-labelledby="live-photo-title">
                         <h4 id="live-photo-title">Take a live photo</h4>
-                        <p>Use your camera to take a photo. It stays in this browser and is not uploaded or used to verify identity.</p>
+                        <p>Use your camera to take a photo. It stays in this browser. This demo cannot verify your identity.</p>
                         <video id="live-camera-preview" class="camera-preview" autoplay playsinline muted hidden></video>
                         <canvas id="live-photo-canvas" hidden></canvas>
                         <img id="live-photo-result" class="camera-preview" alt="Photo captured in this browser" hidden>
@@ -234,7 +217,7 @@
                             <button id="start-live-camera" type="button" class="btn-vote-now camera-action">Start live camera</button>
                             <button id="capture-live-photo" type="button" class="btn-vote-now camera-action" disabled>Take photo</button>
                         </div>
-                        <p id="camera-status" class="camera-status" role="status">Camera is off.</p>
+                        <p id="camera-status" class="camera-status" role="status">Camera is off. Face detection runs on-device and does not verify identity.</p>
                     </section>
 
                     <section class="biometric-box camera-tool-card" aria-labelledby="qr-scan-title">
@@ -242,10 +225,20 @@
                         <p>Scan a QR code containing only your demo account ID. Passwords and identity-document QR codes are not accepted.</p>
                         <div id="qr-reader" class="qr-reader"></div>
                         <button id="start-qr-scanner" type="button" class="btn-vote-now camera-action">Start QR scanner</button>
+                        <label for="qr-image-input" class="qr-image-label">Or scan a QR image</label>
+                        <input id="qr-image-input" class="qr-image-input" type="file" accept="image/*">
                         <p id="qr-status" class="camera-status" role="status">Scanner is off.</p>
                         <div id="qr-account-result" class="qr-account-result" role="status" hidden>
-                            <p>Account ID detected: <strong id="qr-account-id"></strong></p>
-                            <a id="qr-login-link" class="btn-maroon" href="/pages/auth/Login.html">Continue to sign in</a>
+                            <p>Verified demo session match</p>
+                            <dl>
+                                <div><dt>Name</dt><dd id="qr-account-name"></dd></div>
+                                <div><dt>Account ID</dt><dd id="qr-account-id"></dd></div>
+                                <div><dt>Location</dt><dd id="qr-account-location"></dd></div>
+                                <div><dt>PAN</dt><dd id="qr-account-pan"></dd></div>
+                                <div><dt>Photo check</dt><dd id="qr-face-status"></dd></div>
+                            </dl>
+                            <p class="verification-help">Sample profile only. No Aadhaar, PAN, or voter-roll verification was performed.</p>
+                            <button id="continue-to-ballot" type="button" class="btn-maroon">Continue to sample ballot</button>
                         </div>
                     </section>
                 </div>
@@ -253,7 +246,7 @@
                 <div style="margin-bottom: 1.25rem;">
                     <a href="javascript:void(0)" onclick="showToast('Need help? Contact Election Helpline: 1950', 'info')" style="font-size: 0.82rem; color: var(--text-muted); text-decoration: underline;">Need help? Click here.</a>
                 </div>
-                <p class="camera-demo-notice">This is a demo account lookup only. QR scanning and photos do not authenticate a voter or establish voting eligibility.</p>
+                <p class="camera-demo-notice">This demo cannot verify a voter's identity or eligibility. Photos, QR content, and document numbers are not sent to the server.</p>
             </div>
         </div>
 
@@ -438,12 +431,12 @@
             <span class="bottom-nav-icon">🏠</span>
             Home
         </a>
-        <a href="javascript:void(0)" onclick="navigateToStep('step-ballot')" class="bottom-nav-item">
+        <a href="javascript:void(0)" onclick="beginDemoVotingFlow()" class="bottom-nav-item">
             <span class="bottom-nav-icon">🔍</span>
             Elections
         </a>
-        <a href="javascript:void(0)" onclick="navigateToStep('step-auth')" class="bottom-nav-item">
-            <div class="bottom-nav-center-btn">📷</div>
+        <a href="javascript:void(0)" onclick="beginDemoVotingFlow()" class="bottom-nav-item" aria-label="Start demo ballot verification" title="Start demo ballot verification">
+            <div class="bottom-nav-center-btn">🗳️</div>
         </a>
         <a href="/pages/spectator/ElectionNews.html" class="bottom-nav-item">
             <span class="bottom-nav-icon">📰</span>
@@ -473,6 +466,92 @@
             }
             navigateToStep('step-ballot');
         }
+
+        let demoVerification = null;
+
+        function beginDemoVotingFlow() {
+            const user = getUserInfo();
+            if (!user || !user.id) {
+                showToast('Sign in to your demo account before starting the sample ballot.', 'info');
+                window.location.assign('/pages/auth/Login.html');
+                return;
+            }
+            if (user.role !== 'voter') {
+                showToast('The sample ballot is available only to demo voter accounts.', 'error');
+                return;
+            }
+
+            demoVerification = null;
+            document.getElementById('demo-aadhaar-form').reset();
+            document.getElementById('demo-account-details').hidden = true;
+            document.getElementById('demo-details-form').hidden = true;
+            document.getElementById('nri-passport').value = '';
+            document.getElementById('nri-parent-name').value = '';
+            navigateToStep('step-aadhaar');
+        }
+
+        document.getElementById('demo-aadhaar-form').addEventListener('submit', event => {
+            event.preventDefault();
+            const aadhaarInput = document.getElementById('aadhaar-input');
+            const sampleNumber = aadhaarInput.value.replace(/\s/g, '');
+            aadhaarInput.value = '';
+
+            if (!/^\d{12}$/.test(sampleNumber)) {
+                showToast('Enter a 12-digit made-up sample number. Do not use a real Aadhaar number.', 'error');
+                return;
+            }
+
+            const user = getUserInfo();
+            if (!user || !user.id || user.role !== 'voter') {
+                showToast('Your demo voter session is unavailable. Sign in again to continue.', 'error');
+                window.location.assign('/pages/auth/Login.html');
+                return;
+            }
+
+            document.getElementById('verification-account-name').textContent = user.name || 'Demo voter';
+            document.getElementById('verification-account-id').textContent = user.id;
+            document.getElementById('demo-account-details').hidden = false;
+            document.getElementById('demo-details-form').hidden = false;
+        });
+
+        document.getElementById('demo-details-form').addEventListener('submit', event => {
+            event.preventDefault();
+            const locationInput = document.getElementById('demo-location');
+            const panInput = document.getElementById('demo-pan');
+            const location = locationInput.value.trim();
+            const pan = panInput.value.trim().toUpperCase();
+
+            if (!location || location.length > 80) {
+                showToast('Enter a city or district (up to 80 characters).', 'error');
+                return;
+            }
+            if (!/^[A-Z]{5}\d{4}[A-Z]$/.test(pan)) {
+                showToast('Enter a sample PAN in the format ABCDE1234F. Do not use a real PAN.', 'error');
+                return;
+            }
+
+            const user = getUserInfo();
+            if (!user || !user.id || user.role !== 'voter') {
+                showToast('Your demo voter session is unavailable. Sign in again to continue.', 'error');
+                window.location.assign('/pages/auth/Login.html');
+                return;
+            }
+
+            demoVerification = {
+                accountId: String(user.id),
+                name: String(user.name || 'Demo voter'),
+                location,
+                maskedPan: `${pan.slice(0, 2)}******${pan.slice(-2)}`,
+                photoCheck: 'Photo not captured'
+            };
+            locationInput.value = '';
+            panInput.value = '';
+            document.getElementById('qr-account-result').hidden = true;
+            document.getElementById('live-photo-result').hidden = true;
+            document.getElementById('start-qr-scanner').disabled = true;
+            document.getElementById('qr-image-input').disabled = true;
+            navigateToStep('step-auth');
+        });
 
         document.querySelectorAll('#step-pin .pin-box-input').forEach((input, index, inputs) => {
             input.addEventListener('input', () => {
@@ -508,8 +587,10 @@
         }
 
         let html5QrcodeScanner = null;
+        let qrScannerStopPromise = null;
         let cameraStream = null;
         let qrScanHandled = false;
+        let faceDetectorPromise = null;
 
         function stopLiveCamera() {
             const wasStreaming = Boolean(cameraStream);
@@ -535,12 +616,22 @@
         async function startLiveCamera() {
             const status = document.getElementById('camera-status');
             const video = document.getElementById('live-camera-preview');
+            if (!demoVerification) {
+                status.textContent = 'Complete the demo profile details before starting the camera.';
+                return;
+            }
             if (!navigator.mediaDevices?.getUserMedia) {
                 status.textContent = 'Live camera is not available in this browser. Open the site over HTTPS and allow camera access.';
                 return;
             }
 
             stopLiveCamera();
+            await stopQRScanner();
+            demoVerification.photoCheck = 'Photo not captured';
+            document.getElementById('live-photo-result').hidden = true;
+            document.getElementById('qr-account-result').hidden = true;
+            document.getElementById('start-qr-scanner').disabled = true;
+            document.getElementById('qr-image-input').disabled = true;
             try {
                 cameraStream = await navigator.mediaDevices.getUserMedia({
                     audio: false,
@@ -574,7 +665,63 @@
             image.hidden = false;
             video.hidden = true;
             stopLiveCamera();
-            document.getElementById('camera-status').textContent = 'Photo captured locally. It was not uploaded.';
+            detectFaceInPhoto(image);
+        }
+
+        async function detectFaceInPhoto(image) {
+            const status = document.getElementById('camera-status');
+            if (!demoVerification) {
+                status.textContent = 'Complete the demo identity details step before taking a photo.';
+                return;
+            }
+
+            status.textContent = 'Checking for a face on this device…';
+            try {
+                if (!faceDetectorPromise) {
+                    faceDetectorPromise = (async () => {
+                        const { FaceDetector, FilesetResolver } = await import(
+                            'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.21/vision_bundle.mjs'
+                        );
+                        const vision = await FilesetResolver.forVisionTasks(
+                            'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.21/wasm'
+                        );
+                        return FaceDetector.createFromOptions(vision, {
+                            baseOptions: {
+                                modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tflite'
+                            },
+                            runningMode: 'IMAGE',
+                            minDetectionConfidence: 0.5
+                        });
+                    })();
+                }
+                const detector = await faceDetectorPromise;
+                const faces = detector.detect(image).detections;
+                if (faces.length === 0) {
+                    demoVerification.photoCheck = 'No face detected in the photo';
+                    status.textContent = 'No face detected. Retake the photo with your face in view.';
+                    document.getElementById('start-qr-scanner').disabled = true;
+                    document.getElementById('qr-image-input').disabled = true;
+                    return;
+                }
+                if (faces.length > 1) {
+                    demoVerification.photoCheck = 'More than one face detected';
+                    status.textContent = 'More than one face detected. Retake the photo with one person in view.';
+                    document.getElementById('start-qr-scanner').disabled = true;
+                    document.getElementById('qr-image-input').disabled = true;
+                    return;
+                }
+                demoVerification.photoCheck = 'One face detected locally (not identity verified)';
+                status.textContent = 'Face detected in this photo on this device. Identity and eligibility are not verified.';
+                document.getElementById('start-qr-scanner').disabled = false;
+                document.getElementById('qr-image-input').disabled = false;
+            } catch (err) {
+                demoVerification.photoCheck = 'Photo captured; face detection failed';
+                status.textContent = 'Photo captured, but the on-device face detector could not load. No face or identity was verified; you may still scan your demo account QR.';
+                document.getElementById('start-qr-scanner').disabled = false;
+                document.getElementById('qr-image-input').disabled = false;
+                faceDetectorPromise = null;
+                console.error('Face detection error:', err);
+            }
         }
 
         function getAccountIdFromQr(decodedText) {
@@ -593,65 +740,183 @@
         }
 
         async function stopQRScanner() {
-            if (!html5QrcodeScanner) return;
+            if (qrScannerStopPromise) return qrScannerStopPromise;
+            if (!html5QrcodeScanner) return true;
             const scanner = html5QrcodeScanner;
-            html5QrcodeScanner = null;
+            qrScannerStopPromise = (async () => {
+                const scannerEngine = scanner.html5Qrcode;
+                if (scanner.getState() === 2 && scannerEngine?.isScanning === false) {
+                    await new Promise(resolve => {
+                        const deadline = Date.now() + 3000;
+                        const poll = window.setInterval(() => {
+                            if (scannerEngine.isScanning !== false || scanner.getState() !== 2 || Date.now() >= deadline) {
+                                window.clearInterval(poll);
+                                resolve();
+                            }
+                        }, 100);
+                    });
+                }
+                let stopped = false;
+                try {
+                    await scanner.clear();
+                    stopped = true;
+                } catch (err) {
+                    console.error('Could not stop QR scanner cleanly:', err);
+                } finally {
+                    if (stopped && html5QrcodeScanner === scanner) html5QrcodeScanner = null;
+                    document.getElementById('qr-image-input').disabled = false;
+                }
+                return stopped;
+            })();
             try {
-                await scanner.clear();
-            } catch (err) {
-                console.error('Could not stop QR scanner cleanly:', err);
+                return await qrScannerStopPromise;
+            } finally {
+                qrScannerStopPromise = null;
             }
         }
 
         async function startQRScanner() {
             const status = document.getElementById('qr-status');
+            if (!demoVerification || demoVerification.photoCheck === 'Photo not captured'
+                || demoVerification.photoCheck === 'No face detected in the photo'
+                || demoVerification.photoCheck === 'More than one face detected') {
+                status.textContent = 'Complete the profile details and take a photo before scanning the account QR.';
+                return;
+            }
             if (typeof Html5QrcodeScanner === 'undefined') {
                 status.textContent = 'QR scanner could not load. Check your connection and refresh the page.';
                 return;
             }
             stopLiveCamera();
-            await stopQRScanner();
+            if (!await stopQRScanner()) {
+                status.textContent = 'The previous camera session could not be stopped. Refresh the page before trying again.';
+                return;
+            }
             qrScanHandled = false;
-            sessionStorage.removeItem('votein.pendingAccountId');
             document.getElementById('qr-account-result').hidden = true;
+            document.getElementById('qr-image-input').disabled = true;
             status.textContent = 'Starting camera… allow camera access to scan your account QR.';
             try {
                 html5QrcodeScanner = new Html5QrcodeScanner('qr-reader', {
                     fps: 10,
                     qrbox: { width: 220, height: 220 },
-                    rememberLastUsedCamera: true
+                    rememberLastUsedCamera: true,
+                    supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA]
                 });
                 html5QrcodeScanner.render(async decodedText => {
                     if (qrScanHandled) return;
                     qrScanHandled = true;
                     const accountId = getAccountIdFromQr(decodedText);
                     await stopQRScanner();
-                    if (!accountId) {
-                        status.textContent = 'That QR does not contain a valid demo account ID. For safety, scan a QR with only the ID (or {"accountId":"your-id"}); passwords and identity QR codes are not accepted.';
+                    handleAccountQr(accountId, status);
+                }, () => {
+                    if (!qrScanHandled && html5QrcodeScanner?.html5Qrcode?.isScanning) {
+                        status.textContent = 'Scanner is running. Hold the account QR steady inside the frame.';
+                    }
+                });
+                status.textContent = html5QrcodeScanner.html5Qrcode?.isScanning
+                    ? 'Scanner is running. Hold the account QR steady inside the frame.'
+                    : 'Starting camera… allow camera access, then point it at your account QR.';
+                const activeScanner = html5QrcodeScanner;
+                let cameraStartRequested = false;
+                const statusPoll = window.setInterval(() => {
+                    if (html5QrcodeScanner !== activeScanner || qrScanHandled) {
+                        window.clearInterval(statusPoll);
                         return;
                     }
-                    stopLiveCamera();
-                    document.getElementById('qr-account-id').textContent = accountId;
-                    document.getElementById('qr-account-result').hidden = false;
-                    sessionStorage.setItem('votein.pendingAccountId', accountId);
-                    status.textContent = 'Account ID scanned. Continue to sign in with your password.';
-                }, () => {});
-                status.textContent = 'Point the camera at your demo account QR code.';
+                    if (!cameraStartRequested) {
+                        const startButton = [...document.querySelectorAll('#qr-reader button')]
+                            .find(button => /^(request camera permissions|start scanning)$/i.test(button.textContent.trim())
+                                && button.offsetParent !== null && !button.disabled);
+                        if (startButton) {
+                            cameraStartRequested = true;
+                            startButton.click();
+                        }
+                    }
+                    if (activeScanner.html5Qrcode?.isScanning) {
+                        status.textContent = 'Scanner is running. Hold the account QR steady inside the frame.';
+                        window.clearInterval(statusPoll);
+                    }
+                }, 250);
+                window.setTimeout(async () => {
+                    window.clearInterval(statusPoll);
+                    if (html5QrcodeScanner !== activeScanner || qrScanHandled || activeScanner.html5Qrcode?.isScanning) return;
+                    const stopped = await stopQRScanner();
+                    status.textContent = stopped
+                        ? 'Camera did not start. Allow camera access and try again, or scan a QR image instead.'
+                        : 'The camera is still starting and could not be stopped safely. Refresh the page or use the QR image option.';
+                }, 20000);
             } catch (err) {
-                status.textContent = 'Could not start the QR scanner. Check that a camera is connected and allow camera access.';
                 console.error('QR scanner error:', err);
-                await stopQRScanner();
+                const stopped = await stopQRScanner();
+                status.textContent = stopped
+                    ? 'Could not start the QR scanner. Check that a camera is connected and allow camera access.'
+                    : 'The camera is still starting and could not be stopped safely. Refresh the page or use the QR image option.';
             }
         }
+
+        function handleAccountQr(accountId, status) {
+            if (!accountId) {
+                status.textContent = 'That QR does not contain a valid demo account ID. Scan a QR with only the ID (or {"accountId":"your-id"}); passwords and identity-document QR codes are not accepted.';
+                return;
+            }
+            const user = getUserInfo();
+            if (!demoVerification || !user || String(user.id).toUpperCase() !== accountId.toUpperCase()
+                || demoVerification.accountId.toUpperCase() !== accountId.toUpperCase()) {
+                status.textContent = 'The scanned account ID does not match the signed-in demo account. No account details were shown.';
+                return;
+            }
+
+            document.getElementById('qr-account-name').textContent = demoVerification.name;
+            document.getElementById('qr-account-id').textContent = demoVerification.accountId;
+            document.getElementById('qr-account-location').textContent = demoVerification.location;
+            document.getElementById('qr-account-pan').textContent = demoVerification.maskedPan;
+            document.getElementById('qr-face-status').textContent = demoVerification.photoCheck;
+            document.getElementById('qr-account-result').hidden = false;
+            status.textContent = 'QR scanned. The account ID matches the signed-in demo account.';
+        }
+
+        function canScanAccountQr() {
+            return demoVerification
+                && demoVerification.photoCheck !== 'Photo not captured'
+                && demoVerification.photoCheck !== 'No face detected in the photo'
+                && demoVerification.photoCheck !== 'More than one face detected';
+        }
+
+        document.getElementById('qr-image-input').addEventListener('change', async event => {
+            const file = event.target.files?.[0];
+            const status = document.getElementById('qr-status');
+            event.target.value = '';
+            if (!file) return;
+            if (!canScanAccountQr()) {
+                status.textContent = 'Complete the profile details and take a photo before scanning the account QR.';
+                return;
+            }
+            if (typeof Html5Qrcode === 'undefined') {
+                status.textContent = 'QR image scanning could not load. Check your connection and refresh the page.';
+                return;
+            }
+
+            status.textContent = 'Reading QR code from the selected image…';
+            event.target.disabled = true;
+            const scanner = new Html5Qrcode('qr-reader');
+            try {
+                const decodedText = await scanner.scanFile(file, true);
+                handleAccountQr(getAccountIdFromQr(decodedText), status);
+            } catch (err) {
+                status.textContent = 'No readable QR code was found in that image. Try a clearer image or use the live scanner.';
+                console.error('QR image scan error:', err);
+            } finally {
+                await scanner.clear();
+                event.target.disabled = false;
+            }
+        });
 
         document.getElementById('start-live-camera').addEventListener('click', startLiveCamera);
         document.getElementById('capture-live-photo').addEventListener('click', captureLivePhoto);
         document.getElementById('start-qr-scanner').addEventListener('click', startQRScanner);
-        document.getElementById('qr-login-link').addEventListener('click', event => {
-            if (!sessionStorage.getItem('votein.pendingAccountId')) {
-                event.preventDefault();
-                document.getElementById('qr-status').textContent = 'Scan a valid demo account QR before continuing.';
-            }
+        document.getElementById('continue-to-ballot').addEventListener('click', () => {
+            if (!document.getElementById('qr-account-result').hidden) navigateToStep('step-ballot');
         });
 
         function openVoteModal(id, name, party, symbol) {

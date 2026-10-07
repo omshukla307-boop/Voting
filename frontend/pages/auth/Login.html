@@ -73,13 +73,6 @@
         const pwInput = document.getElementById('password');
         const togglePwBtn = document.getElementById('toggle-pw');
 
-        const scannedAccountId = sessionStorage.getItem('votein.pendingAccountId');
-        if (scannedAccountId) {
-            document.getElementById('voterId').value = scannedAccountId;
-            sessionStorage.removeItem('votein.pendingAccountId');
-            pwInput.focus();
-        }
-
         togglePwBtn.addEventListener('click', () => {
             if (pwInput.type === 'password') {
                 pwInput.type = 'text';

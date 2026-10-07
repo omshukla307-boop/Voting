@@ -449,6 +449,140 @@ nav {
     line-height: 1.55;
 }
 
+.verification-title {
+    margin-bottom: 0.5rem;
+    font: 800 1.45rem/1.2 'Outfit', sans-serif;
+}
+
+.verification-disclaimer {
+    max-width: 720px;
+    margin: 0 auto 1.25rem;
+    padding: 0.8rem 1rem;
+    border: 1px solid #FCD34D;
+    border-radius: 12px;
+    background: #FFFBEB;
+    color: #78350F;
+    font-size: 0.84rem;
+    line-height: 1.55;
+    text-align: left;
+}
+
+.verification-form {
+    display: grid;
+    gap: 0.6rem;
+    max-width: 560px;
+    margin: 0 auto 1.25rem;
+    text-align: left;
+}
+
+.verification-form[hidden],
+.demo-account-details[hidden],
+.qr-account-result[hidden] {
+    display: none;
+}
+
+.verification-form label {
+    color: var(--text-dark);
+    font-size: 0.86rem;
+    font-weight: 700;
+}
+
+.verification-form button {
+    justify-self: start;
+}
+
+.verification-help {
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    line-height: 1.55;
+}
+
+.demo-account-details {
+    max-width: 560px;
+    margin: 0 auto 1.25rem;
+    padding: 1rem;
+    border: 1px solid #BFDBFE;
+    border-radius: 14px;
+    background: #EFF6FF;
+    text-align: left;
+}
+
+.verification-eyebrow {
+    margin-bottom: 0.65rem;
+    color: #1D4ED8;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+}
+
+.demo-account-details dl,
+.qr-account-result dl {
+    display: grid;
+    gap: 0.55rem;
+}
+
+.demo-account-details dl > div,
+.qr-account-result dl > div {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.demo-account-details dt,
+.qr-account-result dt {
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.demo-account-details dd,
+.qr-account-result dd {
+    color: var(--text-dark);
+    font-size: 0.86rem;
+    font-weight: 800;
+    text-align: right;
+    overflow-wrap: anywhere;
+}
+
+.qr-image-label {
+    display: inline-block;
+    margin-top: 0.65rem;
+    color: var(--votein-maroon);
+    font-size: 0.82rem;
+    font-weight: 800;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.qr-image-input {
+    display: block;
+    width: 100%;
+    margin-top: 0.45rem;
+    color: var(--text-muted);
+    font-size: 0.76rem;
+}
+
+.qr-image-input:disabled {
+    opacity: 0.55;
+}
+
+.qr-account-result {
+    text-align: left;
+}
+
+.qr-account-result > p:first-child {
+    margin-bottom: 0.85rem;
+    font-weight: 800;
+}
+
+.qr-account-result .verification-help {
+    margin-top: 0.75rem;
+}
+
+.qr-account-result #continue-to-ballot {
+    margin-top: 0.85rem;
+}
+
 /* Slide to Vote Interactive Slider */
 .slide-to-vote-container {
     position: relative;
