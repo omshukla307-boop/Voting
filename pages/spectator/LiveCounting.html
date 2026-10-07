@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Live demo election results ranked by recorded votes.">
+    <meta name="description" content="Practice election results ranked by recorded votes.">
     <title>Live Leaderboard | voteIn</title>
-    <link rel="stylesheet" href="/css/styles.css?v=20260615">
+    <link rel="stylesheet" href="/css/styles.css?v=20261007-nri">
 </head>
 <body>
     <nav>
@@ -20,9 +20,9 @@
     <main class="leaderboard-main">
         <section class="leaderboard-hero">
             <div>
-                <p class="leaderboard-eyebrow"><span class="live-indicator"></span> LIVE DEMO RESULTS</p>
+                <p class="leaderboard-eyebrow"><span class="live-indicator"></span> LIVE PRACTICE RESULTS</p>
                 <h1>Vote leaderboard</h1>
-                <p><span id="leaderboard-election-name">Current demo election</span> · Results refresh automatically every five seconds.</p>
+                <p><span id="leaderboard-election-name">Current practice election</span> · Results refresh automatically every five seconds.</p>
             </div>
             <button id="refresh-results" class="leaderboard-refresh" type="button">↻ <span>Refresh</span></button>
         </section>
@@ -52,13 +52,13 @@
                     <p class="leaderboard-eyebrow">THE CURRENT STANDINGS</p>
                     <h2 id="top-candidates-title">Leading candidates</h2>
                 </div>
-                <span class="leaderboard-demo-label">Demo tally</span>
+                <span class="leaderboard-practice-label">Practice tally</span>
             </div>
             <div id="leaderboard-podium" class="leaderboard-podium" aria-live="polite">
                 <p class="leaderboard-state">Loading vote counts…</p>
             </div>
             <div id="leaderboard-list" class="leaderboard-list" aria-live="polite"></div>
-            <p id="leaderboard-note" class="leaderboard-note">Counts reflect recorded demo ballots only. This is not an official election result.</p>
+            <p id="leaderboard-note" class="leaderboard-note">Counts reflect practice ballots only. This is not an official election result.</p>
             <p id="leaderboard-error" class="leaderboard-error" role="alert" hidden></p>
         </section>
 
@@ -68,7 +68,7 @@
         </div>
     </main>
 
-    <footer><p>voteIn · Live demo leaderboard</p></footer>
+    <footer><p>voteIn · Practice leaderboard — not an official election result</p></footer>
 
     <script src="/js/main.js?v=20260615"></script>
     <script>
@@ -85,7 +85,7 @@
         }
 
         function renderResults(candidates, election) {
-            document.getElementById('leaderboard-election-name').textContent = election?.name || 'Current demo election';
+            document.getElementById('leaderboard-election-name').textContent = election?.name || 'Current practice election';
             const ranked = candidates.map((candidate) => {
                 const votes = Number(candidate.voteCount ?? candidate.votes ?? 0);
                 return {
@@ -109,13 +109,13 @@
             });
 
             if (ranked.length === 0) {
-                podium.innerHTML = `<p class="leaderboard-state">${election ? 'No candidates are available for this election yet.' : 'There is no active demo election right now.'}</p>`;
+                podium.innerHTML = `<p class="leaderboard-state">${election ? 'No candidates are available for this election yet.' : 'There is no active practice election right now.'}</p>`;
                 leaderboard.replaceChildren();
                 return;
             }
 
             if (totalVotes === 0) {
-                podium.innerHTML = '<p class="leaderboard-state">No votes have been recorded yet. Rankings will appear as demo ballots are counted.</p>';
+                podium.innerHTML = '<p class="leaderboard-state">No votes have been recorded yet. Rankings will appear as practice ballots are counted.</p>';
             } else {
                 podium.innerHTML = ranked.slice(0, 3).map((candidate, index) => {
                     const percent = ((candidate.votes / totalVotes) * 100).toFixed(1);

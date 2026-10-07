@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Create a demo account for the voting app.">
-    <title>Create Demo Account | voteIn</title>
-    <link rel="stylesheet" href="/css/styles.css?v=20261007">
+    <meta name="description" content="Create an account to explore the practice voting experience.">
+    <title>Create Account | voteIn</title>
+    <link rel="stylesheet" href="/css/styles.css?v=20261007-nri">
 </head>
 <body class="signup-page">
     <nav>
@@ -16,9 +16,9 @@
         <section class="signup-card" aria-labelledby="signup-title">
             <div class="signup-heading">
                 <div class="signup-mark" aria-hidden="true">🗳️</div>
-                <p class="signup-eyebrow">DEMO ACCESS</p>
+                <p class="signup-eyebrow">PRACTICE ACCESS</p>
                 <h1 id="signup-title">Create your account</h1>
-                <p>Set up a demo profile to explore the app. This does not register you to vote or verify identity or eligibility.</p>
+                <p>Create a practice profile to explore the app. This does not register you to vote or verify identity or eligibility.</p>
             </div>
 
             <div id="signup-error" class="signup-message signup-error" role="alert" hidden></div>
@@ -26,8 +26,8 @@
 
             <form id="signup-form" class="signup-form">
                 <div class="signup-field">
-                    <label for="signup-voter-id">Demo ID</label>
-                    <input id="signup-voter-id" name="voterId" autocomplete="username" required maxlength="50" placeholder="Choose a demo ID">
+                    <label for="signup-voter-id">Account ID</label>
+                    <input id="signup-voter-id" name="voterId" autocomplete="username" required maxlength="50" placeholder="Choose an account ID">
                 </div>
                 <div class="signup-field">
                     <label for="signup-name">Full name</label>
@@ -58,14 +58,14 @@
                     <label for="signup-confirm-password">Confirm password</label>
                     <input id="signup-confirm-password" name="confirmPassword" type="password" autocomplete="new-password" required minlength="8" maxlength="72" placeholder="Enter your password again">
                 </div>
-                <button id="signup-submit" class="btn btn-full signup-submit" type="submit">Create demo account</button>
+                <button id="signup-submit" class="btn btn-full signup-submit" type="submit">Create account</button>
             </form>
 
-            <p class="signup-login">Already have a demo account? <a href="/pages/auth/Login.html">Sign in</a></p>
+            <p class="signup-login">Already have an account? <a href="/pages/auth/Login.html">Sign in</a></p>
         </section>
     </main>
 
-    <footer><p>Demo only. This is not an official voter registration service.</p></footer>
+    <footer><p>Practice access only. This is not an official voter registration service.</p></footer>
 
     <script src="/js/main.js?v=20260615"></script>
     <script>
@@ -104,22 +104,22 @@
                 });
                 const data = await response.json();
                 if (!response.ok) {
-                    signupError.textContent = data.error || 'Could not create the demo account.';
+                    signupError.textContent = data.error || 'Could not create the account.';
                     signupError.hidden = false;
                     return;
                 }
 
                 setToken(data.token);
-                signupSuccess.textContent = 'Demo account created. Taking you to Home...';
+                signupSuccess.textContent = 'Account created. Taking you to Home...';
                 signupSuccess.hidden = false;
                 window.location.assign('/');
             } catch (error) {
-                console.error('Demo signup request failed:', error);
+                console.error('Account signup request failed:', error);
                 signupError.textContent = 'Could not connect to the server. Please try again.';
                 signupError.hidden = false;
             } finally {
                 signupSubmit.disabled = false;
-                signupSubmit.textContent = 'Create demo account';
+                signupSubmit.textContent = 'Create account';
             }
         });
     </script>

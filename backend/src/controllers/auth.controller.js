@@ -64,7 +64,7 @@ exports.signup = async (req, res) => {
     return res.status(400).json({ error: "Complete all required fields." });
   }
   if (!/^[A-Z0-9_-]{3,50}$/.test(normalizedVoterId)) {
-    return res.status(400).json({ error: "Demo ID must be 3–50 letters, numbers, hyphens, or underscores." });
+    return res.status(400).json({ error: "Account ID must be 3–50 letters, numbers, hyphens, or underscores." });
   }
   if (normalizedName.length > 50 || normalizedMobile.length > 15) {
     return res.status(400).json({ error: "One or more fields are too long." });
@@ -94,7 +94,7 @@ exports.signup = async (req, res) => {
       }
     });
     if (existingUser) {
-      return res.status(409).json({ error: "That demo ID, email, or phone number is already registered." });
+      return res.status(409).json({ error: "That account ID, email, or phone number is already registered." });
     }
 
     const user = await User.create({
@@ -104,7 +104,7 @@ exports.signup = async (req, res) => {
       mobileNo: normalizedMobile,
       gender,
       role: "voter",
-      aadharNo: `DEMO-${crypto.randomUUID()}`,
+      aadharNo: `PRACTICE-${crypto.randomUUID()}`,
       password
     });
 
@@ -123,10 +123,31 @@ exports.signup = async (req, res) => {
       return res.status(400).json({ error: "Please check your account details and try again." });
     }
     if (error.name === "SequelizeUniqueConstraintError") {
-      return res.status(409).json({ error: "That demo ID, email, or phone number is already registered." });
+      return res.status(409).json({ error: "That account ID, email, or phone number is already registered." });
     }
-    console.error("Demo signup failed:", error);
-    return res.status(500).json({ error: "Could not create the demo account. Please try again." });
+    console.error("Account signup failed:", error);
+    return res.status(500).json({ error: "Could not create the account. Please try again." });
+  }
+};
+
+exports.getProfile = async (req, res) => {
+  try {
+    const user = await User.findByPk(req.user.id, {
+      attributes: ["voterId", "name", "role"]
+    });
+    if (!user) {
+      return res.status(404).json({ error: "Account not found." });
+    }
+    return res.status(200).json({
+      user: {
+        id: user.voterId,
+        name: user.name,
+        role: user.role
+      }
+    });
+  } catch (error) {
+    console.error("Account profile lookup failed:", error);
+    return res.status(500).json({ error: "Could not load account details." });
   }
 };
 

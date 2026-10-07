@@ -53,14 +53,16 @@ async function seed() {
             await User.create({
                 voterId: panDemoVoterId,
                 aadharNo: 'PAN-TXPPS1893L',
-                name: 'Demo PAN Voter',
+                name: 'PAN Test Voter',
                 email: 'txpps1893l@voting.app',
                 role: 'voter',
                 gender: 'other',
                 mobileNo: '9000001893',
                 password: 'password123'
             });
-            console.log(`Created demo voter: ${panDemoVoterId} / password123`);
+            console.log(`Created PAN test voter: ${panDemoVoterId} / password123`);
+        } else if (panDemoVoter.name === 'Demo PAN Voter') {
+            await panDemoVoter.update({ name: 'PAN Test Voter' });
         }
 
         const voters = [
