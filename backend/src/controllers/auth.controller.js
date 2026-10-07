@@ -133,7 +133,7 @@ exports.signup = async (req, res) => {
 exports.getProfile = async (req, res) => {
   try {
     const user = await User.findByPk(req.user.id, {
-      attributes: ["voterId", "name", "role"]
+      attributes: ["voterId", "name", "role", "mobileNo"]
     });
     if (!user) {
       return res.status(404).json({ error: "Account not found." });
@@ -142,7 +142,8 @@ exports.getProfile = async (req, res) => {
       user: {
         id: user.voterId,
         name: user.name,
-        role: user.role
+        role: user.role,
+        mobileNo: user.mobileNo
       }
     });
   } catch (error) {
