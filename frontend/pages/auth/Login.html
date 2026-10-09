@@ -494,6 +494,18 @@
             }
         }
 
+        async function autoOpenMetaMaskOnLoad() {
+            if (window.voteInWallet && window.voteInWallet.isInstalled() && !window.voteInWallet.account) {
+                const statusBadge = document.getElementById('wallet-status-badge');
+                if (statusBadge) {
+                    statusBadge.innerText = '🦊 Opening MetaMask...';
+                    statusBadge.className = 'badge badge-live';
+                }
+                await window.voteInWallet.connect();
+            }
+            updateWalletUI();
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
             if (window.voteInWallet) {
                 window.voteInWallet.account = null;
@@ -502,6 +514,7 @@
             }
             updateWalletUI();
             checkActiveSession();
+            setTimeout(autoOpenMetaMaskOnLoad, 400);
         });
     </script>
 </body>
