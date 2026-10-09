@@ -57,7 +57,136 @@ document.addEventListener('DOMContentLoaded', () => {
     if (logoutBtn) {
         logoutBtn.addEventListener('click', logout);
     }
+
+    if (window.voteInWallet) {
+        window.voteInWallet.updateUI();
+
+        document.querySelectorAll('.metamask-connect-btn').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                if (window.voteInWallet.account) {
+                    if (confirm(`MetaMask Wallet Connected:\n${window.voteInWallet.account}\n\nDo you want to disconnect this wallet?`)) {
+                        window.voteInWallet.disconnect();
+                    }
+                } else {
+                    await window.voteInWallet.connect();
+                }
+            });
+        });
+    }
 });
+
+/* =========================================================
+   METAMASK / WEB3 WALLET INTEGRATION
+   ========================================================= */
+class VoteInMetaMask {
+    constructor() {
+        this.account = localStorage.getItem('connectedWallet') || null;
+        this.initListeners();
+    }
+
+    isInstalled() {
+        return typeof window.ethereum !== 'undefined';
+    }
+
+    async connect() {
+        if (!this.isInstalled()) {
+            alert("MetaMask is not detected in your browser!\n\nPlease install the MetaMask browser extension from https://metamask.io to connect your Web3 wallet.");
+            window.open('https://metamask.io/download/', '_blank');
+            return null;
+        }
+
+        try {
+            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+            if (accounts && accounts.length > 0) {
+                this.account = accounts[0];
+                localStorage.setItem('connectedWallet', this.account);
+                this.updateUI();
+                return this.account;
+            }
+        } catch (err) {
+            console.error("MetaMask connection error:", err);
+            if (err.code === 4001) {
+                alert("MetaMask wallet connection request rejected by user.");
+            } else {
+                alert("MetaMask Error: " + (err.message || err));
+            }
+        }
+        return null;
+    }
+
+    disconnect() {
+        this.account = null;
+        localStorage.removeItem('connectedWallet');
+        this.updateUI();
+    }
+
+    async signBallot(voterId, candidateId, candidateName, electionId) {
+        if (!this.account) {
+            const connected = await this.connect();
+            if (!connected) return null;
+        }
+
+        const message = `voteIn Cryptographic Ballot Authentication\n\nVoter EPIC ID: ${voterId}\nCandidate: ${candidateName} (ID: ${candidateId})\nElection ID: ${electionId}\nTimestamp: ${new Date().toISOString()}`;
+        
+        try {
+            const msgBuffer = new TextEncoder().encode(message);
+            const hexMsg = '0x' + Array.from(msgBuffer).map(b => b.toString(16).padStart(2, '0')).join('');
+            
+            const signature = await window.ethereum.request({
+                method: 'personal_sign',
+                params: [hexMsg, this.account]
+            });
+
+            return {
+                address: this.account,
+                signature: signature,
+                message: message
+            };
+        } catch (err) {
+            console.warn("MetaMask vote signing canceled or failed:", err);
+            return null;
+        }
+    }
+
+    initListeners() {
+        if (typeof window.ethereum !== 'undefined') {
+            window.ethereum.on('accountsChanged', (accounts) => {
+                if (accounts.length === 0) {
+                    this.disconnect();
+                } else {
+                    this.account = accounts[0];
+                    localStorage.setItem('connectedWallet', this.account);
+                    this.updateUI();
+                }
+            });
+
+            window.ethereum.on('chainChanged', () => {
+                window.location.reload();
+            });
+        }
+    }
+
+    updateUI() {
+        const walletBtns = document.querySelectorAll('.metamask-connect-btn');
+        walletBtns.forEach(btn => {
+            const textSpan = btn.querySelector('.wallet-text');
+            if (this.account) {
+                const shortAddr = `${this.account.slice(0, 6)}...${this.account.slice(-4)}`;
+                if (textSpan) textSpan.innerText = shortAddr;
+                else btn.innerHTML = `🦊 ${shortAddr}`;
+                btn.classList.add('wallet-connected');
+                btn.title = `Connected MetaMask Wallet: ${this.account}\nClick to Disconnect`;
+            } else {
+                if (textSpan) textSpan.innerText = 'Connect MetaMask';
+                else btn.innerHTML = '🦊 Connect MetaMask';
+                btn.classList.remove('wallet-connected');
+                btn.title = 'Click to Connect MetaMask Wallet';
+            }
+        });
+    }
+}
+
+window.voteInWallet = new VoteInMetaMask();
 
 /* =========================================================
    QR CODE SCANNER CONTROLLER (html5-qrcode integration)

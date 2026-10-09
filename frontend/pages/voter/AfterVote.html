@@ -19,6 +19,7 @@
             vote<span>In</span>
         </a>
         <div class="nav-links">
+            <button class="metamask-connect-btn">🦊 Connect MetaMask</button>
             <a href="/pages/spectator/LiveCounting.html">Live Tally</a>
             <a href="/" class="btn btn-secondary btn-sm">Home</a>
         </div>
@@ -55,8 +56,13 @@
                     <span id="receipt-time" style="font-size: 0.9rem; color: #CBD5E1;">-</span>
                 </div>
 
+                <div id="web3-wallet-row" style="margin-bottom: 0.75rem; display: none;">
+                    <span style="font-size: 0.75rem; color: #94A3B8; display: block;">METAMASK SIGNER WALLET</span>
+                    <span id="receipt-web3-wallet" style="font-family: monospace; font-size: 0.85rem; color: #F97316;">-</span>
+                </div>
+
                 <div>
-                    <span style="font-size: 0.75rem; color: #94A3B8; display: block; margin-bottom: 0.25rem;">BLOCKCHAIN RECEIPT HASH (SHA-256)</span>
+                    <span style="font-size: 0.75rem; color: #94A3B8; display: block; margin-bottom: 0.25rem;">BLOCKCHAIN RECEIPT / WEB3 SIGNATURE</span>
                     <div id="receipt-hash" style="font-family: monospace; font-size: 0.8rem; background: #1E293B; color: #38BDF8; padding: 0.6rem; border-radius: 6px; word-break: break-all; border: 1px solid #334155;">
                         0x...
                     </div>
@@ -89,11 +95,17 @@
         const candidateParty = sessionStorage.getItem('lastCandidateParty') || 'Party';
         const voterId = sessionStorage.getItem('currentVoterId') || 'TXPPS1893L';
         const voteTime = sessionStorage.getItem('lastVoteTime') || new Date().toLocaleString();
+        const web3Wallet = sessionStorage.getItem('lastWeb3Wallet');
 
         document.getElementById('receipt-hash').innerText = hash;
         document.getElementById('receipt-voter-id').innerText = voterId;
         document.getElementById('receipt-candidate').innerText = `${candidateName} (${candidateParty})`;
         document.getElementById('receipt-time').innerText = voteTime;
+
+        if (web3Wallet) {
+            document.getElementById('web3-wallet-row').style.display = 'block';
+            document.getElementById('receipt-web3-wallet').innerText = web3Wallet;
+        }
     </script>
 </body>
 </html>
