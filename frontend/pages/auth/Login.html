@@ -68,12 +68,12 @@
             <div id="resident-section">
                 <form id="login-form">
                     <div class="form-group">
-                        <label for="voterId" style="display: flex; justify-content: space-between; align-items: center;">
-                            <span>Voter ID / EPIC Number</span>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                            <label for="voterId" style="margin-bottom: 0;">Voter ID / EPIC Number</label>
                             <button type="button" id="open-scanner-btn" class="btn btn-secondary btn-sm" style="padding: 0.25rem 0.65rem; font-size: 0.8rem;">
                                 📷 Scan Voter ID Card
                             </button>
-                        </label>
+                        </div>
                         <input type="text" id="voterId" placeholder="e.g. TXPPS1893L or voter1" value="TXPPS1893L" required>
                         <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">
                             Enter your official 10-character EPIC card number or click Scan Voter ID Card.
@@ -394,40 +394,61 @@
 
         qrScanner = new VoteInQRScanner('qr-reader', updateScannerStatus, onQRDetected);
 
-        openScannerBtn.addEventListener('click', async () => {
-            scannerModal.classList.add('active');
-            const cameras = await qrScanner.getCameras();
-            if (cameras.length > 1) {
-                cameraSelect.style.display = 'block';
-                cameraSelect.innerHTML = cameras.map(c => `<option value="${c.id}">${c.label || 'Camera ' + c.id}</option>`).join('');
-            }
-        });
+        if (openScannerBtn) {
+            openScannerBtn.addEventListener('click', async (e) => {
+                if (e) e.preventDefault();
+                if (scannerModal) {
+                    scannerModal.style.display = 'flex';
+                    scannerModal.classList.add('active');
+                }
+                try {
+                    const cameras = await qrScanner.getCameras();
+                    if (cameras && cameras.length > 1) {
+                        cameraSelect.style.display = 'block';
+                        cameraSelect.innerHTML = cameras.map(c => `<option value="${c.id}">${c.label || 'Camera ' + c.id}</option>`).join('');
+                    }
+                } catch (err) {
+                    console.warn("Camera enum notice:", err);
+                }
+            });
+        }
 
-        closeScannerBtn.addEventListener('click', async () => {
-            await qrScanner.stopScanning();
-            scannerModal.classList.remove('active');
-            stopCamBtn.style.display = 'none';
-            startCamBtn.style.display = 'inline-flex';
-        });
+        if (closeScannerBtn) {
+            closeScannerBtn.addEventListener('click', async () => {
+                await qrScanner.stopScanning();
+                if (scannerModal) {
+                    scannerModal.classList.remove('active');
+                    scannerModal.style.display = 'none';
+                }
+                stopCamBtn.style.display = 'none';
+                startCamBtn.style.display = 'inline-flex';
+            });
+        }
 
-        startCamBtn.addEventListener('click', async () => {
-            startCamBtn.style.display = 'none';
-            stopCamBtn.style.display = 'inline-flex';
-            const selectedCam = cameraSelect.value || null;
-            await qrScanner.startScanning(selectedCam);
-        });
+        if (startCamBtn) {
+            startCamBtn.addEventListener('click', async () => {
+                startCamBtn.style.display = 'none';
+                stopCamBtn.style.display = 'inline-flex';
+                const selectedCam = cameraSelect ? (cameraSelect.value || null) : null;
+                await qrScanner.startScanning(selectedCam);
+            });
+        }
 
-        stopCamBtn.addEventListener('click', async () => {
-            await qrScanner.stopScanning();
-            stopCamBtn.style.display = 'none';
-            startCamBtn.style.display = 'inline-flex';
-        });
+        if (stopCamBtn) {
+            stopCamBtn.addEventListener('click', async () => {
+                await qrScanner.stopScanning();
+                stopCamBtn.style.display = 'none';
+                startCamBtn.style.display = 'inline-flex';
+            });
+        }
 
-        fileInput.addEventListener('change', async (e) => {
-            if (e.target.files.length > 0) {
-                await qrScanner.scanFile(e.target.files[0]);
-            }
-        });
+        if (fileInput) {
+            fileInput.addEventListener('change', async (e) => {
+                if (e.target.files.length > 0) {
+                    await qrScanner.scanFile(e.target.files[0]);
+                }
+            });
+        }
 
         // NRI Passport Scanner Controller (Section 20A Form 6A)
         let nriPassportScanner = null;
@@ -448,7 +469,10 @@
         }
 
         function onNRIPassportDetected(data) {
-            if (nriModal) nriModal.classList.remove('active');
+            if (nriModal) {
+                nriModal.classList.remove('active');
+                nriModal.style.display = 'none';
+            }
             const resultCard = document.getElementById('nri-scanner-result-card');
             const resultDetails = document.getElementById('nri-scanner-result-details');
             
@@ -493,12 +517,20 @@
         nriPassportScanner = new VoteInQRScanner('nri-passport-qr-reader', updateNriScannerStatus, onNRIPassportDetected);
 
         if (openNriBtn) {
-            openNriBtn.addEventListener('click', async () => {
-                nriModal.classList.add('active');
-                const cameras = await nriPassportScanner.getCameras();
-                if (cameras.length > 1) {
-                    nriCamSelect.style.display = 'block';
-                    nriCamSelect.innerHTML = cameras.map(c => `<option value="${c.id}">${c.label || 'Camera ' + c.id}</option>`).join('');
+            openNriBtn.addEventListener('click', async (e) => {
+                if (e) e.preventDefault();
+                if (nriModal) {
+                    nriModal.style.display = 'flex';
+                    nriModal.classList.add('active');
+                }
+                try {
+                    const cameras = await nriPassportScanner.getCameras();
+                    if (cameras && cameras.length > 1) {
+                        nriCamSelect.style.display = 'block';
+                        nriCamSelect.innerHTML = cameras.map(c => `<option value="${c.id}">${c.label || 'Camera ' + c.id}</option>`).join('');
+                    }
+                } catch (err) {
+                    console.warn("NRI camera enum notice:", err);
                 }
             });
         }
@@ -506,7 +538,10 @@
         if (closeNriBtn) {
             closeNriBtn.addEventListener('click', async () => {
                 await nriPassportScanner.stopScanning();
-                nriModal.classList.remove('active');
+                if (nriModal) {
+                    nriModal.classList.remove('active');
+                    nriModal.style.display = 'none';
+                }
                 stopNriCamBtn.style.display = 'none';
                 startNriCamBtn.style.display = 'inline-flex';
             });
@@ -516,7 +551,7 @@
             startNriCamBtn.addEventListener('click', async () => {
                 startNriCamBtn.style.display = 'none';
                 stopNriCamBtn.style.display = 'inline-flex';
-                const selectedCam = nriCamSelect.value || null;
+                const selectedCam = nriCamSelect ? (nriCamSelect.value || null) : null;
                 await nriPassportScanner.startScanning(selectedCam);
             });
         }

@@ -193,18 +193,27 @@
 
         qrScanner = new VoteInQRScanner('qr-reader', updateScannerStatus, onQRDetected);
 
-        openBtn.addEventListener('click', async () => {
-            modal.classList.add('active');
-            const cameras = await qrScanner.getCameras();
-            if (cameras.length > 1) {
-                cameraSelect.style.display = 'block';
-                cameraSelect.innerHTML = cameras.map(c => `<option value="${c.id}">${c.label || 'Camera ' + c.id}</option>`).join('');
+        openBtn.addEventListener('click', async (e) => {
+            if (e) e.preventDefault();
+            if (modal) {
+                modal.style.display = 'flex';
+                modal.classList.add('active');
             }
+            try {
+                const cameras = await qrScanner.getCameras();
+                if (cameras && cameras.length > 1) {
+                    cameraSelect.style.display = 'block';
+                    cameraSelect.innerHTML = cameras.map(c => `<option value="${c.id}">${c.label || 'Camera ' + c.id}</option>`).join('');
+                }
+            } catch (err) {}
         });
 
         closeBtn.addEventListener('click', async () => {
             await qrScanner.stopScanning();
-            modal.classList.remove('active');
+            if (modal) {
+                modal.classList.remove('active');
+                modal.style.display = 'none';
+            }
             stopCamBtn.style.display = 'none';
             startCamBtn.style.display = 'inline-flex';
         });
