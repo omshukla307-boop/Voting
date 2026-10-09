@@ -3,34 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Voter Verification & Login | voteIn</title>
+    <title>Voter Login & Verification | Digital Voting System of India</title>
     <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
     <!-- Practice Banner -->
     <div class="demo-banner">
-        ⚠️ PRACTICE / DEMO MODE — Educational Prototype Only. Not affiliated with ECI.
+        ⚠️ PRACTICE / DEMO ELECTION PORTAL — Educational Prototype Only.
     </div>
 
-    <!-- Navigation -->
+    <!-- Navigation Bar -->
     <nav>
         <a href="/" class="logo">
-            <div class="logo-icon">🗳️</div>
-            vote<span>In</span>
+            <div class="logo-chakra">☸</div>
+            Digital Voting System of India
         </a>
         <div class="nav-links">
-            <button class="metamask-connect-btn">🦊 Connect MetaMask</button>
             <a href="/">Home</a>
-            <a href="/pages/spectator/LiveCounting.html">Live Tally</a>
+            <a href="/pages/voter/VotePage.html">Vote</a>
+            <a href="/pages/voter/Dashboard.html">Dashboard</a>
+            <a href="/pages/spectator/LiveCounting.html">Results</a>
+            <a href="/pages/auth/AdminLogin.html">Admin</a>
+            <button class="metamask-connect-btn">🦊 Connect Wallet</button>
         </div>
     </nav>
 
-    <div class="container" style="max-width: 540px; margin-top: 2rem;">
+    <div class="container" style="max-width: 520px; margin-top: 2rem;">
         <div class="card">
-            <h2 style="text-align: center; color: var(--primary); margin-bottom: 0.25rem;">Elector Authentication</h2>
-            <p style="text-align: center; margin-bottom: 1.5rem;">Verify your Voter ID / EPIC number to access the ballot.</p>
+            <h2 style="text-align: center; color: var(--navy-primary); margin-bottom: 0.25rem;">Elector Authentication</h2>
+            <p style="text-align: center; margin-bottom: 1.25rem;">Connect your wallet and verify your Voter ID / EPIC card to access the ballot.</p>
 
-            <!-- Voter Category Tabs -->
+            <!-- Wallet Connection Status Display -->
+            <div style="background: #F8FAFC; border: 1px solid var(--border-color); padding: 0.85rem; border-radius: 6px; margin-bottom: 1.25rem; display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 0.85rem; font-weight: 700; color: var(--navy-primary);">MetaMask Wallet Status:</span>
+                <span id="wallet-status-badge" class="badge badge-ended">Wallet Not Connected</span>
+            </div>
+
+            <!-- Elector Category Tabs -->
             <div class="tabs-header">
                 <button class="tab-btn active" id="tab-resident-btn">🇮🇳 Resident Elector</button>
                 <button class="tab-btn" id="tab-nri-btn">✈️ NRI Overseas Elector</button>
@@ -38,7 +47,7 @@
 
             <div id="error-alert" class="alert-box alert-danger" style="display: none;"></div>
 
-            <!-- Indian Resident Form -->
+            <!-- Indian Resident Elector Form -->
             <div id="resident-section">
                 <form id="login-form">
                     <div class="form-group">
@@ -54,10 +63,10 @@
                         <input type="password" id="password" placeholder="••••••••" required>
                     </div>
 
-                    <!-- 4-Digit Security PIN setup -->
-                    <div style="background: #F8FAFC; border: 1px solid var(--border-color); padding: 1.25rem; border-radius: 12px; margin-bottom: 1.25rem; text-align: center;">
-                        <label style="margin-bottom: 0.25rem;">Enter 4-Digit Security PIN</label>
-                        <p style="font-size: 0.8rem; margin-bottom: 0.75rem;">Required to unlock ballot confirmation on this device.</p>
+                    <!-- 4-Digit Security PIN Section -->
+                    <div style="background: #F8FAFC; border: 1px solid var(--border-color); padding: 1rem; border-radius: 6px; margin-bottom: 1.15rem; text-align: center;">
+                        <label style="margin-bottom: 0.2rem;">4-Digit Security PIN</label>
+                        <p style="font-size: 0.8rem; margin-bottom: 0.5rem;">Required for ballot confirmation on this device.</p>
                         
                         <div class="pin-input-container" id="pin-container">
                             <input type="password" maxlength="1" class="pin-digit-box">
@@ -68,29 +77,29 @@
                     </div>
 
                     <!-- Camera Liveness Preview Frame -->
-                    <div style="background: #FFFFFF; border: 1px solid var(--border-color); padding: 1.25rem; border-radius: 12px; margin-bottom: 1.5rem; text-align: center;">
-                        <div style="font-size: 0.9rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.25rem;">
-                            📸 Camera Verification Preview (Demo Liveness)
+                    <div style="background: #FFFFFF; border: 1px solid var(--border-color); padding: 1rem; border-radius: 6px; margin-bottom: 1.25rem; text-align: center;">
+                        <div style="font-size: 0.85rem; font-weight: 700; color: var(--navy-primary); margin-bottom: 0.2rem;">
+                            📸 Camera Preview (Demo Liveness Check)
                         </div>
-                        <p style="font-size: 0.8rem; margin-bottom: 0.75rem;">
-                            Check camera preview for sample liveness check. (Demo format only — not legal biometric authentication).
+                        <p style="font-size: 0.78rem; margin-bottom: 0.5rem;">
+                            Verify live camera stream. (Demo format only — not legal biometric authentication).
                         </p>
 
-                        <div id="liveness-video-box" style="width: 100%; max-width: 280px; height: 180px; background: #000; margin: 0 auto 0.75rem auto; border-radius: 10px; overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative;">
+                        <div id="liveness-video-box" style="width: 100%; max-width: 260px; height: 160px; background: #000; margin: 0 auto 0.6rem auto; border-radius: 6px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
                             <video id="liveness-video" autoplay playsinline muted style="width: 100%; height: 100%; object-fit: cover; display: none;"></video>
                             <img id="liveness-photo" style="width: 100%; height: 100%; object-fit: cover; display: none;">
                             <span id="liveness-placeholder" style="color: #94A3B8; font-size: 0.85rem;">Camera Idle</span>
                         </div>
 
                         <div style="display: flex; gap: 0.5rem; justify-content: center;">
-                            <button type="button" id="start-webcam-btn" class="btn btn-secondary btn-sm">Start Preview</button>
+                            <button type="button" id="start-webcam-btn" class="btn btn-secondary btn-sm">Start Camera</button>
                             <button type="button" id="capture-webcam-btn" class="btn btn-secondary btn-sm" style="display: none;">Take Snapshot</button>
                             <button type="button" id="stop-webcam-btn" class="btn btn-secondary btn-sm" style="display: none;">Stop Camera</button>
                         </div>
                     </div>
 
-                    <button type="submit" class="btn btn-teal" style="width: 100%; padding: 0.85rem;">
-                        Verify Voter & Access Ballot
+                    <button type="submit" class="btn btn-saffron" style="width: 100%; padding: 0.75rem;">
+                        Verify Voter & Access Dashboard
                     </button>
                 </form>
             </div>
@@ -98,7 +107,7 @@
             <!-- NRI Elector Prototype Section -->
             <div id="nri-section" style="display: none;">
                 <div class="alert-box alert-info">
-                    <strong>Overseas Electors (NRIs):</strong> In official elections under Section 20A of the Representation of the People Act 1951, NRIs holding valid Indian Passports must register using Form 6A on the ECI NVSP portal.
+                    <strong>Overseas Electors (NRIs):</strong> Under Section 20A of the Representation of the People Act 1951, NRIs holding valid Indian Passports register using Form 6A on the ECI NVSP portal.
                 </div>
 
                 <form id="nri-form">
@@ -114,27 +123,23 @@
 
                     <div class="form-group">
                         <label for="nriCountry">Foreign Country of Residence</label>
-                        <input type="text" id="nriCountry" placeholder="e.g. United Arab Emirates / USA / UK" required>
+                        <input type="text" id="nriCountry" placeholder="e.g. UAE / USA / UK" required>
                     </div>
 
                     <div class="form-group">
-                        <label for="nriVoterId">Assigned Voter ID / EPIC (if registered)</label>
+                        <label for="nriVoterId">Assigned Voter ID / EPIC</label>
                         <input type="text" id="nriVoterId" placeholder="e.g. TXPPS1893L" required>
                     </div>
 
-                    <div class="alert-box alert-danger" style="font-size: 0.85rem;">
-                        Disclaimer: Remote online voting for NRIs is currently a prototype feature proposal. Demo verification allows ballot access for practice.
-                    </div>
-
-                    <button type="submit" class="btn btn-teal" style="width: 100%; padding: 0.85rem;">
-                        Submit NRI Prototype Details & Proceed
+                    <button type="submit" class="btn btn-saffron" style="width: 100%; padding: 0.75rem;">
+                        Submit NRI Details & Proceed
                     </button>
                 </form>
             </div>
 
             <!-- Test Credentials Card -->
-            <div style="margin-top: 1.5rem; padding: 1rem; background: #F8FAFC; border: 1px dashed var(--border-color); border-radius: 10px; font-size: 0.85rem; color: var(--text-muted);">
-                <div style="font-weight: 700; color: var(--text-main); margin-bottom: 0.35rem;">🔑 Practice Test Credentials:</div>
+            <div style="margin-top: 1.25rem; padding: 0.85rem; background: #F8FAFC; border: 1px dashed var(--border-color); border-radius: 6px; font-size: 0.85rem; color: var(--text-muted);">
+                <div style="font-weight: 700; color: var(--navy-primary); margin-bottom: 0.25rem;">🔑 Demo Practice Credentials:</div>
                 <div>• Voter ID / EPIC: <strong>TXPPS1893L</strong> | Password: <strong>password123</strong></div>
                 <div>• Voter ID / EPIC: <strong>voter1</strong> | Password: <strong>password123</strong></div>
             </div>
@@ -142,25 +147,20 @@
     </div>
 
     <footer>
-        <p>voteIn Practice Prototype &copy; 2026. Cryptographic Proof of Concept for E-Voting in India.</p>
+        <p>Digital Voting System of India &copy; 2026. Cryptographic Proof of Concept Portal.</p>
     </footer>
 
     <script src="/js/main.js"></script>
     <script>
-        // Check query parameters for voterId prefill from QR scanner
         const urlParams = new URLSearchParams(window.location.search);
         const prefilledVoterId = urlParams.get('voterId');
         if (prefilledVoterId) {
             document.getElementById('voterId').value = prefilledVoterId;
         }
 
-        // Initialize 4-Digit Security PIN
-        let pinCode = '';
-        initPinInputs('pin-container', (code) => {
-            pinCode = code;
-        });
+        initPinInputs('pin-container');
 
-        // Tab Switch Logic
+        // Tab Switching
         const residentBtn = document.getElementById('tab-resident-btn');
         const nriBtn = document.getElementById('tab-nri-btn');
         const residentSection = document.getElementById('resident-section');
@@ -180,7 +180,7 @@
             residentSection.style.display = 'none';
         });
 
-        // Camera Liveness Preview Controls
+        // Camera Preview Controls
         let mediaStream = null;
         const video = document.getElementById('liveness-video');
         const photo = document.getElementById('liveness-photo');
@@ -232,18 +232,20 @@
         stopWebcamBtn.addEventListener('click', stopWebcam);
         captureWebcamBtn.addEventListener('click', captureSnapshot);
 
-        // Login Handler (Resident)
+        // Resident Login Submission
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const voterId = document.getElementById('voterId').value;
             const password = document.getElementById('password').value;
             const errorAlert = document.getElementById('error-alert');
 
+            const walletAddress = window.voteInWallet?.account || null;
+
             try {
                 const res = await fetch(apiUrl('/auth/login'), {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ voterId, password })
+                    body: JSON.stringify({ voterId, password, walletAddress })
                 });
 
                 const data = await res.json();
@@ -255,31 +257,22 @@
                 }
 
                 setToken(data.token);
-                sessionStorage.setItem('currentVoterId', data.user?.id || voterId);
-                window.location.href = '/pages/voter/VotePage.html';
+                setUserRole('voter');
+                localStorage.setItem('currentVoterId', data.user?.id || voterId);
+                window.location.href = '/pages/voter/Dashboard.html';
             } catch (err) {
                 errorAlert.innerText = 'Server connection error. Please try again.';
                 errorAlert.style.display = 'block';
             }
         });
 
-        // NRI Form Handler
+        // NRI Form Submission
         document.getElementById('nri-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const voterId = document.getElementById('nriVoterId').value;
-            const passport = document.getElementById('nriPassport').value;
-            const parentName = document.getElementById('nriParentName').value;
-            const country = document.getElementById('nriCountry').value;
             const errorAlert = document.getElementById('error-alert');
 
-            if (!voterId || !passport) {
-                errorAlert.innerText = 'Please enter valid passport and Voter ID details.';
-                errorAlert.style.display = 'block';
-                return;
-            }
-
             try {
-                // Issue demo token for NRI voter
                 const res = await fetch(apiUrl('/auth/login'), {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -289,17 +282,17 @@
                 const data = await res.json();
 
                 if (!res.ok) {
-                    errorAlert.innerText = 'NRI Demo Verification Notice: ' + (data.error || 'Please use test Voter ID TXPPS1893L');
+                    errorAlert.innerText = 'NRI Demo Verification Notice: Use test Voter ID TXPPS1893L';
                     errorAlert.style.display = 'block';
                     return;
                 }
 
                 setToken(data.token);
-                sessionStorage.setItem('currentVoterId', voterId);
-                sessionStorage.setItem('nriDetails', JSON.stringify({ passport, parentName, country }));
-                window.location.href = '/pages/voter/VotePage.html';
+                setUserRole('voter');
+                localStorage.setItem('currentVoterId', voterId);
+                window.location.href = '/pages/voter/Dashboard.html';
             } catch (err) {
-                errorAlert.innerText = 'Connection error submitting NRI registration details.';
+                errorAlert.innerText = 'Connection error submitting NRI details.';
                 errorAlert.style.display = 'block';
             }
         });

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elector Dashboard | Digital Voting System of India</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <!-- Practice Banner -->
+    <div class="demo-banner">
+        ⚠️ PRACTICE / DEMO ELECTION PORTAL — Educational Prototype Only.
+    </div>
+
+    <!-- Navigation Bar -->
+    <nav>
+        <a href="/" class="logo">
+            <div class="logo-chakra">☸</div>
+            Digital Voting System of India
+        </a>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/pages/voter/VotePage.html">Vote</a>
+            <a href="/pages/voter/Dashboard.html" class="active">Dashboard</a>
+            <a href="/pages/spectator/LiveCounting.html">Results</a>
+            <a href="/pages/auth/AdminLogin.html">Admin</a>
+            <button class="metamask-connect-btn">🦊 Connect Wallet</button>
+            <button id="logout-btn" class="btn btn-secondary btn-sm">Logout</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Profile & Verification Card -->
+        <div class="card" style="border-top: 4px solid var(--navy-primary);">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <span class="badge badge-live" style="margin-bottom: 0.5rem;">Verified Elector Session</span>
+                    <h2 style="margin: 0; color: var(--navy-primary);">Elector Dashboard</h2>
+                    <p style="margin: 0.25rem 0 0 0; font-size: 0.9rem;">Welcome back. Manage your voter record and digital ballot paper.</p>
+                </div>
+                <a href="/pages/voter/VotePage.html" class="btn btn-saffron">
+                    🗳️ Access Official Ballot
+                </a>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-top: 1.5rem; background: #F8FAFC; border: 1px solid var(--border-color); padding: 1.25rem; border-radius: 6px;">
+                <div>
+                    <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; display: block;">VOTER EPIC ID</span>
+                    <strong id="dash-voter-id" style="font-size: 1.1rem; color: var(--navy-primary); font-family: monospace;">TXPPS1893L</strong>
+                </div>
+                <div>
+                    <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; display: block;">ELECTORAL STATUS</span>
+                    <span class="badge badge-live">Eligible for Ballot</span>
+                </div>
+                <div>
+                    <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; display: block;">CONNECTED WEB3 WALLET</span>
+                    <strong id="dash-wallet-addr" style="font-size: 0.9rem; color: #C2410C; font-family: monospace;">Not Connected</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Elections List Card -->
+        <div class="card">
+            <h3>🇮🇳 Active Elections</h3>
+            <p>Elections open for voting in your registered constituency.</p>
+
+            <div style="background: #FFFFFF; border: 1px solid var(--border-color); border-radius: 6px; padding: 1.25rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <h4 style="margin: 0; color: var(--navy-primary);">General Election 2026 Prototype</h4>
+                    <p style="margin: 0.25rem 0 0 0; font-size: 0.85rem;">National Parliamentary & Assembly Representation Pool</p>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <span class="badge badge-live">LIVE NOW</span>
+                    <a href="/pages/voter/VotePage.html" class="btn btn-saffron btn-sm">Cast Ballot</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Voting History & Cryptographic Receipts -->
+        <div class="card">
+            <h3>📜 Voting History & Digital Receipts</h3>
+            <p>Cryptographic transaction receipts committed to database.</p>
+
+            <div id="history-container">
+                <div style="text-align: center; padding: 1.5rem; color: var(--text-muted); background: #F8FAFC; border: 1px dashed var(--border-color); border-radius: 6px;">
+                    No ballot cast yet in this active election window. Click <strong>Access Official Ballot</strong> to cast your vote.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Digital Voting System of India &copy; 2026. Cryptographic Proof of Concept Portal.</p>
+    </footer>
+
+    <script src="/js/main.js"></script>
+    <script>
+        const voterId = localStorage.getItem('currentVoterId') || 'TXPPS1893L';
+        const wallet = localStorage.getItem('connectedWallet');
+        const lastVoteHash = sessionStorage.getItem('lastVoteHash');
+
+        document.getElementById('dash-voter-id').innerText = voterId;
+
+        if (wallet) {
+            document.getElementById('dash-wallet-addr').innerText = `${wallet.slice(0, 6)}...${wallet.slice(-4)}`;
+        }
+
+        if (lastVoteHash) {
+            const candidateName = sessionStorage.getItem('lastCandidateName') || 'Candidate';
+            const candidateParty = sessionStorage.getItem('lastCandidateParty') || 'Party';
+            const voteTime = sessionStorage.getItem('lastVoteTime') || new Date().toLocaleString();
+
+            document.getElementById('history-container').innerHTML = `
+                <div style="background: #F0FDF4; border: 1px solid #A7F3D0; padding: 1.25rem; border-radius: 6px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.5rem;">
+                        <strong style="color: #065F46; font-size: 1rem;">✓ Ballot Successfully Cast for ${candidateName} (${candidateParty})</strong>
+                        <span style="font-size: 0.8rem; color: #047857;">${voteTime}</span>
+                    </div>
+                    <div style="font-size: 0.8rem; color: #065F46; margin-bottom: 0.5rem;">
+                        Receipt Hash: <code style="background: #FFFFFF; padding: 0.2rem 0.5rem; border-radius: 4px; font-family: monospace;">${lastVoteHash}</code>
+                    </div>
+                    <a href="/pages/voter/AfterVote.html" class="btn btn-secondary btn-sm">View Full Digital Receipt</a>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
