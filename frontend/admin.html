@@ -97,6 +97,43 @@
                 </form>
             </div>
 
+            <!-- Section: Add Party & Candidate -->
+            <div style="border-top: 1px solid #E2E8F0; padding-top: 1.5rem; margin-top: 2rem;">
+                <h4 style="color: #0B4F9C; font-weight: 700; margin-bottom: 1rem;">Add Political Party & Candidate</h4>
+
+                <form id="add-candidate-form">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                        <div>
+                            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 0.3rem;">Candidate Name</label>
+                            <input type="text" id="candName" placeholder="e.g. Aarav Mehta" required style="width: 100%;">
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 0.3rem;">Party Name</label>
+                            <input type="text" id="candParty" placeholder="e.g. Progressive Democratic Alliance" required style="width: 100%;">
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                        <div>
+                            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 0.3rem;">Party Symbol (Emoji / Icon)</label>
+                            <input type="text" id="candSymbol" placeholder="e.g. 🦁, ⚖️, 🐘, 🌺" value="⚖️" required style="width: 100%;">
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 0.3rem;">Constituency</label>
+                            <input type="text" id="candConstituency" placeholder="e.g. North Delhi" value="General Constituency" style="width: 100%;">
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 0.3rem;">State</label>
+                            <input type="text" id="candState" placeholder="e.g. Delhi" value="All India" style="width: 100%;">
+                        </div>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 1.25rem;">
+                        <button type="submit" class="btn" style="padding: 0.55rem 1.75rem; background: #0B4F9C;">+ Add Candidate & Party</button>
+                    </div>
+                </form>
+            </div>
+
             <!-- Section 4: Live Cryptographic Elector Audit Ledger (Multi-Device Live Stream) -->
             <div style="margin-top: 2rem; border-top: 2px solid #0B4F9C; padding-top: 1.5rem;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
@@ -204,6 +241,51 @@
                 showAlert('Error creating election.', 'danger');
             }
         });
+
+        const addCandidateForm = document.getElementById('add-candidate-form');
+        if (addCandidateForm) {
+            addCandidateForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const name = document.getElementById('candName').value.trim();
+                const party = document.getElementById('candParty').value.trim();
+                const symbol = document.getElementById('candSymbol').value.trim() || '⚖️';
+                const constituency = document.getElementById('candConstituency').value.trim() || 'General Constituency';
+                const state = document.getElementById('candState').value.trim() || 'All India';
+                const token = getToken();
+
+                try {
+                    const res = await fetch(apiUrl('/admin/candidate'), {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({
+                            name,
+                            party,
+                            symbol,
+                            constituency,
+                            constituencyType: 'general',
+                            state
+                        })
+                    });
+
+                    const data = await res.json();
+                    if (!res.ok) {
+                        showAlert(data.error || 'Failed to add candidate & party', 'danger');
+                        return;
+                    }
+
+                    showAlert(`Candidate "${name}" (${party}) added successfully!`, 'success');
+                    addCandidateForm.reset();
+                    document.getElementById('candSymbol').value = '⚖️';
+                    document.getElementById('candConstituency').value = 'General Constituency';
+                    document.getElementById('candState').value = 'All India';
+                } catch (err) {
+                    showAlert('Error adding candidate & party.', 'danger');
+                }
+            });
+        }
 
         async function fetchLiveAuditVotes() {
             try {

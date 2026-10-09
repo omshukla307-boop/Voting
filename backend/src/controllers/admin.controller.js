@@ -20,13 +20,23 @@ exports.createElection = async (req, res) => {
 // Add a candidate to an election
 exports.addCandidate = async (req, res) => {
     try {
-        const { electionId, name, party, symbol, constituency, constituencyType, state } = req.body || {};
-        if (!electionId || !name || !party || !symbol || !constituency || !constituencyType || !state) {
-            return res.status(400).json({ error: 'electionId, name, party, symbol, constituency, constituencyType and state are required' });
+        let { electionId, name, party, symbol, constituency, constituencyType, state } = req.body || {};
+        if (!name || !party) {
+            return res.status(400).json({ error: 'Candidate name and Party name are required' });
         }
 
+        if (!electionId) {
+            const firstElection = await Election.findOne({ order: [['id', 'ASC']] });
+            electionId = firstElection ? firstElection.id : 1;
+        }
+
+        symbol = symbol || '⚖️';
+        constituency = constituency || 'General Constituency';
+        constituencyType = constituencyType || 'general';
+        state = state || 'All India';
+
         const candidate = await Candidate.create({ name, party, symbol, electionId, constituency, constituencyType, state });
-        return res.json({ id: candidate.id, name: candidate.name });
+        return res.json({ success: true, message: 'Candidate and Party added successfully', candidate });
     } catch (err) {
         console.error('addCandidate error', err);
         return res.status(500).json({ error: 'Could not add candidate' });
