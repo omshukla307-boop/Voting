@@ -105,6 +105,16 @@ class VoteInMetaMask {
         }
 
         try {
+            // Forces MetaMask pop-up window to open on screen for manual user connection
+            try {
+                await window.ethereum.request({
+                    method: 'wallet_requestPermissions',
+                    params: [{ eth_accounts: {} }]
+                });
+            } catch (permErr) {
+                console.log("MetaMask popup notice:", permErr);
+            }
+
             const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
             if (accounts && accounts.length > 0) {
                 this.account = accounts[0];
