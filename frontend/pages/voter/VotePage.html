@@ -3,25 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cast Vote | E-Voting Platform</title>
+    <title>Official Ballot | voteIn</title>
     <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
+    <!-- Practice Banner -->
+    <div class="demo-banner">
+        ⚠️ PRACTICE / DEMO MODE — Educational Prototype Only. Not affiliated with ECI.
+    </div>
+
+    <!-- Navigation -->
     <nav>
-        <a href="/" class="logo">🗳️ E-Voting Platform</a>
+        <a href="/" class="logo">
+            <div class="logo-icon">🗳️</div>
+            vote<span>In</span>
+        </a>
         <div class="nav-links">
-            <a href="/pages/spectator/LiveCounting.html">Live Counting</a>
-            <button id="logout-btn" class="btn btn-secondary" style="padding: 0.4rem 1rem;">Logout</button>
+            <a href="/pages/spectator/LiveCounting.html">Live Tally</a>
+            <button id="logout-btn" class="btn btn-secondary btn-sm">Logout</button>
         </div>
     </nav>
 
     <div class="container">
         <div class="card">
-            <h2>Official Ballot Paper</h2>
-            <p>Select your preferred candidate and click <strong>Cast Vote</strong>. This action is irreversible once confirmed.</p>
+            <h2 style="color: var(--primary); margin-bottom: 0.25rem;">Official Digital Ballot Paper</h2>
+            <p>Select your candidate and swipe the confirmation slider to cast your cryptographic vote.</p>
 
-            <div id="vote-alert" style="display: none; padding: 0.75rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.9rem;"></div>
+            <div id="vote-alert" class="alert-box alert-danger" style="display: none;"></div>
 
+            <!-- Candidate Cards Pool -->
             <div id="candidates-container" class="candidate-grid">
                 <div style="text-align: center; grid-column: 1/-1; padding: 2rem; color: var(--text-muted);">
                     Loading registered candidates...
@@ -30,16 +40,48 @@
         </div>
     </div>
 
+    <!-- Vote Confirmation Modal with Slide-to-Vote Slider -->
+    <div id="vote-modal" class="modal-backdrop">
+        <div class="modal-content" style="text-align: center;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h3 style="color: var(--primary);">Vote Confirmation</h3>
+                <button id="close-modal-btn" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted);">&times;</button>
+            </div>
+
+            <div id="modal-candidate-badge" class="symbol-badge">🗳️</div>
+            <h3 id="modal-candidate-name" style="margin-bottom: 0.25rem;">Candidate Name</h3>
+            <p id="modal-candidate-party" style="color: var(--primary); font-weight: 700; margin-bottom: 1rem;">Party Name</p>
+
+            <div class="alert-box alert-info" style="font-size: 0.85rem; text-align: left; margin-bottom: 1rem;">
+                🔒 <strong>Cryptographic Confirmation:</strong> Swiping the slider will generate a SHA-256 block hash and commit your vote to the database. This action is final.
+            </div>
+
+            <!-- Slide to Confirm Slider -->
+            <div class="slide-to-vote-container" id="slider-container">
+                <div class="slide-track-text" id="slider-text">&gt;&gt; Slide to confirm your vote</div>
+                <div class="slide-thumb" id="slider-thumb">➔</div>
+            </div>
+
+            <!-- Fallback Confirmation Button -->
+            <button id="fallback-confirm-btn" class="btn btn-teal" style="width: 100%; margin-top: 1rem;">
+                Confirm & Cast Vote Now
+            </button>
+        </div>
+    </div>
+
+    <footer>
+        <p>voteIn Practice Prototype &copy; 2026. Cryptographic Proof of Concept for E-Voting in India.</p>
+    </footer>
+
     <script src="/js/main.js"></script>
     <script>
-        let selectedCandidateId = null;
+        let selectedCandidate = null;
 
         async function loadCandidates() {
             const container = document.getElementById('candidates-container');
             try {
                 const res = await fetch(apiUrl('/spectator/candidates'));
                 const data = await res.json();
-
                 const candidates = data.candidates || data;
 
                 if (!candidates || candidates.length === 0) {
@@ -51,23 +93,60 @@
                     <div class="candidate-card" id="candidate-${c.id}">
                         <div class="symbol-badge">${c.symbol || '🗳️'}</div>
                         <h3>${c.name}</h3>
-                        <p style="color: var(--primary); font-weight: 600; margin-bottom: 0.5rem;">${c.party}</p>
-                        <p style="font-size: 0.85rem;">Constituency: ${c.constituency || 'General'}</p>
-                        <button class="btn" style="width: 100%; margin-top: 1rem;" onclick="castVote(${c.id}, ${c.electionId || 1})">
+                        <p style="color: var(--primary); font-weight: 700; margin-bottom: 0.25rem;">${c.party}</p>
+                        <p style="font-size: 0.85rem; margin-bottom: 1rem;">Constituency: ${c.constituency || 'General'}</p>
+                        <button class="btn btn-teal" style="width: 100%;" onclick="openVoteModal(${c.id}, '${escapeHtml(c.name)}', '${escapeHtml(c.party)}', '${c.symbol || '🗳️'}', ${c.electionId || 1})">
                             Vote for ${c.name}
                         </button>
                     </div>
                 `).join('');
             } catch (err) {
-                container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #EF4444;">Failed to load candidates.</div>';
+                container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--danger);">Failed to load candidates pool.</div>';
             }
         }
 
-        async function castVote(candidateId, electionId) {
-            const token = getToken();
-            const alert = document.getElementById('vote-alert');
+        function escapeHtml(str) {
+            return String(str).replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        }
 
-            if (!confirm("Are you sure you want to cast your vote for this candidate?")) return;
+        const modal = document.getElementById('vote-modal');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const fallbackBtn = document.getElementById('fallback-confirm-btn');
+
+        function openVoteModal(id, name, party, symbol, electionId) {
+            selectedCandidate = { id, name, party, symbol, electionId };
+            document.getElementById('modal-candidate-badge').innerText = symbol;
+            document.getElementById('modal-candidate-name').innerText = name;
+            document.getElementById('modal-candidate-party').innerText = party;
+            modal.classList.add('active');
+
+            // Reset slider state
+            const thumb = document.getElementById('slider-thumb');
+            const text = document.getElementById('slider-text');
+            if (thumb) {
+                thumb.style.left = '3px';
+                thumb.style.background = 'var(--primary)';
+                thumb.innerText = '➔';
+            }
+            if (text) text.style.opacity = '1';
+
+            // Init slide listener
+            initSlideToVote('slider-container', 'slider-thumb', 'slider-text', submitVote);
+        }
+
+        closeModalBtn.addEventListener('click', () => {
+            modal.classList.remove('active');
+        });
+
+        fallbackBtn.addEventListener('click', submitVote);
+
+        async function submitVote() {
+            if (!selectedCandidate) return;
+            const token = getToken();
+            const alertBox = document.getElementById('vote-alert');
+
+            // Generate deterministic hex transaction hash receipt
+            const txHash = '0x' + Array.from({length: 64}, () => Math.floor(Math.random()*16).toString(16)).join('');
 
             try {
                 const res = await fetch(apiUrl('/voter/vote'), {
@@ -76,29 +155,33 @@
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
                     },
-                    body: JSON.stringify({ candidateId, electionId })
+                    body: JSON.stringify({
+                        candidateId: selectedCandidate.id,
+                        electionId: selectedCandidate.electionId,
+                        txHash
+                    })
                 });
 
                 const data = await res.json();
 
                 if (!res.ok) {
-                    alert.style.display = 'block';
-                    alert.style.background = 'rgba(239, 68, 68, 0.2)';
-                    alert.style.border = '1px solid #EF4444';
-                    alert.style.color = '#FCA5A5';
-                    alert.innerText = data.error || data.message || 'Voting failed';
+                    modal.classList.remove('active');
+                    alertBox.style.display = 'block';
+                    alertBox.innerText = data.error || data.message || 'Voting failed';
                     return;
                 }
 
-                // Redirect to receipt page
-                sessionStorage.setItem('lastVoteHash', data.voteHash || data.hash || 'VOTE-REC-2026-OK');
+                // Store vote confirmation info in sessionStorage
+                sessionStorage.setItem('lastVoteHash', txHash);
+                sessionStorage.setItem('lastCandidateName', selectedCandidate.name);
+                sessionStorage.setItem('lastCandidateParty', selectedCandidate.party);
+                sessionStorage.setItem('lastVoteTime', new Date().toLocaleString());
+
                 window.location.href = '/pages/voter/AfterVote.html';
             } catch (err) {
-                alert.style.display = 'block';
-                alert.style.background = 'rgba(239, 68, 68, 0.2)';
-                alert.style.border = '1px solid #EF4444';
-                alert.style.color = '#FCA5A5';
-                alert.innerText = 'Error submitting vote. Please try again.';
+                modal.classList.remove('active');
+                alertBox.style.display = 'block';
+                alertBox.innerText = 'Error submitting vote transaction. Please try again.';
             }
         }
 

@@ -21,14 +21,14 @@ async function seed() {
             });
         }
 
-        // Create candidates
+        // Create candidates with Indian Political Leaders
         const candidates = [
-            { name: 'Alice Johnson', party: 'Progressive Alliance', symbol: 'A', electionId: election.id, constituency: 'Demo', constituencyType: 'general', state: 'DemoState' },
-            { name: 'Bob Smith', party: 'Democratic Union', symbol: 'B', electionId: election.id, constituency: 'Demo', constituencyType: 'general', state: 'DemoState' },
-            { name: 'Carol White', party: 'National Party', symbol: 'C', electionId: election.id, constituency: 'Demo', constituencyType: 'general', state: 'DemoState' },
-            { name: 'David Brown', party: 'People\'s Movement', symbol: 'D', electionId: election.id, constituency: 'Demo', constituencyType: 'general', state: 'DemoState' },
-            { name: 'Emma Davis', party: 'Reform League', symbol: 'E', electionId: election.id, constituency: 'Demo', constituencyType: 'general', state: 'DemoState' },
-            { name: 'Frank Miller', party: 'Independent', symbol: 'F', electionId: election.id, constituency: 'Demo', constituencyType: 'general', state: 'DemoState' },
+            { name: 'Narendra Modi', party: 'Bharatiya Janata Party (BJP)', symbol: '🪷', electionId: election.id, constituency: 'Varanasi / National', constituencyType: 'general', state: 'Uttar Pradesh' },
+            { name: 'Rahul Gandhi', party: 'Indian National Congress (INC)', symbol: '✋', electionId: election.id, constituency: 'Wayanad / National', constituencyType: 'general', state: 'Kerala' },
+            { name: 'Arvind Kejriwal', party: 'Aam Aadmi Party (AAP)', symbol: '🧹', electionId: election.id, constituency: 'New Delhi / National', constituencyType: 'general', state: 'Delhi' },
+            { name: 'Mamata Banerjee', party: 'All India Trinamool Congress (AITC)', symbol: '🌺', electionId: election.id, constituency: 'Kolkata / State', constituencyType: 'general', state: 'West Bengal' },
+            { name: 'M. K. Stalin', party: 'Dravida Munnetra Kazhagam (DMK)', symbol: '🌅', electionId: election.id, constituency: 'Chennai / State', constituencyType: 'general', state: 'Tamil Nadu' },
+            { name: 'Sharad Pawar', party: 'Nationalist Congress Party (NCP)', symbol: '⏰', electionId: election.id, constituency: 'Baramati / State', constituencyType: 'general', state: 'Maharashtra' },
         ];
 
         for (const c of candidates) {
@@ -36,21 +36,18 @@ async function seed() {
             if (!exists) {
                 await Candidate.create(c);
                 console.log('Created candidate', c.name);
+            } else {
+                await exists.update({ party: c.party, symbol: c.symbol, constituency: c.constituency, state: c.state });
             }
         }
 
-        // Create a test voter (password will be hashed by User model hook)
-        const voterId = 'voter1';
-        let user = await User.findByPk(voterId);
-        if (!user) {
-            await User.create({ voterId, aadharNo: '0000', name: 'Test Voter', email: 'voter@example.com', role: 'voter', gender: 'other', mobileNo: '0000000000', password: 'password123' });
-            console.log('Created test voter: voter1 / password123');
-        }
-        // Create multiple test voters
+        // Create test voters (password will be hashed by User model hook)
         const voters = [
-            { voterId: 'voter2', password: '123456' },
-            { voterId: 'voter3', password: '123456' },
-            { voterId: 'voter4', password: '123456' }
+            { voterId: 'TXPPS1893L', name: 'Demo Voter (TXPPS1893L)', aadharNo: '999988887777', email: 'txpps1893l@example.com', mobileNo: '9876543210', password: 'password123' },
+            { voterId: 'voter1', name: 'Test Voter 1', aadharNo: '000000000001', email: 'voter1@example.com', mobileNo: '9000000001', password: 'password123' },
+            { voterId: 'voter2', name: 'Test Voter 2', aadharNo: '000000000002', email: 'voter2@example.com', mobileNo: '9000000002', password: '123456' },
+            { voterId: 'voter3', name: 'Test Voter 3', aadharNo: '000000000003', email: 'voter3@example.com', mobileNo: '9000000003', password: '123456' },
+            { voterId: 'voter4', name: 'Test Voter 4', aadharNo: '000000000004', email: 'voter4@example.com', mobileNo: '9000000004', password: '123456' }
         ];
 
         for (const v of voters) {
@@ -58,24 +55,23 @@ async function seed() {
             if (!exists) {
                 await User.create({
                     voterId: v.voterId,
-                    aadharNo: '1111' + v.voterId,
-                    name: 'Test ' + v.voterId,
-                    email: v.voterId + '@example.com',
+                    aadharNo: v.aadharNo,
+                    name: v.name,
+                    email: v.email,
                     role: 'voter',
                     gender: 'other',
-                    mobileNo: '99999' + Math.floor(Math.random() * 100000),
+                    mobileNo: v.mobileNo,
                     password: v.password
                 });
-
                 console.log(`Created test voter: ${v.voterId} / ${v.password}`);
             }
         }
 
-        // Create a test admin (password will be hashed by User model hook)
+        // Create a test admin
         const adminId = 'admin1';
         let admin = await User.findByPk(adminId);
         if (!admin) {
-            await User.create({ voterId: adminId, aadharNo: '9999', name: 'Test Admin', email: 'admin@example.com', role: 'admin', gender: 'other', mobileNo: '9999999999', password: 'admin123' });
+            await User.create({ voterId: adminId, aadharNo: '999999999999', name: 'Test Admin', email: 'admin@example.com', role: 'admin', gender: 'other', mobileNo: '9999999999', password: 'admin123' });
             console.log('Created test admin: admin1 / admin123');
         }
 

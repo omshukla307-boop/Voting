@@ -3,55 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Results | E-Voting Platform</title>
+    <title>Live Vote Counting | voteIn</title>
     <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
+    <!-- Practice Banner -->
+    <div class="demo-banner">
+        ⚠️ PRACTICE / DEMO MODE — Educational Prototype Only. Not affiliated with ECI.
+    </div>
+
+    <!-- Navigation -->
     <nav>
-        <a href="/" class="logo">🗳️ E-Voting Platform</a>
+        <a href="/" class="logo">
+            <div class="logo-icon">🗳️</div>
+            vote<span>In</span>
+        </a>
         <div class="nav-links">
             <a href="/">Home</a>
-            <a href="/pages/spectator/FinalResult.html">Final Results</a>
-            <a href="/pages/auth/Login.html" class="btn">Voter Login</a>
+            <a href="/pages/spectator/LiveCounting.html" class="active">Live Tally</a>
+            <a href="/pages/spectator/FinalResult.html">Results</a>
+            <a href="/pages/auth/Login.html" class="btn btn-sm">Voter Login</a>
         </div>
     </nav>
 
     <div class="container">
+        <!-- Results Card -->
         <div class="card">
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; border-bottom: 2px solid var(--border-color); padding-bottom: 1rem; margin-bottom: 1.5rem;">
                 <div>
-                    <h2>Live Election Counting <span class="badge badge-live">LIVE</span></h2>
-                    <p style="margin: 0;">Real-time vote counters (auto-refreshes every 3 seconds)</p>
+                    <h2 style="margin: 0; color: var(--primary); display: flex; align-items: center; gap: 0.5rem;">
+                        Live Election Vote Tally <span class="badge badge-live">LIVE UPDATING</span>
+                    </h2>
+                    <p style="margin: 0.25rem 0 0 0; font-size: 0.9rem;">Auto-refreshes every 3 seconds from Supabase</p>
                 </div>
-                <div style="font-size: 0.9rem; color: var(--text-muted);">
-                    Total Votes Cast: <strong id="total-votes" style="color: white; font-size: 1.2rem;">0</strong>
+                <div style="background: #F8FAFC; border: 1px solid var(--border-color); padding: 0.75rem 1.25rem; border-radius: 10px; text-align: right;">
+                    <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">TOTAL DEMO VOTES CAST</div>
+                    <strong id="total-votes" style="color: var(--primary); font-size: 1.5rem; font-family: monospace;">0</strong>
                 </div>
             </div>
 
-            <div id="live-results-container" style="margin-top: 2rem;">
-                <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
+            <div class="alert-box alert-danger" style="margin-bottom: 1.5rem;">
+                ⚠️ <strong>DEMO DATA DISCLAIMER:</strong> Tally data presented below reflects practice votes cast within this educational demonstration. It does not represent official Election Commission of India results.
+            </div>
+
+            <!-- Retry error banner -->
+            <div id="retry-alert" class="alert-box alert-danger" style="display: none; margin-bottom: 1rem;">
+                Connection lost to backend server. Retrying live sync... <button onclick="fetchLiveResults()" class="btn btn-secondary btn-sm" style="margin-left: 0.5rem;">Retry Now</button>
+            </div>
+
+            <div id="live-results-container">
+                <div style="text-align: center; padding: 2.5rem; color: var(--text-muted);">
                     Loading live vote tally...
+                </div>
+            </div>
+        </div>
+
+        <!-- Sample News & Media Feed Section -->
+        <div class="card">
+            <h3 style="color: var(--primary); margin-bottom: 1rem;">📰 Demo Election News & Media Feed</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+                Simulated news updates for practice environment. (Source: Demo Press Feed Prototype)
+            </p>
+
+            <div style="display: grid; gap: 1rem;">
+                <div style="background: #F8FAFC; border: 1px solid var(--border-color); padding: 1rem; border-radius: 10px;">
+                    <span style="font-size: 0.75rem; background: #E2E8F0; padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 700;">LIVE REPORT</span>
+                    <h4 style="margin: 0.4rem 0 0.25rem 0;">Voter Turnout Reaches Record High in Demo Constituencies</h4>
+                    <p style="font-size: 0.85rem; margin: 0;">Over 80,000 electors registered cryptographic verification tokens across all polling stations.</p>
+                </div>
+                <div style="background: #F8FAFC; border: 1px solid var(--border-color); padding: 1rem; border-radius: 10px;">
+                    <span style="font-size: 0.75rem; background: #E2E8F0; padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 700;">SECURITY BULLETIN</span>
+                    <h4 style="margin: 0.4rem 0 0.25rem 0;">Supabase Database Sync Enforces Atomic Double-Voting Protection</h4>
+                    <p style="font-size: 0.85rem; margin: 0;">Every ballot transaction is checked against voter ID indexes to prevent duplicate submissions.</p>
                 </div>
             </div>
         </div>
     </div>
 
+    <footer>
+        <p>voteIn Practice Prototype &copy; 2026. Cryptographic Proof of Concept for E-Voting in India.</p>
+    </footer>
+
     <script src="/js/main.js"></script>
     <script>
         async function fetchLiveResults() {
+            const retryAlert = document.getElementById('retry-alert');
             try {
                 const res = await fetch(apiUrl('/spectator/live'));
+                if (!res.ok) throw new Error("HTTP error " + res.status);
+
                 const data = await res.json();
                 const results = data.results || data.candidates || [];
 
+                retryAlert.style.display = 'none';
+
                 let total = 0;
                 results.forEach(r => total += (r.voteCount || r.votes || 0));
-                document.getElementById('total-votes').innerText = total;
+                document.getElementById('total-votes').innerText = total.toLocaleString();
 
                 const container = document.getElementById('live-results-container');
 
                 if (results.length === 0) {
-                    container.innerHTML = '<p style="text-align: center;">No votes or candidates recorded yet.</p>';
+                    container.innerHTML = '<p style="text-align: center; padding: 2rem;">No votes or candidates recorded yet in database.</p>';
                     return;
                 }
 
@@ -59,10 +112,10 @@
                     const count = r.voteCount || r.votes || 0;
                     const pct = total > 0 ? ((count / total) * 100).toFixed(1) : 0;
                     return `
-                        <div style="margin-bottom: 1.5rem; background: #090D16; padding: 1.25rem; border-radius: 8px; border: 1px solid var(--border-color);">
-                            <div style="display: flex; justify-content: space-between; font-weight: 600; margin-bottom: 0.5rem;">
-                                <span>${r.symbol || '🗳️'} ${r.name} (${r.party})</span>
-                                <span>${count} votes (${pct}%)</span>
+                        <div style="margin-bottom: 1.25rem; background: #FFFFFF; padding: 1.25rem; border-radius: 10px; border: 1.5px solid var(--border-color);">
+                            <div style="display: flex; justify-content: space-between; font-weight: 700; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.5rem;">
+                                <span style="font-size: 1.05rem;">${r.symbol || '🗳️'} ${r.name} <span style="color: var(--primary); font-size: 0.9rem; font-weight: 600;">(${r.party})</span></span>
+                                <span style="color: var(--primary); font-size: 1.05rem;">${count} votes <span style="color: var(--text-muted); font-size: 0.9rem;">(${pct}%)</span></span>
                             </div>
                             <div class="progress-bar">
                                 <div class="progress-fill" style="width: ${pct}%;"></div>
@@ -72,6 +125,7 @@
                 }).join('');
             } catch (err) {
                 console.error("Live fetch error:", err);
+                retryAlert.style.display = 'block';
             }
         }
 

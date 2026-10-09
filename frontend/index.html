@@ -3,54 +3,238 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-Voting Platform | Secure & Transparent</title>
+    <title>voteIn — Blockchain E-Voting System India</title>
     <link rel="stylesheet" href="/css/styles.css">
+    <!-- html5-qrcode library for QR Scanner -->
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 </head>
 <body>
+    <!-- Practice Banner -->
+    <div class="demo-banner">
+        ⚠️ PRACTICE / DEMO MODE — Educational Prototype Only. Not affiliated with the Election Commission of India (ECI).
+    </div>
+
+    <!-- Top Navigation -->
     <nav>
-        <a href="/" class="logo">🗳️ E-Voting Platform</a>
+        <a href="/" class="logo">
+            <div class="logo-icon">🗳️</div>
+            vote<span>In</span>
+        </a>
         <div class="nav-links">
-            <a href="/pages/spectator/LiveCounting.html">Live Counting</a>
-            <a href="/pages/spectator/FinalResult.html">Final Results</a>
-            <a href="/pages/auth/Login.html" class="btn">Voter Login</a>
+            <a href="/" class="active">Home</a>
+            <a href="/pages/spectator/LiveCounting.html">Live Tally</a>
+            <a href="/pages/spectator/FinalResult.html">Results</a>
+            <a href="/pages/auth/Login.html" class="btn btn-sm">Voter Sign In</a>
         </div>
     </nav>
 
     <div class="container">
-        <div class="card" style="text-align: center; padding: 4rem 2rem;">
-            <h1 style="font-size: 2.5rem; margin-bottom: 1rem;">Secure, Transparent & Instant Digital Voting</h1>
-            <p style="font-size: 1.1rem; max-width: 650px; margin: 0 auto 2rem auto;">
-                Cast your vote securely using unique cryptographic verification hashes and real-time live result counting powered by Supabase.
+        <!-- Hero Section with Countdown -->
+        <div class="card" style="text-align: center; padding: 2.5rem 1.5rem; background: linear-gradient(180deg, #FFFFFF 0%, #FFF5F5 100%); border-top: 4px solid var(--primary);">
+            <div style="display: inline-block; background: #FEF2F2; color: var(--primary); padding: 0.35rem 0.85rem; border-radius: 20px; font-weight: 700; font-size: 0.85rem; margin-bottom: 1rem;">
+                🔴 Demo General Election 2026 is LIVE
+            </div>
+            
+            <h1 style="font-size: 2.2rem; margin-bottom: 0.75rem; color: var(--primary);">Secure, Transparent Blockchain Voting for India</h1>
+            <p style="max-width: 680px; margin: 0 auto 1.5rem auto; font-size: 1rem;">
+                Cast your vote using unique cryptographic receipt hashes, instant live tallying, and identity verification workflow (Resident & NRI Prototype).
             </p>
-            <div style="display: flex; gap: 1rem; justify-content: center;">
-                <a href="/pages/auth/Login.html" class="btn">Cast Your Vote Now</a>
-                <a href="/pages/spectator/LiveCounting.html" class="btn btn-secondary">View Live Results</a>
+
+            <div style="background: #FFFFFF; border: 1.5px solid var(--border-color); border-radius: 12px; padding: 1.25rem; max-width: 450px; margin: 0 auto 1.75rem auto; box-shadow: 0 4px 6px rgba(0,0,0,0.03);">
+                <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.25rem;">ELECTION CLOSES IN</div>
+                <div id="countdown-timer" style="font-size: 1.5rem; font-weight: 800; color: var(--primary); font-family: monospace;">8 hrs : 50 mins : 10 sec</div>
+            </div>
+
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <a href="/pages/auth/Login.html" class="btn btn-teal">
+                    <span>🗳️</span> Vote Now (Voter Sign In)
+                </a>
+                <button id="open-scanner-btn" class="btn btn-secondary">
+                    <span>📷</span> Scan Voter QR Code
+                </button>
+                <a href="/pages/spectator/LiveCounting.html" class="btn btn-secondary">
+                    <span>📊</span> View Live Counting
+                </a>
             </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
-            <div class="card">
-                <div class="symbol-badge">🔐</div>
-                <h3>Cryptographic Security</h3>
-                <p>Every cast vote generates a unique receipt hash preventing double-voting and tampering.</p>
+        <!-- Scanner Verification Status Alert -->
+        <div id="scanner-result-card" class="card" style="display: none; border-left: 4px solid var(--accent-green);">
+            <h3 style="color: var(--accent-green);">✓ Demo QR Voter Card Detected</h3>
+            <div id="scanner-result-details" style="font-size: 0.95rem; margin-bottom: 1rem;"></div>
+            <div class="alert-box alert-info" style="margin-bottom: 1rem;">
+                Note: Format valid for practice environment. Electoral roll identity is not independently verified by ECI in this prototype.
             </div>
-            <div class="card">
-                <div class="symbol-badge">📊</div>
-                <h3>Live Real-Time Tallying</h3>
-                <p>Spectators and voters can track election turnouts and live vote counts as they are recorded.</p>
+            <a href="/pages/auth/Login.html" id="scanner-login-link" class="btn">Proceed to Verification & Voting</a>
+        </div>
+
+        <!-- Registered National Candidates Section -->
+        <div class="card">
+            <h2 style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+                <span>🇮🇳 National & State Candidates (Demo List)</span>
+                <span class="badge badge-live">Official Ballot Pool</span>
+            </h2>
+            <p>Select your constituency representative during voter sign in.</p>
+
+            <div class="candidate-grid">
+                <div class="candidate-card">
+                    <div class="symbol-badge">🪷</div>
+                    <h3>Narendra Modi</h3>
+                    <p style="color: var(--primary); font-weight: 700; margin-bottom: 0.25rem;">Bharatiya Janata Party (BJP)</p>
+                    <p style="font-size: 0.85rem;">Constituency: Varanasi / National</p>
+                </div>
+                <div class="candidate-card">
+                    <div class="symbol-badge">✋</div>
+                    <h3>Rahul Gandhi</h3>
+                    <p style="color: var(--primary); font-weight: 700; margin-bottom: 0.25rem;">Indian National Congress (INC)</p>
+                    <p style="font-size: 0.85rem;">Constituency: Wayanad / National</p>
+                </div>
+                <div class="candidate-card">
+                    <div class="symbol-badge">🧹</div>
+                    <h3>Arvind Kejriwal</h3>
+                    <p style="color: var(--primary); font-weight: 700; margin-bottom: 0.25rem;">Aam Aadmi Party (AAP)</p>
+                    <p style="font-size: 0.85rem;">Constituency: New Delhi / National</p>
+                </div>
+                <div class="candidate-card">
+                    <div class="symbol-badge">🌺</div>
+                    <h3>Mamata Banerjee</h3>
+                    <p style="color: var(--primary); font-weight: 700; margin-bottom: 0.25rem;">All India Trinamool Congress (AITC)</p>
+                    <p style="font-size: 0.85rem;">Constituency: Kolkata / State</p>
+                </div>
+                <div class="candidate-card">
+                    <div class="symbol-badge">🌅</div>
+                    <h3>M. K. Stalin</h3>
+                    <p style="color: var(--primary); font-weight: 700; margin-bottom: 0.25rem;">Dravida Munnetra Kazhagam (DMK)</p>
+                    <p style="font-size: 0.85rem;">Constituency: Chennai / State</p>
+                </div>
+                <div class="candidate-card">
+                    <div class="symbol-badge">⏰</div>
+                    <h3>Sharad Pawar</h3>
+                    <p style="color: var(--primary); font-weight: 700; margin-bottom: 0.25rem;">Nationalist Congress Party (NCP)</p>
+                    <p style="font-size: 0.85rem;">Constituency: Baramati / State</p>
+                </div>
             </div>
-            <div class="card">
-                <div class="symbol-badge">☁️</div>
-                <h3>Supabase Powered</h3>
-                <p>Backed by high-concurrency cloud database infrastructure ensuring zero downtime during peak voting hours.</p>
+        </div>
+    </div>
+
+    <!-- QR Scanner Modal Overlay -->
+    <div id="scanner-modal" class="modal-backdrop">
+        <div class="modal-content">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3>📷 Scan Voter QR Code</h3>
+                <button id="close-scanner-btn" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted);">&times;</button>
+            </div>
+            
+            <p style="font-size: 0.85rem; margin-top: 0.25rem; margin-bottom: 0.75rem;">
+                Align your practice Voter QR code inside the box, or upload a QR image.
+            </p>
+
+            <div id="scanner-status" class="alert-box alert-info">
+                Click "Start Camera Scanner" or choose a QR image file.
+            </div>
+
+            <div id="camera-controls" style="display: flex; gap: 0.5rem; margin-bottom: 0.75rem; flex-wrap: wrap;">
+                <select id="camera-select" style="display: none; flex: 1; padding: 0.5rem; font-size: 0.85rem;"></select>
+                <button id="start-cam-btn" class="btn btn-sm">Start Camera Scanner</button>
+                <button id="stop-cam-btn" class="btn btn-secondary btn-sm" style="display: none;">Stop Camera</button>
+            </div>
+
+            <!-- Video Preview Container -->
+            <div id="qr-reader"></div>
+
+            <div style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--border-color);">
+                <label for="qr-file-input" style="font-size: 0.85rem; font-weight: 600;">Or Upload QR Image File:</label>
+                <input type="file" id="qr-file-input" accept="image/*" style="padding: 0.4rem; font-size: 0.85rem;">
             </div>
         </div>
     </div>
 
     <footer>
-        <p>&copy; 2026 E-Voting Platform. All rights reserved.</p>
+        <p>voteIn Practice Prototype &copy; 2026. Cryptographic Proof of Concept for E-Voting in India.</p>
     </footer>
 
     <script src="/js/main.js"></script>
+    <script>
+        let qrScanner = null;
+
+        // Countdown timer simulation
+        function startTimer() {
+            let totalSeconds = 8 * 3600 + 50 * 60 + 10;
+            const timerEl = document.getElementById('countdown-timer');
+            setInterval(() => {
+                if (totalSeconds > 0) totalSeconds--;
+                const h = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
+                const m = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
+                const s = String(totalSeconds % 60).padStart(2, '0');
+                if (timerEl) timerEl.innerText = `${h} hrs : ${m} mins : ${s} sec`;
+            }, 1000);
+        }
+        startTimer();
+
+        // Modal and Scanner logic
+        const modal = document.getElementById('scanner-modal');
+        const openBtn = document.getElementById('open-scanner-btn');
+        const closeBtn = document.getElementById('close-scanner-btn');
+        const startCamBtn = document.getElementById('start-cam-btn');
+        const stopCamBtn = document.getElementById('stop-cam-btn');
+        const cameraSelect = document.getElementById('camera-select');
+        const statusEl = document.getElementById('scanner-status');
+        const fileInput = document.getElementById('qr-file-input');
+
+        function updateScannerStatus(msg, type) {
+            statusEl.className = `alert-box alert-${type === 'danger' ? 'danger' : type === 'success' ? 'success' : 'info'}`;
+            statusEl.innerText = msg;
+        }
+
+        function onQRDetected(data) {
+            modal.classList.remove('active');
+            const resultCard = document.getElementById('scanner-result-card');
+            const resultDetails = document.getElementById('scanner-result-details');
+            resultCard.style.display = 'block';
+            resultDetails.innerHTML = `
+                <strong>Scanned Voter ID / EPIC:</strong> <code style="background: #F1F5F9; padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 700;">${data.voterId}</code><br>
+                <strong>Status:</strong> ${data.statusMessage}
+            `;
+            const loginLink = document.getElementById('scanner-login-link');
+            loginLink.href = `/pages/auth/Login.html?voterId=${encodeURIComponent(data.voterId)}`;
+        }
+
+        qrScanner = new VoteInQRScanner('qr-reader', updateScannerStatus, onQRDetected);
+
+        openBtn.addEventListener('click', async () => {
+            modal.classList.add('active');
+            const cameras = await qrScanner.getCameras();
+            if (cameras.length > 1) {
+                cameraSelect.style.display = 'block';
+                cameraSelect.innerHTML = cameras.map(c => `<option value="${c.id}">${c.label || 'Camera ' + c.id}</option>`).join('');
+            }
+        });
+
+        closeBtn.addEventListener('click', async () => {
+            await qrScanner.stopScanning();
+            modal.classList.remove('active');
+            stopCamBtn.style.display = 'none';
+            startCamBtn.style.display = 'inline-flex';
+        });
+
+        startCamBtn.addEventListener('click', async () => {
+            startCamBtn.style.display = 'none';
+            stopCamBtn.style.display = 'inline-flex';
+            const selectedCam = cameraSelect.value || null;
+            await qrScanner.startScanning(selectedCam);
+        });
+
+        stopCamBtn.addEventListener('click', async () => {
+            await qrScanner.stopScanning();
+            stopCamBtn.style.display = 'none';
+            startCamBtn.style.display = 'inline-flex';
+        });
+
+        fileInput.addEventListener('change', async (e) => {
+            if (e.target.files.length > 0) {
+                await qrScanner.scanFile(e.target.files[0]);
+            }
+        });
+    </script>
 </body>
 </html>

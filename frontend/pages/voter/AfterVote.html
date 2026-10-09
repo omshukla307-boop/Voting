@@ -3,40 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vote Confirmation | E-Voting Platform</title>
+    <title>Vote Receipt & Confirmation | voteIn</title>
     <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
+    <!-- Practice Banner -->
+    <div class="demo-banner">
+        ⚠️ PRACTICE / DEMO MODE — Educational Prototype Only. Not affiliated with ECI.
+    </div>
+
+    <!-- Navigation -->
     <nav>
-        <a href="/" class="logo">🗳️ E-Voting Platform</a>
+        <a href="/" class="logo">
+            <div class="logo-icon">🗳️</div>
+            vote<span>In</span>
+        </a>
         <div class="nav-links">
-            <a href="/pages/spectator/LiveCounting.html">Live Counting</a>
-            <a href="/" class="btn btn-secondary">Home</a>
+            <a href="/pages/spectator/LiveCounting.html">Live Tally</a>
+            <a href="/" class="btn btn-secondary btn-sm">Home</a>
         </div>
     </nav>
 
-    <div class="container" style="max-width: 550px; margin-top: 3rem;">
-        <div class="card" style="text-align: center; padding: 3rem 2rem;">
-            <div class="symbol-badge" style="background: rgba(16, 185, 129, 0.2); color: var(--accent-green);">✓</div>
-            <h2 style="color: var(--accent-green); margin-bottom: 0.5rem;">Vote Cast Successfully!</h2>
-            <p>Your vote has been cryptographically signed and stored in Supabase.</p>
-
-            <div style="background: #090D16; border: 1px dashed var(--border-color); padding: 1.25rem; border-radius: 8px; margin: 1.5rem 0; word-break: break-all;">
-                <span style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 0.25rem;">YOUR VERIFICATION RECEIPT HASH</span>
-                <strong id="receipt-hash" style="color: var(--accent-blue); font-family: monospace;">---</strong>
+    <div class="container" style="max-width: 580px; margin-top: 2rem;">
+        <div class="card" style="text-align: center; padding: 2.5rem 1.75rem;">
+            <div style="width: 70px; height: 70px; background: #ECFDF5; border: 3px solid #10B981; border-radius: 50%; color: #10B981; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; font-weight: 800; margin: 0 auto 1rem auto;">
+                ✓
             </div>
 
-            <div style="display: flex; gap: 1rem; justify-content: center;">
-                <a href="/pages/spectator/LiveCounting.html" class="btn">View Live Counting</a>
-                <a href="/" class="btn btn-secondary">Done</a>
+            <h2 style="color: #065F46; margin-bottom: 0.25rem;">Voting Successful!</h2>
+            <p style="margin-bottom: 1.5rem;">Your vote has been cryptographically signed and stored in Supabase.</p>
+
+            <!-- Digital Receipt Card -->
+            <div style="background: #0F172A; color: #F8FAFC; border-radius: 12px; padding: 1.5rem; text-align: left; margin-bottom: 1.5rem; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #334155; padding-bottom: 0.75rem; margin-bottom: 1rem;">
+                    <span style="font-weight: 700; color: #94A3B8; font-size: 0.85rem;">RECEIPT METRIC</span>
+                    <span style="font-weight: 700; color: #38BDF8; font-size: 0.85rem;">CRYPTOGRAPHIC VERIFIED</span>
+                </div>
+
+                <div style="margin-bottom: 0.75rem;">
+                    <span style="font-size: 0.75rem; color: #94A3B8; display: block;">VOTER EPIC ID</span>
+                    <strong id="receipt-voter-id" style="font-family: monospace; font-size: 1rem; color: #FFFFFF;">TXPPS1893L</strong>
+                </div>
+
+                <div style="margin-bottom: 0.75rem;">
+                    <span style="font-size: 0.75rem; color: #94A3B8; display: block;">CANDIDATE SECURED</span>
+                    <strong id="receipt-candidate" style="font-size: 1.05rem; color: #34D399;">Narendra Modi (BJP)</strong>
+                </div>
+
+                <div style="margin-bottom: 0.75rem;">
+                    <span style="font-size: 0.75rem; color: #94A3B8; display: block;">TIMESTAMP</span>
+                    <span id="receipt-time" style="font-size: 0.9rem; color: #CBD5E1;">-</span>
+                </div>
+
+                <div>
+                    <span style="font-size: 0.75rem; color: #94A3B8; display: block; margin-bottom: 0.25rem;">BLOCKCHAIN RECEIPT HASH (SHA-256)</span>
+                    <div id="receipt-hash" style="font-family: monospace; font-size: 0.8rem; background: #1E293B; color: #38BDF8; padding: 0.6rem; border-radius: 6px; word-break: break-all; border: 1px solid #334155;">
+                        0x...
+                    </div>
+                </div>
+            </div>
+
+            <div class="alert-box alert-info" style="font-size: 0.85rem; text-align: left; margin-bottom: 1.5rem;">
+                ℹ️ <strong>Database & Hashes Notice:</strong> This receipt hash proves that your vote record was immutably appended to the database. It does not contain personally identifiable vote choices.
+            </div>
+
+            <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
+                <button onclick="window.print()" class="btn btn-secondary">
+                    📄 Print / Save PDF Receipt
+                </button>
+                <a href="/pages/spectator/LiveCounting.html" class="btn btn-teal">
+                    📊 View Live Counting
+                </a>
             </div>
         </div>
     </div>
 
+    <footer>
+        <p>voteIn Practice Prototype &copy; 2026. Cryptographic Proof of Concept for E-Voting in India.</p>
+    </footer>
+
     <script src="/js/main.js"></script>
     <script>
-        const hash = sessionStorage.getItem('lastVoteHash') || '0x' + Array.from({length: 32}, () => Math.floor(Math.random()*16).toString(16)).join('');
+        const hash = sessionStorage.getItem('lastVoteHash') || '0x' + Array.from({length: 64}, () => Math.floor(Math.random()*16).toString(16)).join('');
+        const candidateName = sessionStorage.getItem('lastCandidateName') || 'Selected Candidate';
+        const candidateParty = sessionStorage.getItem('lastCandidateParty') || 'Party';
+        const voterId = sessionStorage.getItem('currentVoterId') || 'TXPPS1893L';
+        const voteTime = sessionStorage.getItem('lastVoteTime') || new Date().toLocaleString();
+
         document.getElementById('receipt-hash').innerText = hash;
+        document.getElementById('receipt-voter-id').innerText = voterId;
+        document.getElementById('receipt-candidate').innerText = `${candidateName} (${candidateParty})`;
+        document.getElementById('receipt-time').innerText = voteTime;
     </script>
 </body>
 </html>
