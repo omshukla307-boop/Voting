@@ -3,187 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Practice Election Results | E-Voting Platform</title>
-    <link rel="stylesheet" href="/css/styles.css?v=20261007-nri">
+    <title>Final Election Results | voteIn</title>
+    <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
+    <!-- Practice Banner -->
+    <div class="demo-banner">
+        ⚠️ PRACTICE / DEMO MODE — Educational Prototype Only. Not affiliated with ECI.
+    </div>
+
+    <!-- Navigation -->
     <nav>
         <a href="/" class="logo">
             <div class="logo-icon">🗳️</div>
-            E-Voting Platform
+            vote<span>In</span>
         </a>
         <div class="nav-links">
             <a href="/">Home</a>
-            <a href="/pages/spectator/LiveCounting.html">Live Counting</a>
-            <a href="/pages/spectator/FinalResult.html" class="active">Final Results</a>
+            <a href="/pages/spectator/LiveCounting.html">Live Tally</a>
+            <a href="/pages/spectator/FinalResult.html" class="active">Results</a>
+            <a href="/pages/auth/Login.html" class="btn btn-sm">Voter Login</a>
         </div>
     </nav>
 
     <div class="container">
-        <!-- Header -->
-        <div class="card" style="padding: 2rem 2.25rem;">
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
-                <div>
-                    <span class="badge badge-purple" style="margin-bottom: 0.5rem;">PRACTICE TALLY</span>
-                    <h2 id="final-results-title" style="font-size: 1.8rem; font-weight: 800; margin: 0.2rem 0 0.3rem 0;">Election Results</h2>
-                    <p style="margin: 0; color: var(--text-secondary); font-size: 0.95rem;">
-                        Practice results for the active sample election. Not an official or certified election count.
-                    </p>
-                </div>
-                <div style="display: flex; gap: 0.75rem;">
-                    <button type="button" class="btn btn-secondary" onclick="exportCSV()" style="padding: 0.6rem 1.1rem; font-size: 0.88rem;">
-                        📥 Export CSV Report
-                    </button>
-                    <button type="button" class="btn" onclick="window.print()" style="padding: 0.6rem 1.1rem; font-size: 0.88rem;">
-                        🖨️ Print Summary
-                    </button>
-                </div>
-            </div>
-        </div>
+        <div class="card">
+            <h2 style="color: var(--primary);">Official Final Election Tally (Demo)</h2>
+            <p>Certified final vote count and breakdown by candidate and party.</p>
 
-        <!-- Dynamic Final Results Container -->
-        <div id="final-results-container">
-            <div class="card" style="text-align: center; padding: 4rem 1rem; color: var(--text-secondary);">
-                <div class="logo-icon" style="margin: 0 auto 1rem auto; animation: pulse 1.5s infinite;">🏆</div>
-                <p style="font-size: 1.1rem; font-weight: 600;">Loading practice election results...</p>
+            <div class="alert-box alert-danger" style="margin-bottom: 1.5rem;">
+                ⚠️ <strong>DEMO DATA DISCLAIMER:</strong> Tally data presented below reflects practice votes cast within this educational demonstration. It does not represent official Election Commission of India results.
+            </div>
+
+            <div id="final-results-container">
+                <div style="text-align: center; padding: 2.5rem; color: var(--text-muted);">
+                    Loading official final result...
+                </div>
             </div>
         </div>
     </div>
 
     <footer>
-        <p>&copy; 2026 E-Voting Platform. Practice results only — not an official election tally.</p>
+        <p>voteIn Practice Prototype &copy; 2026. Cryptographic Proof of Concept for E-Voting in India.</p>
     </footer>
 
-    <script src="/js/main.js?v=20261006"></script>
+    <script src="/js/main.js"></script>
     <script>
-        let cachedResults = [];
-
         async function fetchFinalResults() {
             try {
                 const res = await fetch(apiUrl('/spectator/final'));
                 const data = await res.json();
                 const results = data.results || data.candidates || [];
-                cachedResults = results;
-                if (data.election) {
-                    document.getElementById('final-results-title').textContent = `${data.election.name} Results`;
-                }
 
                 let total = 0;
-                results.forEach(r => total += (r.votes || r.voteCount || 0));
+                results.forEach(r => total += (r.voteCount || r.votes || 0));
 
                 const container = document.getElementById('final-results-container');
 
                 if (results.length === 0) {
-                    container.innerHTML = `
-                        <div class="card" style="text-align: center; padding: 3rem;">
-                            <p style="color: var(--text-secondary);">${data.election ? 'No candidates are listed for the active practice election yet.' : 'There is no active practice election right now.'}</p>
-                        </div>
-                    `;
+                    container.innerHTML = '<p style="text-align: center; padding: 2rem;">No final election results recorded in database.</p>';
                     return;
                 }
 
                 // Sort by vote count descending
-                results.sort((a, b) => (b.votes || b.voteCount || 0) - (a.votes || a.voteCount || 0));
+                results.sort((a, b) => (b.voteCount || b.votes || 0) - (a.voteCount || a.votes || 0));
                 const winner = results[0];
-                const winnerVotes = winner.votes || winner.voteCount || 0;
-                const winnerPct = total > 0 ? ((winnerVotes / total) * 100).toFixed(1) : 0;
+                const winnerCount = winner.voteCount || winner.votes || 0;
 
                 container.innerHTML = `
-                    <!-- Winner Podium Card -->
-                    <div class="card" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(139, 92, 246, 0.15) 100%); border-color: var(--primary); padding: 3rem 2rem; text-align: center; margin-bottom: 2rem;">
-                        <div style="font-size: 3.5rem; margin-bottom: 0.75rem;">🏆</div>
-                        <span class="badge badge-live" style="background: rgba(245, 158, 11, 0.2); color: var(--accent-amber); border-color: var(--accent-amber); margin-bottom: 0.75rem;">
-                            LEADING CANDIDATE IN PRACTICE TALLY
-                        </span>
-                        <h2 style="font-size: 2.2rem; font-weight: 800; color: var(--text-primary); margin-bottom: 0.4rem;">
-                            ${winner.name}
-                        </h2>
-                        <p style="color: var(--primary); font-size: 1.15rem; font-weight: 700; margin-bottom: 1.25rem;">
-                            ${winner.party}
-                        </p>
-                        <div style="display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap;">
-                            <div style="background: rgba(11, 15, 25, 0.6); padding: 0.8rem 1.5rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
-                                <span style="font-size: 0.78rem; color: var(--text-muted); display: block; font-weight: 700;">TOTAL VOTES SECURED</span>
-                                <strong style="font-size: 1.4rem; color: var(--text-primary);">${winnerVotes}</strong>
-                            </div>
-                            <div style="background: rgba(11, 15, 25, 0.6); padding: 0.8rem 1.5rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
-                                <span style="font-size: 0.78rem; color: var(--text-muted); display: block; font-weight: 700;">VOTE SHARE</span>
-                                <strong style="font-size: 1.4rem; color: var(--accent-green);">${winnerPct}%</strong>
-                            </div>
-                        </div>
+                    <div style="background: #FFF5F5; border: 2px solid var(--primary); padding: 1.75rem; border-radius: 12px; margin-bottom: 2rem; text-align: center;">
+                        <span style="font-size: 2.8rem; display: block; margin-bottom: 0.25rem;">🏆</span>
+                        <h3 style="color: var(--primary); font-size: 1.5rem; margin-bottom: 0.25rem;">Projected Winner: ${winner.name}</h3>
+                        <div style="font-weight: 700; color: var(--text-main); font-size: 1.1rem; margin-bottom: 0.5rem;">${winner.party}</div>
+                        <p style="margin: 0; color: var(--accent-teal); font-weight: 700;">Total Votes Secured: <strong>${winnerCount.toLocaleString()}</strong></p>
                     </div>
 
-                    <!-- Practice leaderboard -->
-                    <div class="card" style="padding: 2rem;">
-                        <h3 style="font-size: 1.3rem; margin-bottom: 1.5rem;">Complete Candidates Leaderboard</h3>
-
-                        <div style="overflow-x: auto;">
-                            <table style="width: 100%; border-collapse: collapse; text-align: left;">
-                                <thead>
-                                    <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">
-                                        <th style="padding: 1rem;">Rank & Candidate</th>
-                                        <th style="padding: 1rem;">Political Party</th>
-                                        <th style="padding: 1rem;">Votes</th>
-                                        <th style="padding: 1rem;">Vote Share Bar</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    ${results.map((r, index) => {
-                                        const count = r.votes || r.voteCount || 0;
-                                        const pct = total > 0 ? ((count / total) * 100).toFixed(1) : 0;
-                                        const rankLabel = index === 0 ? '🥇 1st' : index === 1 ? '🥈 2nd' : index === 2 ? '🥉 3rd' : `#${index + 1}`;
-
-                                        return `
-                                            <tr style="border-bottom: 1px solid var(--border-color); transition: background 0.2s ease;">
-                                                <td style="padding: 1.2rem 1rem; font-weight: 700;">
-                                                    <span style="color: var(--text-muted); font-size: 0.9rem; margin-right: 0.75rem;">${rankLabel}</span>
-                                                    <span style="font-size: 1.2rem; margin-right: 0.5rem;">${r.symbol || '🗳️'}</span>
-                                                    ${r.name}
-                                                </td>
-                                                <td style="padding: 1.2rem 1rem; color: var(--primary); font-weight: 600;">
-                                                    ${r.party}
-                                                </td>
-                                                <td style="padding: 1.2rem 1rem; font-weight: 800; font-size: 1.1rem;">
-                                                    ${count}
-                                                </td>
-                                                <td style="padding: 1.2rem 1rem; width: 35%;">
-                                                    <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 700; margin-bottom: 0.3rem;">
-                                                        <span style="color: var(--accent-green);">${pct}%</span>
-                                                    </div>
-                                                    <div class="progress-bar" style="margin: 0; height: 10px;">
-                                                        <div class="progress-fill" style="width: ${pct}%; background: ${index === 0 ? 'linear-gradient(90deg, #10B981, #06B6D4)' : 'var(--primary)'};"></div>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        `;
-                                    }).join('')}
-                                </tbody>
-                            </table>
-                        </div>
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid var(--border-color); color: var(--text-muted); font-size: 0.9rem;">
+                                    <th style="padding: 1rem;">Candidate</th>
+                                    <th style="padding: 1rem;">Party Affiliation</th>
+                                    <th style="padding: 1rem;">Total Votes</th>
+                                    <th style="padding: 1rem;">Vote Share</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${results.map(r => {
+                                    const count = r.voteCount || r.votes || 0;
+                                    const pct = total > 0 ? ((count / total) * 100).toFixed(1) : 0;
+                                    return `
+                                        <tr style="border-bottom: 1px solid var(--border-color);">
+                                            <td style="padding: 1rem; font-weight: 700; font-size: 1rem;">${r.symbol || '🗳️'} ${r.name}</td>
+                                            <td style="padding: 1rem; color: var(--primary); font-weight: 600;">${r.party}</td>
+                                            <td style="padding: 1rem; font-weight: 700; font-size: 1rem;">${count.toLocaleString()}</td>
+                                            <td style="padding: 1rem; color: var(--accent-teal); font-weight: 700;">${pct}%</td>
+                                        </tr>
+                                    `;
+                                }).join('')}
+                            </tbody>
+                        </table>
                     </div>
                 `;
-
             } catch (err) {
                 console.error("Final fetch error:", err);
+                document.getElementById('final-results-container').innerHTML = '<div class="alert-box alert-danger">Failed to fetch final election tallies from database server.</div>';
             }
-        }
-
-        function exportCSV() {
-            if (!cachedResults || cachedResults.length === 0) {
-                showToast('No results available to export', 'error');
-                return;
-            }
-            let csv = 'Candidate,Party,Votes\n';
-            cachedResults.forEach(r => {
-                csv += `"${r.name}","${r.party}",${r.votes || r.voteCount || 0}\n`;
-            });
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'Practice_Election_Results.csv';
-            a.click();
-            showToast('CSV Report Downloaded!', 'success');
         }
 
         fetchFinalResults();

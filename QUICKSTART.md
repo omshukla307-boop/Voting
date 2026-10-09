@@ -59,8 +59,6 @@ The server will:
 ### Demo Credentials
 - **Voter ID:** `voter1`
 - **Password:** `password123`
-- **PAN demo Voter ID:** `TXPPS1893L`
-- **PAN demo password:** `password123`
 
 ### Access Points
 
@@ -201,6 +199,14 @@ curl -X POST http://localhost:4000/api/voter/vote \
 **Port 4000 already in use?**
 - Kill the process: `taskkill /PID <pid> /F` (Windows) or `kill <pid>` (Unix)
 - Or run on a different port by modifying `src/server.js` line changing `PORT = 4000`
+
+**Server connection error in the browser?**
+- Check `https://<your-deployment-domain>/api/health`; a healthy deployment returns JSON.
+- Ensure the backend changes are pushed and the latest deployment completed.
+- In Vercel Project Settings → Environment Variables, configure `DATABASE_URL` and `JWT_SECRET`, then redeploy. For a Supabase direct database URL that Vercel cannot resolve, also set `SUPABASE_DB_POOLER_HOST` to the hostname shown under Supabase Dashboard → Connect → Transaction Pooler (for example, `aws-0-region.pooler.supabase.com`). The app routes direct Supabase URLs through the transaction pooler on port 6543.
+- Do not use SQLite for Vercel deployments.
+- Locally, confirm the backend is running: `npm --prefix backend start`.
+- For a preview or alternate host, set `window.__VOTING_API_BASE__` to the backend's full API URL before loading `/js/main.js`.
 
 **Cannot login?**
 - Confirm test voter was created: Check server output for "Created test voter"

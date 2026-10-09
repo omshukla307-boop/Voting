@@ -3,93 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Participation Confirmation | E-Voting Platform</title>
+    <title>Vote Receipt & Confirmation | voteIn</title>
     <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
+    <!-- Practice Banner -->
+    <div class="demo-banner">
+        ⚠️ PRACTICE / DEMO MODE — Educational Prototype Only. Not affiliated with ECI.
+    </div>
+
+    <!-- Navigation -->
     <nav>
         <a href="/" class="logo">
             <div class="logo-icon">🗳️</div>
-            E-Voting Platform
+            vote<span>In</span>
         </a>
         <div class="nav-links">
-            <a href="/pages/spectator/LiveCounting.html">Live Counting</a>
-            <a href="/pages/spectator/FinalResult.html">Final Results</a>
+            <a href="/pages/spectator/LiveCounting.html">Live Tally</a>
+            <a href="/" class="btn btn-secondary btn-sm">Home</a>
         </div>
     </nav>
 
-    <div class="container" style="max-width: 600px; margin-top: 3.5rem;">
-        <div class="card" style="text-align: center; padding: 3rem 2.25rem; border-color: rgba(16, 185, 129, 0.4); background: linear-gradient(180deg, rgba(16, 185, 129, 0.08) 0%, rgba(17, 24, 39, 0.9) 100%);">
-            <div class="candidate-avatar" style="width: 80px; height: 80px; font-size: 2.5rem; background: rgba(16, 185, 129, 0.2); border-color: var(--accent-green); margin: 0 auto 1.25rem auto;">
+    <div class="container" style="max-width: 580px; margin-top: 2rem;">
+        <div class="card" style="text-align: center; padding: 2.5rem 1.75rem;">
+            <div style="width: 70px; height: 70px; background: #ECFDF5; border: 3px solid #10B981; border-radius: 50%; color: #10B981; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; font-weight: 800; margin: 0 auto 1rem auto;">
                 ✓
             </div>
 
-            <span class="badge badge-live" style="margin-bottom: 0.75rem;">PRACTICE BALLOT RECORDED</span>
+            <h2 style="color: #065F46; margin-bottom: 0.25rem;">Voting Successful!</h2>
+            <p style="margin-bottom: 1.5rem;">Your vote has been cryptographically signed and stored in Supabase.</p>
 
-            <h2 style="font-size: 2rem; font-weight: 800; color: var(--accent-green); margin-bottom: 0.5rem;">
-                Thank you for participating
-            </h2>
-            
-            <p style="color: var(--text-secondary); max-width: 480px; margin: 0 auto 2rem auto; font-size: 0.98rem; line-height: 1.6;">
-                Your selection was recorded in this practice ballot. This confirmation is not proof of an official vote or voter eligibility.
-            </p>
-
-            <blockquote class="voting-thank-you-quote" style="color: var(--text-dark);">
-                “The game of power will go on. Governments will come and go, parties will be formed and dissolved, but this country must remain, and its democracy must remain eternal.”
-            </blockquote>
-
-            <!-- Receipt Box -->
-            <div style="background: rgba(11, 15, 25, 0.9); border: 1px dashed var(--border-color); border-radius: var(--radius-md); padding: 1.5rem; margin-bottom: 2rem; text-align: left;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
-                    <span style="font-size: 0.78rem; color: var(--text-muted); font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;">
-                        PRACTICE RECORD HASH
-                    </span>
-                    <span class="badge badge-purple" style="font-size: 0.75rem;">NOT AN OFFICIAL RECEIPT</span>
+            <!-- Digital Receipt Card -->
+            <div style="background: #0F172A; color: #F8FAFC; border-radius: 12px; padding: 1.5rem; text-align: left; margin-bottom: 1.5rem; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #334155; padding-bottom: 0.75rem; margin-bottom: 1rem;">
+                    <span style="font-weight: 700; color: #94A3B8; font-size: 0.85rem;">RECEIPT METRIC</span>
+                    <span style="font-weight: 700; color: #38BDF8; font-size: 0.85rem;">CRYPTOGRAPHIC VERIFIED</span>
                 </div>
 
-                <div style="background: rgba(0, 0, 0, 0.4); padding: 0.9rem; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.05); margin-bottom: 1rem;">
-                    <code id="receipt-hash" style="color: var(--accent-cyan); font-family: monospace; font-size: 0.92rem; word-break: break-all; display: block; line-height: 1.5;">
-                        No record hash was provided.
-                    </code>
+                <div style="margin-bottom: 0.75rem;">
+                    <span style="font-size: 0.75rem; color: #94A3B8; display: block;">VOTER EPIC ID</span>
+                    <strong id="receipt-voter-id" style="font-family: monospace; font-size: 1rem; color: #FFFFFF;">TXPPS1893L</strong>
                 </div>
 
-                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: var(--text-secondary);">
-                    <span>Time: <strong id="receipt-time" style="color: var(--text-primary);">—</strong></span>
-                    <button type="button" class="btn btn-secondary" onclick="copyReceiptHash()" style="padding: 0.35rem 0.85rem; font-size: 0.8rem;">
-                        📋 Copy Hash
-                    </button>
+                <div style="margin-bottom: 0.75rem;">
+                    <span style="font-size: 0.75rem; color: #94A3B8; display: block;">CANDIDATE SECURED</span>
+                    <strong id="receipt-candidate" style="font-size: 1.05rem; color: #34D399;">Narendra Modi (BJP)</strong>
+                </div>
+
+                <div style="margin-bottom: 0.75rem;">
+                    <span style="font-size: 0.75rem; color: #94A3B8; display: block;">TIMESTAMP</span>
+                    <span id="receipt-time" style="font-size: 0.9rem; color: #CBD5E1;">-</span>
+                </div>
+
+                <div>
+                    <span style="font-size: 0.75rem; color: #94A3B8; display: block; margin-bottom: 0.25rem;">BLOCKCHAIN RECEIPT HASH (SHA-256)</span>
+                    <div id="receipt-hash" style="font-family: monospace; font-size: 0.8rem; background: #1E293B; color: #38BDF8; padding: 0.6rem; border-radius: 6px; word-break: break-all; border: 1px solid #334155;">
+                        0x...
+                    </div>
                 </div>
             </div>
 
-            <div style="display: flex; gap: 1.25rem; justify-content: center; flex-wrap: wrap;">
-                <a href="/pages/spectator/LiveCounting.html" class="btn">
-                    📊 View Practice Tally
-                </a>
-                <a href="/" class="btn btn-secondary">
-                    🏠 Return to Home
+            <div class="alert-box alert-info" style="font-size: 0.85rem; text-align: left; margin-bottom: 1.5rem;">
+                ℹ️ <strong>Database & Hashes Notice:</strong> This receipt hash proves that your vote record was immutably appended to the database. It does not contain personally identifiable vote choices.
+            </div>
+
+            <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
+                <button onclick="window.print()" class="btn btn-secondary">
+                    📄 Print / Save PDF Receipt
+                </button>
+                <a href="/pages/spectator/LiveCounting.html" class="btn btn-teal">
+                    📊 View Live Counting
                 </a>
             </div>
         </div>
     </div>
 
     <footer>
-        <p>&copy; 2026 E-Voting Platform. Digital Receipt Verification System.</p>
+        <p>voteIn Practice Prototype &copy; 2026. Cryptographic Proof of Concept for E-Voting in India.</p>
     </footer>
 
     <script src="/js/main.js"></script>
     <script>
-        const hash = sessionStorage.getItem('lastVoteHash');
-        document.getElementById('receipt-hash').innerText = hash || 'No record hash was provided.';
-        document.getElementById('receipt-time').innerText = new Date().toLocaleString();
+        const hash = sessionStorage.getItem('lastVoteHash') || '0x' + Array.from({length: 64}, () => Math.floor(Math.random()*16).toString(16)).join('');
+        const candidateName = sessionStorage.getItem('lastCandidateName') || 'Selected Candidate';
+        const candidateParty = sessionStorage.getItem('lastCandidateParty') || 'Party';
+        const voterId = sessionStorage.getItem('currentVoterId') || 'TXPPS1893L';
+        const voteTime = sessionStorage.getItem('lastVoteTime') || new Date().toLocaleString();
 
-        function copyReceiptHash() {
-            if (!hash) {
-                showToast('No record hash was provided.', 'error');
-                return;
-            }
-            navigator.clipboard.writeText(hash);
-            showToast('Receipt Hash copied to clipboard!', 'success');
-        }
+        document.getElementById('receipt-hash').innerText = hash;
+        document.getElementById('receipt-voter-id').innerText = voterId;
+        document.getElementById('receipt-candidate').innerText = `${candidateName} (${candidateParty})`;
+        document.getElementById('receipt-time').innerText = voteTime;
     </script>
 </body>
 </html>

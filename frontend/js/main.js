@@ -1,8 +1,26 @@
-// E-Voting Platform - Global JavaScript Controller
+// voteIn Main Frontend API, Auth, QR Scanner & Interactive Handlers
 
-const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:')
-    ? 'http://localhost:4000/api'
-    : '/api';
+function normalizeApiBase(base) {
+    if (!base) return '/api';
+    const value = String(base).trim().replace(/\/+$/, '');
+    return value.endsWith('/api') ? value : `${value}/api`;
+}
+
+function resolveApiBase() {
+    const fromGlobal = window.__VOTING_API_BASE__ || window.__API_BASE__;
+    if (fromGlobal) return normalizeApiBase(fromGlobal);
+
+    const hostname = window.location.hostname || '';
+    const isLocalHostname = ['localhost', '127.0.0.1', '0.0.0.0', '::1', '[::1]'].includes(hostname);
+
+    if (window.location.protocol === 'file:' || isLocalHostname) {
+        return 'http://localhost:4000/api';
+    }
+
+    return `${window.location.origin}/api`;
+}
+
+const API_BASE = resolveApiBase();
 
 function apiUrl(path) {
     return `${API_BASE}${path.startsWith('/') ? path : `/${path}`}`;
@@ -16,180 +34,281 @@ function setToken(token) {
     localStorage.setItem('token', token);
 }
 
-function parseJwt(token) {
-    try {
-        const base64Url = token.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
-        return JSON.parse(jsonPayload);
-    } catch (e) {
-        return null;
-    }
-}
-
-function getUserInfo() {
-    const token = getToken();
-    if (!token) return null;
-    return parseJwt(token);
-}
-
 function logout() {
     localStorage.removeItem('token');
-    showToast('Logged out successfully', 'info');
-    setTimeout(() => {
-        window.location.href = '/pages/auth/Login.html';
-    }, 500);
+    window.location.href = '/pages/auth/Login.html';
 }
 
 function checkAuth() {
     const token = getToken();
+    const publicPages = ['Login.html', 'index.html', 'LiveCounting.html', 'FinalResult.html'];
     const path = window.location.pathname;
-    const isPublic = path.includes('Login.html') || path.includes('Signup.html') || path.endsWith('index.html') || path === '/' || path.includes('/spectator/');
-    
+    const isPublic = publicPages.some(page => path.endsWith(page)) || path === '/';
+
     if (!token && !isPublic) {
         window.location.href = '/pages/auth/Login.html';
     }
 }
 
-function showToast(message, type = 'info') {
-    let container = document.getElementById('toast-container');
-    if (!container) {
-        container = document.createElement('div');
-        container.id = 'toast-container';
-        document.body.appendChild(container);
-    }
-
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
-    toast.innerHTML = `<span>${icon}</span> <span>${message}</span>`;
-    
-    container.appendChild(toast);
-
-    setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transform = 'translateX(100%)';
-        toast.style.transition = 'all 0.3s ease';
-        setTimeout(() => toast.remove(), 300);
-    }, 3500);
-}
-
-function updateNavAuthState() {
-    const navLinks = document.querySelector('.nav-links');
-    if (!navLinks) return;
-
-    const user = getUserInfo();
-    const loginBtn = navLinks.querySelector('a[href*="Login.html"]');
-
-    if (user && user.id) {
-        if (loginBtn) loginBtn.remove();
-        
-        let userBadge = document.getElementById('nav-user-badge');
-        if (!userBadge) {
-            userBadge = document.createElement('div');
-            userBadge.id = 'nav-user-badge';
-            userBadge.style.display = 'flex';
-            userBadge.style.alignItems = 'center';
-            userBadge.style.gap = '0.75rem';
-            userBadge.innerHTML = `
-                <span id="nav-user-id" class="badge badge-purple" style="font-size: 0.8rem;"></span>
-                <button id="logout-btn" class="btn btn-secondary" style="padding: 0.4rem 0.9rem; font-size: 0.85rem; background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.3); color: #FCA5A5;">Logout</button>
-            `;
-            userBadge.querySelector('#nav-user-id').textContent = `👤 ${user.id}`;
-            navLinks.appendChild(userBadge);
-
-            const logoutBtn = document.getElementById('logout-btn');
-            if (logoutBtn) logoutBtn.addEventListener('click', logout);
-        }
-    }
-}
-
-function initSlideToVote(onConfirm) {
-    const container = document.getElementById('slide-container');
-    const thumb = document.getElementById('slide-thumb');
-    if (!container || !thumb) return;
-
-    thumb._onConfirm = onConfirm;
-    if (thumb.dataset.sliderReady) return;
-    thumb.dataset.sliderReady = 'true';
-
-    const resetSlider = () => {
-        thumb.style.left = '4px';
-        thumb.disabled = false;
-        thumb.setAttribute('aria-valuenow', '0');
-        const text = container.querySelector('.slide-to-vote-text');
-        if (text) text.textContent = '>> Slide to confirm your vote';
-    };
-
-    let startX = 0;
-    let startLeft = 4;
-    let dragging = false;
-    let submitting = false;
-
-    thumb.addEventListener('pointerdown', event => {
-        if (submitting || thumb.disabled) return;
-        dragging = true;
-        startX = event.clientX;
-        startLeft = parseFloat(thumb.style.left) || 4;
-        thumb.setPointerCapture(event.pointerId);
-        thumb.style.cursor = 'grabbing';
-        event.preventDefault();
-    });
-
-    thumb.addEventListener('pointermove', event => {
-        if (!dragging) return;
-        const maxLeft = Math.max(4, container.clientWidth - thumb.offsetWidth - 4);
-        const left = Math.min(maxLeft, Math.max(4, startLeft + event.clientX - startX));
-        thumb.style.left = `${left}px`;
-        thumb.setAttribute('aria-valuenow', String(Math.round(((left - 4) / Math.max(1, maxLeft - 4)) * 100)));
-    });
-
-    const finishDrag = async event => {
-        if (!dragging) return;
-        dragging = false;
-        thumb.style.cursor = 'grab';
-        if (thumb.hasPointerCapture(event.pointerId)) thumb.releasePointerCapture(event.pointerId);
-
-        const maxLeft = Math.max(4, container.clientWidth - thumb.offsetWidth - 4);
-        const currentLeft = parseFloat(thumb.style.left) || 4;
-        if (currentLeft < 4 + (maxLeft - 4) * 0.9) {
-            resetSlider();
-            return;
-        }
-
-        thumb.style.left = `${maxLeft}px`;
-        submitting = true;
-        thumb.disabled = true;
-        try {
-            const success = await thumb._onConfirm();
-            if (success !== true) resetSlider();
-            else {
-                const text = container.querySelector('.slide-to-vote-text');
-                if (text) text.textContent = 'Vote confirmed';
-                thumb.setAttribute('aria-valuenow', '100');
-            }
-        } catch (error) {
-            console.error('Slide-to-vote confirmation failed:', error);
-            showToast('Could not confirm the vote. Please try again.', 'error');
-            resetSlider();
-        } finally {
-            submitting = false;
-        }
-    };
-
-    thumb.addEventListener('pointerup', finishDrag);
-    thumb.addEventListener('pointercancel', () => {
-        dragging = false;
-        thumb.style.cursor = 'grab';
-        resetSlider();
-    });
-}
-
 // Global initialization
 document.addEventListener('DOMContentLoaded', () => {
     checkAuth();
-    updateNavAuthState();
-    const greeting = document.getElementById('user-greeting');
-    const user = getUserInfo();
-    if (greeting && user && user.name) greeting.textContent = `Welcome, ${user.name}`;
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', logout);
+    }
 });
+
+/* =========================================================
+   QR CODE SCANNER CONTROLLER (html5-qrcode integration)
+   ========================================================= */
+class VoteInQRScanner {
+    constructor(elementId, statusCallback, successCallback) {
+        this.elementId = elementId;
+        this.statusCallback = statusCallback || (() => {});
+        this.successCallback = successCallback || (() => {});
+        this.html5QrcodeScanner = null;
+        this.isScanning = false;
+    }
+
+    updateStatus(message, type = 'info') {
+        this.statusCallback(message, type);
+    }
+
+    async getCameras() {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            this.updateStatus("Camera access is not supported by your browser or environment (HTTPS required).", "danger");
+            return [];
+        }
+        try {
+            const devices = await Html5Qrcode.getCameras();
+            return devices && devices.length > 0 ? devices : [];
+        } catch (err) {
+            console.warn("Camera enumeration error:", err);
+            return [];
+        }
+    }
+
+    async startScanning(cameraId = null) {
+        if (this.isScanning) await this.stopScanning();
+
+        this.updateStatus("Requesting camera permission & initializing preview...", "info");
+
+        try {
+            if (!this.html5QrcodeScanner) {
+                this.html5QrcodeScanner = new Html5Qrcode(this.elementId);
+            }
+
+            const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+            const cameraConfig = cameraId ? { deviceId: { exact: cameraId } } : { facingMode: "environment" };
+
+            await this.html5QrcodeScanner.start(
+                cameraConfig,
+                config,
+                (decodedText, decodedResult) => {
+                    this.onScanSuccess(decodedText, decodedResult);
+                },
+                (errorMessage) => {
+                    // Ignore line-by-line scanning frame misses
+                }
+            );
+
+            this.isScanning = true;
+            this.updateStatus("Scanning active. Align QR code inside frame.", "success");
+        } catch (err) {
+            console.error("QR scanner start error:", err);
+            this.isScanning = false;
+            let errorMsg = "Camera access denied or camera unavailable.";
+            if (err.name === "NotAllowedError" || String(err).includes("Permission denied")) {
+                errorMsg = "Camera Permission Denied. Please grant camera permissions in your browser settings.";
+            } else if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+                errorMsg = "Camera access requires HTTPS in non-localhost web deployments.";
+            }
+            this.updateStatus(errorMsg, "danger");
+        }
+    }
+
+    async stopScanning() {
+        if (this.html5QrcodeScanner && this.isScanning) {
+            try {
+                await this.html5QrcodeScanner.stop();
+                this.html5QrcodeScanner.clear();
+            } catch (err) {
+                console.warn("Scanner stop cleanup notice:", err);
+            }
+        }
+        // Force teardown of any open video stream tracks
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true }).catch(() => null);
+                if (stream) {
+                    stream.getTracks().forEach(track => track.stop());
+                }
+            } catch (e) {}
+        }
+        this.isScanning = false;
+        this.updateStatus("Scanner stopped.", "info");
+    }
+
+    async scanFile(file) {
+        if (!file) return;
+        this.updateStatus("Analyzing uploaded QR code image...", "info");
+
+        try {
+            if (!this.html5QrcodeScanner) {
+                this.html5QrcodeScanner = new Html5Qrcode(this.elementId);
+            }
+            const decodedText = await this.html5QrcodeScanner.scanFile(file, true);
+            this.onScanSuccess(decodedText);
+        } catch (err) {
+            console.error("Image scan error:", err);
+            this.updateStatus("Could not decode valid QR payload from uploaded image.", "danger");
+        }
+    }
+
+    onScanSuccess(decodedText) {
+        this.updateStatus("QR Code Detected! Validating voter format...", "success");
+        const parsed = this.parseDemoPayload(decodedText);
+
+        if (parsed.valid) {
+            this.stopScanning();
+            this.successCallback(parsed);
+        } else {
+            this.updateStatus(`Invalid QR Format: ${parsed.reason || "Payload not recognized"}. Expected demo payload structure.`, "danger");
+        }
+    }
+
+    parseDemoPayload(text) {
+        if (!text) return { valid: false, reason: "Empty payload" };
+        let payload = null;
+
+        try {
+            payload = JSON.parse(text);
+        } catch (e) {
+            // Check string format like VOTER:TXPPS1893L
+            if (text.includes("VOTER:") || text.includes("EPIC:") || text.includes("VOTEIN:")) {
+                const parts = text.split(":");
+                payload = { voterId: parts[1]?.trim() || text };
+            } else {
+                payload = { voterId: text.trim() };
+            }
+        }
+
+        const voterId = payload.voterId || payload.epicNo || payload.epic || payload.id;
+
+        if (voterId && String(voterId).length >= 3) {
+            return {
+                valid: true,
+                voterId: String(voterId).toUpperCase(),
+                name: payload.name || "Demo Verified Elector",
+                statusMessage: "Format valid — Practice/Demo verification only"
+            };
+        }
+
+        return { valid: false, reason: "Missing valid Voter ID or EPIC key" };
+    }
+}
+
+/* =========================================================
+   PIN INPUT AUTO-FOCUS & CLEARING HELPER
+   ========================================================= */
+function initPinInputs(containerId, onComplete) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    const boxes = container.querySelectorAll('.pin-digit-box');
+    boxes.forEach((box, idx) => {
+        box.value = ''; // Ensure start clean, no dots
+        box.placeholder = '•';
+
+        box.addEventListener('input', (e) => {
+            const val = e.target.value.replace(/[^0-9]/g, '');
+            e.target.value = val ? val.slice(-1) : '';
+
+            if (val && idx < boxes.length - 1) {
+                boxes[idx + 1].focus();
+            }
+
+            const currentPin = Array.from(boxes).map(b => b.value).join('');
+            if (currentPin.length === boxes.length && onComplete) {
+                onComplete(currentPin);
+            }
+        });
+
+        box.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace' && !box.value && idx > 0) {
+                boxes[idx - 1].focus();
+            }
+        });
+    });
+}
+
+/* =========================================================
+   SLIDE TO VOTE DRAG & TOUCH SLIDER
+   ========================================================= */
+function initSlideToVote(sliderId, thumbId, textId, onConfirm) {
+    const slider = document.getElementById(sliderId);
+    const thumb = document.getElementById(thumbId);
+    const text = document.getElementById(textId);
+
+    if (!slider || !thumb) return;
+
+    let isDragging = false;
+    let startX = 0;
+    let maxDrag = 0;
+
+    function updateMaxDrag() {
+        maxDrag = slider.clientWidth - thumb.clientWidth - 6;
+    }
+
+    updateMaxDrag();
+    window.addEventListener('resize', updateMaxDrag);
+
+    function onStart(e) {
+        isDragging = true;
+        startX = (e.touches ? e.touches[0].clientX : e.clientX) - thumb.offsetLeft;
+        thumb.style.transition = 'none';
+    }
+
+    function onMove(e) {
+        if (!isDragging) return;
+        if (e.cancelable && e.type === 'touchmove') e.preventDefault();
+
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        let left = clientX - startX;
+
+        if (left < 3) left = 3;
+        if (left > maxDrag) left = maxDrag;
+
+        thumb.style.left = `${left}px`;
+        const pct = (left / maxDrag) * 100;
+        if (text) text.style.opacity = (1 - pct / 70).toFixed(2);
+
+        if (left >= maxDrag - 5) {
+            isDragging = false;
+            thumb.style.left = `${maxDrag}px`;
+            thumb.style.background = '#10B981';
+            thumb.innerText = '✓';
+            if (onConfirm) onConfirm();
+        }
+    }
+
+    function onEnd() {
+        if (!isDragging) return;
+        isDragging = false;
+        thumb.style.transition = 'left 0.3s ease';
+
+        if (parseInt(thumb.style.left || '0', 10) < maxDrag - 10) {
+            thumb.style.left = '3px';
+            if (text) text.style.opacity = '1';
+        }
+    }
+
+    thumb.addEventListener('mousedown', onStart);
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onEnd);
+
+    thumb.addEventListener('touchstart', onStart, { passive: false });
+    document.addEventListener('touchmove', onMove, { passive: false });
+    document.addEventListener('touchend', onEnd);
+}

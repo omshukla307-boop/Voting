@@ -3,1310 +3,237 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VoteIn | Blockchain Digital Voting Platform</title>
-    <link rel="stylesheet" href="/css/styles.css?v=20261007-nri">
-    <!-- HTML5 QR Code Scanner Library -->
+    <title>voteIn — Blockchain E-Voting System India</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <!-- html5-qrcode library for QR Scanner -->
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 </head>
 <body>
-    <!-- Top Web Navigation with Scanner on Top -->
-    <nav class="home-primary-nav">
-        <a href="/" class="logo">
-            <div class="logo-brand-icon">👆</div>
-            voteIn
-        </a>
+    <!-- Practice Banner -->
+    <div class="demo-banner">
+        ⚠️ PRACTICE / DEMO MODE — Educational Prototype Only. Not affiliated with the Election Commission of India (ECI).
+    </div>
 
+    <!-- Top Navigation -->
+    <nav>
+        <a href="/" class="logo">
+            <div class="logo-icon">🗳️</div>
+            vote<span>In</span>
+        </a>
         <div class="nav-links">
             <a href="/" class="active">Home</a>
-            <a href="javascript:void(0)" onclick="beginVotingFlow()">Verify to vote</a>
-            <a href="/pages/spectator/ElectionNews.html">News</a>
+            <a href="/pages/spectator/LiveCounting.html">Live Tally</a>
             <a href="/pages/spectator/FinalResult.html">Results</a>
-            <a href="/pages/auth/Login.html" id="login-link" class="btn-maroon" style="padding: 0.45rem 0.9rem; font-size: 0.85rem; width: auto;">Sign In</a>
+            <a href="/pages/auth/Login.html" class="btn btn-sm">Voter Sign In</a>
         </div>
     </nav>
 
-    <!-- Main Mobile Application Viewport Container -->
-    <div class="main-wrapper">
-        
-        <!-- ========================================== -->
-        <!-- SCREEN 1: HOME DASHBOARD                   -->
-        <!-- ========================================== -->
-        <div id="screen-home" class="app-screen">
-            <!-- User Profile Header -->
-            <div class="home-user-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
-                <div style="display: flex; align-items: center; gap: 0.75rem;">
-                    <div style="width: 46px; height: 46px; border-radius: 50%; background: #F3F4F6; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; border: 1px solid #E5E7EB;">
-                        👩‍💼
-                    </div>
-                    <div>
-                        <h3 id="user-greeting" style="font-size: 1.1rem; font-weight: 800; color: var(--text-dark);">Welcome!</h3>
-                        <p style="font-size: 0.78rem; color: var(--text-muted);">Explore a sample election experience.</p>
-                    </div>
-                </div>
-                <div style="width: 38px; height: 38px; border-radius: 50%; background: #FFFFFF; border: 1px solid #E5E7EB; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; cursor: pointer;" onclick="showToast('Notifications: General Election voting is live!', 'info')">
-                    🔔
-                </div>
+    <div class="container">
+        <!-- Hero Section with Countdown -->
+        <div class="card" style="text-align: center; padding: 2.5rem 1.5rem; background: linear-gradient(180deg, #FFFFFF 0%, #FFF5F5 100%); border-top: 4px solid var(--primary);">
+            <div style="display: inline-block; background: #FEF2F2; color: var(--primary); padding: 0.35rem 0.85rem; border-radius: 20px; font-weight: 700; font-size: 0.85rem; margin-bottom: 1rem;">
+                🔴 Demo General Election 2026 is LIVE
+            </div>
+            
+            <h1 style="font-size: 2.2rem; margin-bottom: 0.75rem; color: var(--primary);">Secure, Transparent Blockchain Voting for India</h1>
+            <p style="max-width: 680px; margin: 0 auto 1.5rem auto; font-size: 1rem;">
+                Cast your vote using unique cryptographic receipt hashes, instant live tallying, and identity verification workflow (Resident & NRI Prototype).
+            </p>
+
+            <div style="background: #FFFFFF; border: 1.5px solid var(--border-color); border-radius: 12px; padding: 1.25rem; max-width: 450px; margin: 0 auto 1.75rem auto; box-shadow: 0 4px 6px rgba(0,0,0,0.03);">
+                <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.25rem;">ELECTION CLOSES IN</div>
+                <div id="countdown-timer" style="font-size: 1.5rem; font-weight: 800; color: var(--primary); font-family: monospace;">8 hrs : 50 mins : 10 sec</div>
             </div>
 
-            <!-- Hero Live Timer Banner -->
-            <div class="hero-timer-banner">
-                <div class="timer-live-badge">Practice ballot</div>
-
-                <div class="timer-countdown-title">Explore the practice ballot</div>
-                <p style="font-size: 0.82rem; color: var(--text-muted); font-weight: 600;">This is a practice experience. No official election is in progress.</p>
-
-                <div class="timer-area-stat">
-                    Sample data only — no official vote or turnout figures.
-                </div>
-
-                <button type="button" class="btn-vote-now" onclick="beginVotingFlow()">
-                    VOTE NOW
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <a href="/pages/auth/Login.html" class="btn btn-teal">
+                    <span>🗳️</span> Vote Now (Voter Sign In)
+                </a>
+                <button id="open-scanner-btn" class="btn btn-secondary">
+                    <span>📷</span> Scan Voter QR Code
                 </button>
-            </div>
-
-            <!-- Prominent Indian Leaders Candidates Area List -->
-            <div class="home-leaders" style="margin-bottom: 5rem;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem;">
-                    <h3 style="font-size: 1.05rem; font-weight: 800; color: var(--text-dark);">Public leader profiles</h3>
-                </div>
-
-                <div id="home-candidate-rows">
-                    <button type="button" class="candidate-row leader-profile-trigger" data-profile="narendra-modi" aria-label="View Narendra Modi's profile">
-                        <div class="candidate-row-left">
-                            <span class="candidate-party-logo">🪷</span>
-                            <div class="candidate-row-info">
-                                <h4>Narendra Modi</h4>
-                                <p>Bharatiya Janata Party (BJP)</p>
-                            </div>
-                        </div>
-                        <span style="font-weight: 800; color: var(--text-muted);">›</span>
-                    </button>
-
-                    <button type="button" class="candidate-row leader-profile-trigger" data-profile="rahul-gandhi" aria-label="View Rahul Gandhi's profile">
-                        <div class="candidate-row-left">
-                            <span class="candidate-party-logo">✋</span>
-                            <div class="candidate-row-info">
-                                <h4>Rahul Gandhi</h4>
-                                <p>Indian National Congress (INC)</p>
-                            </div>
-                        </div>
-                        <span style="font-weight: 800; color: var(--text-muted);">›</span>
-                    </button>
-
-                    <button type="button" class="candidate-row leader-profile-trigger" data-profile="arvind-kejriwal" aria-label="View Arvind Kejriwal's profile">
-                        <div class="candidate-row-left">
-                            <span class="candidate-party-logo">🧹</span>
-                            <div class="candidate-row-info">
-                                <h4>Arvind Kejriwal</h4>
-                                <p>Aam Aadmi Party (AAP)</p>
-                            </div>
-                        </div>
-                        <span style="font-weight: 800; color: var(--text-muted);">›</span>
-                    </button>
-
-                    <button type="button" class="candidate-row leader-profile-trigger" data-profile="akhilesh-yadav" aria-label="View Akhilesh Yadav's profile">
-                        <div class="candidate-row-left">
-                            <span class="candidate-party-logo">🚲</span>
-                            <div class="candidate-row-info">
-                                <h4>Akhilesh Yadav</h4>
-                                <p>Samajwadi Party (SP)</p>
-                            </div>
-                        </div>
-                        <span style="font-weight: 800; color: var(--text-muted);">›</span>
-                    </button>
-
-                    <button type="button" class="candidate-row leader-profile-trigger" data-profile="mayawati" aria-label="View Mayawati's profile">
-                        <div class="candidate-row-left">
-                            <span class="candidate-party-logo">🐘</span>
-                            <div class="candidate-row-info">
-                                <h4>Mayawati</h4>
-                                <p>Bahujan Samaj Party (BSP)</p>
-                            </div>
-                        </div>
-                        <span style="font-weight: 800; color: var(--text-muted);">›</span>
-                    </button>
-
-                    <button type="button" class="candidate-row leader-profile-trigger" data-profile="mamata-banerjee" aria-label="View Mamata Banerjee's profile">
-                        <div class="candidate-row-left">
-                            <span class="candidate-party-logo">🌸</span>
-                            <div class="candidate-row-info">
-                                <h4>Mamata Banerjee</h4>
-                                <p>All India Trinamool Congress (AITC)</p>
-                            </div>
-                        </div>
-                        <span style="font-weight: 800; color: var(--text-muted);">›</span>
-                    </button>
-                </div>
+                <a href="/pages/spectator/LiveCounting.html" class="btn btn-secondary">
+                    <span>📊</span> View Live Counting
+                </a>
             </div>
         </div>
 
-        <dialog id="leader-profile-dialog" class="leader-profile-dialog" aria-labelledby="leader-profile-name">
-            <button type="button" class="leader-profile-close" aria-label="Close profile">×</button>
-            <p class="leader-profile-eyebrow">PUBLIC PROFILE</p>
-            <h2 id="leader-profile-name"></h2>
-            <p id="leader-profile-party" class="leader-profile-party"></p>
-            <p id="leader-profile-dob" class="leader-profile-dob"></p>
-            <h3>Political journey &amp; milestones</h3>
-            <ul id="leader-profile-highlights"></ul>
-            <a id="leader-profile-source" class="leader-profile-source" target="_blank" rel="noopener noreferrer">Read a reference biography ↗</a>
-        </dialog>
-
-        <!-- ========================================== -->
-        <!-- SCREEN 2: AADHAAR VERIFICATION            -->
-        <!-- ========================================== -->
-        <div id="step-aadhaar" class="app-screen" style="display: none;">
-            <div class="votein-card" style="text-align: center;">
-                <h3 class="verification-title">Choose your voter category</h3>
-                <p class="verification-disclaimer">This is a practice voting experience, not an official election service. Identity, voter-roll and eligibility checks are not performed. Use made-up document details only.</p>
-
-                <div class="voter-type-options" role="group" aria-label="Choose voter category">
-                    <button type="button" class="voter-type-option nri-option" data-voter-type="nri" aria-pressed="false">
-                        <strong>NRI</strong>
-                        <span>Non-Resident Indian</span>
-                    </button>
-                    <button type="button" class="voter-type-option" data-voter-type="resident" aria-pressed="false">
-                        <strong>Indian Resident</strong>
-                        <span>Continue with Aadhaar and PAN formats</span>
-                    </button>
-                </div>
-
-                <section id="nri-verification-section" class="voter-category-section" aria-labelledby="nri-section-title" hidden>
-                    <h4 id="nri-section-title" class="nri-section-title">NRI voter details</h4>
-                    <p class="verification-help">Passport and parent details stay in this browser and are not checked against government records. Do not enter a real passport number.</p>
-                    <form id="nri-verification-form" class="verification-form">
-                        <label for="nri-passport">Passport number</label>
-                        <input id="nri-passport" class="form-control-input" type="password" autocomplete="off" maxlength="12" placeholder="Enter a sample passport number" required>
-                        <label for="nri-parent-name">Parent's name</label>
-                        <input id="nri-parent-name" class="form-control-input" type="text" autocomplete="off" maxlength="80" placeholder="Enter a sample parent name" required>
-                        <button type="submit" class="btn-maroon">Continue to camera and QR ➔</button>
-                    </form>
-                </section>
-
-                <section id="resident-verification-section" class="voter-category-section" aria-labelledby="resident-section-title" hidden>
-                    <h4 id="resident-section-title">Indian resident details</h4>
-                    <form id="resident-aadhaar-form" class="verification-form">
-                        <label for="aadhaar-input">Aadhaar number</label>
-                        <input id="aadhaar-input" class="form-control-input" type="password" inputmode="numeric" autocomplete="off" maxlength="12" placeholder="Enter a made-up 12-digit number" required>
-                        <p class="verification-help">Checked only for format in this browser and cleared immediately. Do not enter a real Aadhaar number.</p>
-                        <button type="submit" class="btn-maroon">Continue</button>
-                    </form>
-
-                    <section id="account-details-preview" class="account-details-preview" aria-live="polite" hidden>
-                        <p class="verification-eyebrow">ACCOUNT PROFILE · NOT AN IDENTITY LOOKUP</p>
-                        <dl>
-                            <div><dt>Name</dt><dd id="verification-account-name"></dd></div>
-                            <div><dt>Account ID</dt><dd id="verification-account-id"></dd></div>
-                        </dl>
-                    </section>
-
-                    <form id="resident-pan-form" class="verification-form" hidden>
-                        <label for="resident-pan">PAN number</label>
-                        <input id="resident-pan" class="form-control-input" type="password" autocomplete="off" maxlength="10" placeholder="Enter a sample PAN" required>
-                        <p class="verification-help">Checked only for format. It is masked and kept in this page session, not uploaded.</p>
-                        <button type="submit" class="btn-maroon">Continue to camera and QR ➔</button>
-                    </form>
-                </section>
-
-                <section class="location-permission-card" aria-live="polite">
-                    <div>
-                        <strong>Current location</strong>
-                        <p id="location-status">Requesting browser location permission…</p>
-                        <a id="location-map-link" target="_blank" rel="noopener noreferrer" hidden>View on OpenStreetMap (opens a third-party map)</a>
-                    </div>
-                    <button id="retry-location" type="button" class="btn-vote-now camera-action">Refresh location</button>
-                </section>
+        <!-- Scanner Verification Status Alert -->
+        <div id="scanner-result-card" class="card" style="display: none; border-left: 4px solid var(--accent-green);">
+            <h3 style="color: var(--accent-green);">✓ Demo QR Voter Card Detected</h3>
+            <div id="scanner-result-details" style="font-size: 0.95rem; margin-bottom: 1rem;"></div>
+            <div class="alert-box alert-info" style="margin-bottom: 1rem;">
+                Note: Format valid for practice environment. Electoral roll identity is not independently verified by ECI in this prototype.
             </div>
+            <a href="/pages/auth/Login.html" id="scanner-login-link" class="btn">Proceed to Verification & Voting</a>
         </div>
 
-        <!-- ========================================== -->
-        <!-- SCREEN 3: LIVE PHOTO & QR SCANNER          -->
-        <!-- ========================================== -->
-        <div id="step-auth" class="app-screen" style="display: none;">
-            <div class="votein-card" style="text-align: center;">
-                <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
-                    <button type="button" style="background: none; border: none; font-size: 1.2rem; cursor: pointer;" onclick="navigateToStep('step-aadhaar')">←</button>
-                    <h3 style="font-size: 1.3rem; font-weight: 800; margin: 0;">Authentication</h3>
+        <!-- Registered National Candidates Section -->
+        <div class="card">
+            <h2 style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+                <span>🇮🇳 National & State Candidates (Demo List)</span>
+                <span class="badge badge-live">Official Ballot Pool</span>
+            </h2>
+            <p>Select your constituency representative during voter sign in.</p>
+
+            <div class="candidate-grid">
+                <div class="candidate-card">
+                    <div class="symbol-badge">🪷</div>
+                    <h3>Narendra Modi</h3>
+                    <p style="color: var(--primary); font-weight: 700; margin-bottom: 0.25rem;">Bharatiya Janata Party (BJP)</p>
+                    <p style="font-size: 0.85rem;">Constituency: Varanasi / National</p>
                 </div>
-
-                <section class="verification-account-details" aria-label="Signed-in account details">
-                    <p class="verification-eyebrow">SIGNED-IN ACCOUNT · PRACTICE ONLY</p>
-                    <dl>
-                        <div><dt>Name</dt><dd id="auth-account-name"></dd></div>
-                        <div><dt>Account ID</dt><dd id="auth-account-id"></dd></div>
-                        <div><dt>Voter category</dt><dd id="auth-account-category"></dd></div>
-                        <div><dt>Current location</dt><dd id="auth-account-location">Waiting for location permission…</dd></div>
-                    </dl>
-                </section>
-
-                <div class="camera-tools-grid">
-                    <section class="biometric-box camera-tool-card" aria-labelledby="live-photo-title">
-                        <h4 id="live-photo-title">Take a live photo</h4>
-                        <p>Take a live photo. It stays in this browser; face detection does not verify identity.</p>
-                        <video id="live-camera-preview" class="camera-preview" autoplay playsinline muted hidden></video>
-                        <canvas id="live-photo-canvas" hidden></canvas>
-                        <img id="live-photo-result" class="camera-preview" alt="Photo captured in this browser" hidden>
-                        <div class="camera-tool-actions">
-                            <button id="start-live-camera" type="button" class="btn-vote-now camera-action">Start live camera</button>
-                            <button id="capture-live-photo" type="button" class="btn-vote-now camera-action" disabled>Take photo</button>
-                        </div>
-                        <p id="camera-status" class="camera-status" role="status">Camera is off. Face detection runs on-device and does not verify identity.</p>
-                    </section>
-
-                    <section class="biometric-box camera-tool-card" aria-labelledby="qr-scan-title">
-                        <h4 id="qr-scan-title">Scan account QR code</h4>
-                        <p>Scan a QR code containing only your account ID. Passwords and identity-document QR codes are not accepted.</p>
-                        <div id="qr-reader" class="qr-reader"></div>
-                        <button id="start-qr-scanner" type="button" class="btn-vote-now camera-action">Start QR scanner</button>
-                        <button id="stop-qr-scanner" type="button" class="btn-vote-now camera-action" hidden>Stop scanner</button>
-                        <label for="qr-image-input" class="qr-image-label">Or scan a QR image</label>
-                        <input id="qr-image-input" class="qr-image-input" type="file" accept="image/*">
-                        <p id="qr-status" class="camera-status" role="status">Scanner is off.</p>
-                        <div id="qr-account-result" class="qr-account-result" role="status" hidden>
-                            <p>Account match</p>
-                            <dl>
-                                <div><dt>Name</dt><dd id="qr-account-name"></dd></div>
-                                <div><dt>Account ID</dt><dd id="qr-account-id"></dd></div>
-                                <div><dt>Voter category</dt><dd id="qr-account-category"></dd></div>
-                                <div><dt>Document</dt><dd id="qr-account-document"></dd></div>
-                                <div id="qr-parent-row" hidden><dt>Parent's name</dt><dd id="qr-account-parent"></dd></div>
-                                <div><dt>Current location</dt><dd id="qr-account-location"></dd></div>
-                                <div><dt>Photo check</dt><dd id="qr-face-status"></dd></div>
-                            </dl>
-                            <p class="verification-help">Practice profile only. No identity or voter-roll verification was performed.</p>
-                            <button id="continue-to-ballot" type="button" class="btn-maroon">Continue to ballot</button>
-                        </div>
-                    </section>
+                <div class="candidate-card">
+                    <div class="symbol-badge">✋</div>
+                    <h3>Rahul Gandhi</h3>
+                    <p style="color: var(--primary); font-weight: 700; margin-bottom: 0.25rem;">Indian National Congress (INC)</p>
+                    <p style="font-size: 0.85rem;">Constituency: Wayanad / National</p>
                 </div>
-
-                <div style="margin-bottom: 1.25rem;">
-                    <a href="javascript:void(0)" onclick="showToast('Need help? Contact Election Helpline: 1950', 'info')" style="font-size: 0.82rem; color: var(--text-muted); text-decoration: underline;">Need help? Click here.</a>
+                <div class="candidate-card">
+                    <div class="symbol-badge">🧹</div>
+                    <h3>Arvind Kejriwal</h3>
+                    <p style="color: var(--primary); font-weight: 700; margin-bottom: 0.25rem;">Aam Aadmi Party (AAP)</p>
+                    <p style="font-size: 0.85rem;">Constituency: New Delhi / National</p>
                 </div>
-                <p class="practice-notice">Practice experience only; it cannot verify identity or voting eligibility. Photos, QR content, document numbers and location are not sent to the server.</p>
-            </div>
-        </div>
-
-        <!-- ========================================== -->
-        <!-- SCREEN 4: SECURITY PIN SETUP               -->
-        <!-- ========================================== -->
-        <div id="step-pin" class="app-screen" style="display: none;">
-            <div class="votein-card" style="text-align: center; padding: 2.5rem 1.5rem;">
-                <div class="logo-brand-icon" style="margin: 0 auto 1rem auto; width: 52px; height: 52px; font-size: 1.6rem;">🔑</div>
-                
-                <h3 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 0.4rem;">Set up Security PIN</h3>
-                <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 2rem;">Use this PIN to unlock this app</p>
-
-                <div style="margin-bottom: 1.5rem;">
-                    <span style="font-size: 0.82rem; font-weight: 700; color: var(--text-dark); display: block; margin-bottom: 0.5rem;">New Security PIN</span>
-                    <div class="pin-boxes-container">
-                        <input type="password" maxlength="1" inputmode="numeric" autocomplete="off" class="pin-box-input" aria-label="New PIN digit 1">
-                        <input type="password" maxlength="1" inputmode="numeric" autocomplete="off" class="pin-box-input" aria-label="New PIN digit 2">
-                        <input type="password" maxlength="1" inputmode="numeric" autocomplete="off" class="pin-box-input" aria-label="New PIN digit 3">
-                        <input type="password" maxlength="1" inputmode="numeric" autocomplete="off" class="pin-box-input" aria-label="New PIN digit 4">
-                    </div>
+                <div class="candidate-card">
+                    <div class="symbol-badge">🌺</div>
+                    <h3>Mamata Banerjee</h3>
+                    <p style="color: var(--primary); font-weight: 700; margin-bottom: 0.25rem;">All India Trinamool Congress (AITC)</p>
+                    <p style="font-size: 0.85rem;">Constituency: Kolkata / State</p>
                 </div>
-
-                <div style="margin-bottom: 2rem;">
-                    <span style="font-size: 0.82rem; font-weight: 700; color: var(--text-dark); display: block; margin-bottom: 0.5rem;">Re-Enter Security PIN</span>
-                    <div class="pin-boxes-container">
-                        <input type="password" maxlength="1" inputmode="numeric" autocomplete="off" class="pin-box-input" aria-label="Confirm PIN digit 1">
-                        <input type="password" maxlength="1" inputmode="numeric" autocomplete="off" class="pin-box-input" aria-label="Confirm PIN digit 2">
-                        <input type="password" maxlength="1" inputmode="numeric" autocomplete="off" class="pin-box-input" aria-label="Confirm PIN digit 3">
-                        <input type="password" maxlength="1" inputmode="numeric" autocomplete="off" class="pin-box-input" aria-label="Confirm PIN digit 4">
-                    </div>
+                <div class="candidate-card">
+                    <div class="symbol-badge">🌅</div>
+                    <h3>M. K. Stalin</h3>
+                    <p style="color: var(--primary); font-weight: 700; margin-bottom: 0.25rem;">Dravida Munnetra Kazhagam (DMK)</p>
+                    <p style="font-size: 0.85rem;">Constituency: Chennai / State</p>
                 </div>
-
-                <button type="button" class="btn-maroon" onclick="savePinAndContinue()">
-                    Save PIN & Go to Ballot ➔
-                </button>
-            </div>
-        </div>
-
-        <!-- ========================================== -->
-        <!-- SCREEN 5: CANDIDATE SELECTION BALLOT       -->
-        <!-- ========================================== -->
-        <div id="step-ballot" class="app-screen" style="display: none;">
-            <div class="votein-card">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
-                    <h3 style="font-size: 1.3rem; font-weight: 800; margin: 0;">Tap to Select your Candidate</h3>
-                    <span style="font-size: 0.78rem; background: #FFF5F5; color: var(--votein-maroon); font-weight: 700; padding: 0.3rem 0.65rem; border-radius: 20px;">BALLOT 2026</span>
-                </div>
-
-                <div id="ballot-candidates-list">
-                    <div class="candidate-row" onclick="openVoteModal(1, 'Narendra Modi', 'Bharatiya Janata Party (BJP)', '🪷')">
-                        <div class="candidate-row-left">
-                            <span style="font-weight: 800; color: var(--text-muted);">1.</span>
-                            <div class="candidate-row-info">
-                                <h4>Narendra Modi</h4>
-                                <p>BJP</p>
-                            </div>
-                        </div>
-                        <span class="candidate-party-logo">🪷</span>
-                    </div>
-
-                    <div class="candidate-row" onclick="openVoteModal(2, 'Rahul Gandhi', 'Indian National Congress (INC)', '✋')">
-                        <div class="candidate-row-left">
-                            <span style="font-weight: 800; color: var(--text-muted);">2.</span>
-                            <div class="candidate-row-info">
-                                <h4>Rahul Gandhi</h4>
-                                <p>INC</p>
-                            </div>
-                        </div>
-                        <span class="candidate-party-logo">✋</span>
-                    </div>
-
-                    <div class="candidate-row" onclick="openVoteModal(3, 'Arvind Kejriwal', 'Aam Aadmi Party (AAP)', '🧹')">
-                        <div class="candidate-row-left">
-                            <span style="font-weight: 800; color: var(--text-muted);">3.</span>
-                            <div class="candidate-row-info">
-                                <h4>Arvind Kejriwal</h4>
-                                <p>AAP</p>
-                            </div>
-                        </div>
-                        <span class="candidate-party-logo">🧹</span>
-                    </div>
-
-                    <div class="candidate-row" onclick="openVoteModal(4, 'Akhilesh Yadav', 'Samajwadi Party (SP)', '🚲')">
-                        <div class="candidate-row-left">
-                            <span style="font-weight: 800; color: var(--text-muted);">4.</span>
-                            <div class="candidate-row-info">
-                                <h4>Akhilesh Yadav</h4>
-                                <p>SP</p>
-                            </div>
-                        </div>
-                        <span class="candidate-party-logo">🚲</span>
-                    </div>
-
-                    <div class="candidate-row" onclick="openVoteModal(5, 'Mayawati', 'Bahujan Samaj Party (BSP)', '🐘')">
-                        <div class="candidate-row-left">
-                            <span style="font-weight: 800; color: var(--text-muted);">5.</span>
-                            <div class="candidate-row-info">
-                                <h4>Mayawati</h4>
-                                <p>BSP</p>
-                            </div>
-                        </div>
-                        <span class="candidate-party-logo">🐘</span>
-                    </div>
+                <div class="candidate-card">
+                    <div class="symbol-badge">⏰</div>
+                    <h3>Sharad Pawar</h3>
+                    <p style="color: var(--primary); font-weight: 700; margin-bottom: 0.25rem;">Nationalist Congress Party (NCP)</p>
+                    <p style="font-size: 0.85rem;">Constituency: Baramati / State</p>
                 </div>
             </div>
         </div>
-
-        <!-- ========================================== -->
-        <!-- SCREEN 6: VOTE CONFIRMATION MODAL         -->
-        <!-- ========================================== -->
-        <div id="modal-confirm-vote" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(6px); z-index: 1000; align-items: center; justify-content: center; padding: 1rem;">
-            <div class="votein-card" style="max-width: 420px; width: 100%; text-align: center; position: relative;">
-                <button type="button" style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.2rem; cursor: pointer;" onclick="closeVoteModal()">✕</button>
-                
-                <h3 style="font-size: 1.35rem; font-weight: 800; margin-bottom: 1.25rem;">Vote Confirmation</h3>
-
-                <div style="font-size: 4rem; margin-bottom: 0.5rem;" id="modal-symbol">🪷</div>
-                <h4 style="font-size: 1.3rem; font-weight: 800; color: var(--text-dark);" id="modal-candidate-name">Narendra Modi</h4>
-                <p style="font-size: 0.9rem; color: var(--votein-maroon); font-weight: 700; margin-bottom: 1.75rem;" id="modal-party-name">Bharatiya Janata Party (BJP)</p>
-
-                <!-- Slide to Vote Slider -->
-                <div class="slide-to-vote-container" id="slide-container">
-                    <div class="slide-to-vote-text">>> Slide to confirm your vote</div>
-                    <button type="button" class="slide-to-vote-thumb" id="slide-thumb" aria-label="Slide to confirm vote">►</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- ========================================== -->
-        <!-- SCREEN 7: VOTING SUCCESSFUL & RECEIPT     -->
-        <!-- ========================================== -->
-        <div id="step-success" class="app-screen" style="display: none;">
-            <div class="votein-card" style="text-align: center; padding: 2.5rem 1.5rem;">
-                <h3 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 1.25rem;">Thank you for participating</h3>
-
-                <div style="background: #111827; color: white; border-radius: var(--radius-lg); padding: 1.75rem; text-align: center; margin-bottom: 1.5rem; box-shadow: var(--shadow-lg);">
-                    <div style="width: 50px; height: 50px; background: #10B981; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; margin: 0 auto 1rem auto;">
-                        ✓
-                    </div>
-
-                    <h4 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 0.3rem;">Your practice ballot was recorded</h4>
-                    <p style="font-size: 0.85rem; color: #9CA3AF; margin-bottom: 1.5rem;">This participation certificate is not proof of an official vote.</p>
-
-                    <blockquote class="voting-thank-you-quote">“The game of power will go on. Governments will come and go, parties will be formed and dissolved, but this country must remain, and its democracy must remain eternal.”</blockquote>
-
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; text-align: left; background: #1F2937; padding: 1rem; border-radius: 12px; margin-bottom: 1.25rem; font-size: 0.8rem;">
-                        <div>
-                            <span style="color: #9CA3AF; display: block;">Record reference</span>
-                            <strong style="color: white; font-family: monospace;" id="receipt-ref-no">—</strong>
-                        </div>
-                        <div>
-                            <span style="color: #9CA3AF; display: block;">Vote Time</span>
-                            <strong style="color: white;" id="receipt-vote-time">25 Apr 2026, 13:22</strong>
-                        </div>
-                        <div>
-                            <span style="color: #9CA3AF; display: block;">Practice record hash</span>
-                            <strong style="color: white; font-family: monospace;" id="receipt-vote-id">—</strong>
-                        </div>
-                        <div>
-                            <span style="color: #9CA3AF; display: block;">Voter Name</span>
-                            <strong style="color: white;" id="receipt-voter-name">Manishi</strong>
-                        </div>
-                    </div>
-
-                    <button type="button" class="btn-vote-now" onclick="downloadPDFReceipt()" style="background: transparent; border: 1px solid rgba(255,255,255,0.2); font-size: 0.9rem; padding: 0.65rem;">
-                        🖨️ Print participation certificate
-                    </button>
-                </div>
-
-                <div style="display: flex; gap: 0.75rem;">
-                    <a href="/pages/spectator/LiveCounting.html" class="btn-maroon" style="text-decoration: none; text-align: center;">
-                        View Live Spectator Tally 📊
-                    </a>
-                </div>
-            </div>
-        </div>
-
     </div>
 
-    <!-- Bottom Mobile Navigation Bar -->
-    <div class="bottom-app-nav">
-        <a href="/" class="bottom-nav-item active">
-            <span class="bottom-nav-icon">🏠</span>
-            Home
-        </a>
-        <a href="javascript:void(0)" onclick="beginVotingFlow()" class="bottom-nav-item">
-            <span class="bottom-nav-icon">🔍</span>
-            Elections
-        </a>
-        <a href="javascript:void(0)" onclick="beginVotingFlow()" class="bottom-nav-item" aria-label="Start ballot verification" title="Start ballot verification">
-            <div class="bottom-nav-center-btn">🗳️</div>
-        </a>
-        <a href="/pages/spectator/ElectionNews.html" class="bottom-nav-item">
-            <span class="bottom-nav-icon">📰</span>
-            News
-        </a>
-        <a href="/pages/spectator/FinalResult.html" class="bottom-nav-item">
-            <span class="bottom-nav-icon">☰</span>
-            Menu
-        </a>
+    <!-- QR Scanner Modal Overlay -->
+    <div id="scanner-modal" class="modal-backdrop">
+        <div class="modal-content">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3>📷 Scan Voter QR Code</h3>
+                <button id="close-scanner-btn" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted);">&times;</button>
+            </div>
+            
+            <p style="font-size: 0.85rem; margin-top: 0.25rem; margin-bottom: 0.75rem;">
+                Align your practice Voter QR code inside the box, or upload a QR image.
+            </p>
+
+            <div id="scanner-status" class="alert-box alert-info">
+                Click "Start Camera Scanner" or choose a QR image file.
+            </div>
+
+            <div id="camera-controls" style="display: flex; gap: 0.5rem; margin-bottom: 0.75rem; flex-wrap: wrap;">
+                <select id="camera-select" style="display: none; flex: 1; padding: 0.5rem; font-size: 0.85rem;"></select>
+                <button id="start-cam-btn" class="btn btn-sm">Start Camera Scanner</button>
+                <button id="stop-cam-btn" class="btn btn-secondary btn-sm" style="display: none;">Stop Camera</button>
+            </div>
+
+            <!-- Video Preview Container -->
+            <div id="qr-reader"></div>
+
+            <div style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--border-color);">
+                <label for="qr-file-input" style="font-size: 0.85rem; font-weight: 600;">Or Upload QR Image File:</label>
+                <input type="file" id="qr-file-input" accept="image/*" style="padding: 0.4rem; font-size: 0.85rem;">
+            </div>
+        </div>
     </div>
 
-    <script src="/js/main.js?v=20260615"></script>
+    <footer>
+        <p>voteIn Practice Prototype &copy; 2026. Cryptographic Proof of Concept for E-Voting in India.</p>
+    </footer>
+
+    <script src="/js/main.js"></script>
     <script>
-        let selectedCandidateObj = null;
+        let qrScanner = null;
 
-        function savePinAndContinue() {
-            const groups = document.querySelectorAll('#step-pin .pin-boxes-container');
-            const pin = Array.from(groups[0].querySelectorAll('.pin-box-input'), input => input.value).join('');
-            const confirmation = Array.from(groups[1].querySelectorAll('.pin-box-input'), input => input.value).join('');
-            if (!/^\d{4}$/.test(pin) || !/^\d{4}$/.test(confirmation)) {
-                showToast('Enter all four digits in both PIN fields.', 'error');
-                return;
-            }
-            if (pin !== confirmation) {
-                showToast('The PIN entries do not match.', 'error');
-                return;
-            }
-            navigateToStep('step-ballot');
+        // Countdown timer simulation
+        function startTimer() {
+            let totalSeconds = 8 * 3600 + 50 * 60 + 10;
+            const timerEl = document.getElementById('countdown-timer');
+            setInterval(() => {
+                if (totalSeconds > 0) totalSeconds--;
+                const h = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
+                const m = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
+                const s = String(totalSeconds % 60).padStart(2, '0');
+                if (timerEl) timerEl.innerText = `${h} hrs : ${m} mins : ${s} sec`;
+            }, 1000);
+        }
+        startTimer();
+
+        // Modal and Scanner logic
+        const modal = document.getElementById('scanner-modal');
+        const openBtn = document.getElementById('open-scanner-btn');
+        const closeBtn = document.getElementById('close-scanner-btn');
+        const startCamBtn = document.getElementById('start-cam-btn');
+        const stopCamBtn = document.getElementById('stop-cam-btn');
+        const cameraSelect = document.getElementById('camera-select');
+        const statusEl = document.getElementById('scanner-status');
+        const fileInput = document.getElementById('qr-file-input');
+
+        function updateScannerStatus(msg, type) {
+            statusEl.className = `alert-box alert-${type === 'danger' ? 'danger' : type === 'success' ? 'success' : 'info'}`;
+            statusEl.innerText = msg;
         }
 
-        let demoVerification = null;
-        let signedInVoterProfile = null;
-        let signedInVoterProfilePromise = null;
-        let selectedVoterCategory = null;
-        let liveLocation = null;
-        let locationRequestSequence = 0;
-
-        function beginVotingFlow() {
-            const user = getUserInfo();
-            if (!user || !user.id) {
-                showToast('Sign in before starting the practice ballot.', 'info');
-                window.location.assign('/pages/auth/Login.html');
-                return;
-            }
-            if (user.role !== 'voter') {
-                showToast('The practice ballot is available only to voter accounts.', 'error');
-                return;
-            }
-
-            demoVerification = null;
-            selectedVoterCategory = null;
-            liveLocation = null;
-            document.getElementById('resident-aadhaar-form').reset();
-            document.getElementById('resident-pan-form').reset();
-            document.getElementById('resident-pan-form').hidden = true;
-            document.getElementById('nri-verification-form').reset();
-            document.getElementById('nri-verification-section').hidden = true;
-            document.getElementById('resident-verification-section').hidden = true;
-            document.getElementById('account-details-preview').hidden = true;
-            document.querySelectorAll('[data-voter-type]').forEach(button => button.setAttribute('aria-pressed', 'false'));
-            document.getElementById('location-map-link').hidden = true;
-            document.getElementById('location-status').textContent = 'Requesting browser location permission…';
-            navigateToStep('step-aadhaar');
-            requestCurrentLocation();
-            getSignedInVoter();
+        function onQRDetected(data) {
+            modal.classList.remove('active');
+            const resultCard = document.getElementById('scanner-result-card');
+            const resultDetails = document.getElementById('scanner-result-details');
+            resultCard.style.display = 'block';
+            resultDetails.innerHTML = `
+                <strong>Scanned Voter ID / EPIC:</strong> <code style="background: #F1F5F9; padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 700;">${data.voterId}</code><br>
+                <strong>Status:</strong> ${data.statusMessage}
+            `;
+            const loginLink = document.getElementById('scanner-login-link');
+            loginLink.href = `/pages/auth/Login.html?voterId=${encodeURIComponent(data.voterId)}`;
         }
 
-        function requestCurrentLocation() {
-            const status = document.getElementById('location-status');
-            const mapLink = document.getElementById('location-map-link');
-            const requestSequence = ++locationRequestSequence;
-            liveLocation = null;
-            mapLink.hidden = true;
+        qrScanner = new VoteInQRScanner('qr-reader', updateScannerStatus, onQRDetected);
 
-            if (!navigator.geolocation) {
-                status.textContent = 'Location is unavailable in this browser. You can continue without sharing it.';
-                document.getElementById('auth-account-location').textContent = 'Not available';
-                return;
-            }
-
-            status.textContent = 'Getting your current location… allow the browser location permission if prompted.';
-            document.getElementById('auth-account-location').textContent = 'Waiting for permission…';
-            navigator.geolocation.getCurrentPosition(position => {
-                if (requestSequence !== locationRequestSequence) return;
-                const { latitude, longitude, accuracy } = position.coords;
-                liveLocation = {
-                    latitude,
-                    longitude,
-                    accuracy,
-                    capturedAt: new Date(position.timestamp || Date.now())
-                };
-                const locationLabel = `${latitude.toFixed(5)}, ${longitude.toFixed(5)} · accuracy about ${Math.round(accuracy)} m · captured ${liveLocation.capturedAt.toLocaleTimeString()}`;
-                status.textContent = locationLabel;
-                document.getElementById('auth-account-location').textContent = locationLabel;
-                mapLink.href = `https://www.openstreetmap.org/?mlat=${encodeURIComponent(latitude)}&mlon=${encodeURIComponent(longitude)}#map=16/${encodeURIComponent(latitude)}/${encodeURIComponent(longitude)}`;
-                mapLink.hidden = false;
-            }, error => {
-                if (requestSequence !== locationRequestSequence) return;
-                const message = error.code === error.PERMISSION_DENIED
-                    ? 'Location permission was denied. You can allow it in browser settings and refresh, or continue without sharing location.'
-                    : error.code === error.TIMEOUT
-                        ? 'Location request timed out. Refresh location to try again, or continue without it.'
-                        : 'Could not read your location. Refresh to try again, or continue without it.';
-                status.textContent = message;
-                document.getElementById('auth-account-location').textContent = 'Not shared';
-            }, { enableHighAccuracy: true, maximumAge: 0, timeout: 15000 });
-        }
-
-        document.getElementById('retry-location').addEventListener('click', requestCurrentLocation);
-
-        document.querySelectorAll('[data-voter-type]').forEach(button => {
-            button.addEventListener('click', () => {
-                if (selectedVoterCategory !== button.dataset.voterType) {
-                    demoVerification = null;
-                    stopLiveCamera();
-                    stopQRScanner();
-                    document.getElementById('resident-aadhaar-form').reset();
-                    document.getElementById('resident-pan-form').reset();
-                    document.getElementById('resident-pan-form').hidden = true;
-                    document.getElementById('nri-verification-form').reset();
-                    document.getElementById('account-details-preview').hidden = true;
-                    document.getElementById('live-photo-result').hidden = true;
-                    document.getElementById('qr-account-result').hidden = true;
-                }
-                selectedVoterCategory = button.dataset.voterType;
-                document.querySelectorAll('[data-voter-type]').forEach(option => {
-                    option.setAttribute('aria-pressed', String(option === button));
-                });
-                document.getElementById('nri-verification-section').hidden = selectedVoterCategory !== 'nri';
-                document.getElementById('resident-verification-section').hidden = selectedVoterCategory !== 'resident';
-            });
-        });
-
-        async function getSignedInVoter() {
-            const claims = getUserInfo();
-            if (!claims || !claims.id || claims.role !== 'voter') {
-                showToast('Your voter session is unavailable. Sign in again to continue.', 'error');
-                window.location.assign('/pages/auth/Login.html');
-                return null;
-            }
-            if (claims.name) return claims;
-            if (signedInVoterProfile?.id === claims.id && signedInVoterProfile.name) return signedInVoterProfile;
-
-            if (!signedInVoterProfilePromise) {
-                signedInVoterProfilePromise = (async () => {
-                    const response = await fetch(apiUrl('/auth/me'), {
-                        headers: { Authorization: `Bearer ${getToken()}` }
-                    });
-                    const data = await response.json();
-                    if (!response.ok) throw new Error(data.error || 'Could not load account details.');
-                    if (!data.user || data.user.id !== claims.id || typeof data.user.name !== 'string' || !data.user.name.trim()) {
-                        throw new Error('The account profile response was incomplete.');
-                    }
-                    return { ...claims, ...data.user };
-                })();
-            }
-            try {
-                signedInVoterProfile = await signedInVoterProfilePromise;
-                const greeting = document.getElementById('user-greeting');
-                if (greeting) greeting.textContent = `Welcome, ${signedInVoterProfile.name}`;
-                return signedInVoterProfile;
-            } catch (error) {
-                console.error('Could not load signed-in voter profile:', error);
-                showToast('Could not load your account name. Check your connection and try again.', 'error');
-                return null;
-            } finally {
-                signedInVoterProfilePromise = null;
-            }
-        }
-
-        async function continueToCameraAndQr(category, documentType, documentNumber) {
-            const user = await getSignedInVoter();
-            if (!user) return;
-            if ((category === 'NRI' && selectedVoterCategory !== 'nri')
-                || (category === 'Indian Resident' && selectedVoterCategory !== 'resident')) {
-                showToast('Choose the matching voter category before continuing.', 'error');
-                return;
-            }
-            const normalizedDocument = documentNumber.toUpperCase();
-            const maskedDocument = normalizedDocument.length < 5
-                ? '*'.repeat(normalizedDocument.length)
-                : `${normalizedDocument.slice(0, 2)}${'*'.repeat(normalizedDocument.length - 4)}${normalizedDocument.slice(-2)}`;
-            demoVerification = {
-                accountId: String(user.id),
-                name: String(user.name || 'Voter'),
-                category,
-                documentType,
-                maskedDocument,
-                parentName: '',
-                photoCheck: 'Photo not captured'
-            };
-            document.getElementById('qr-account-result').hidden = true;
-            document.getElementById('live-photo-result').hidden = true;
-            document.getElementById('start-qr-scanner').disabled = true;
-            document.getElementById('stop-qr-scanner').hidden = true;
-            document.getElementById('qr-image-input').disabled = false;
-            document.getElementById('verification-account-name').textContent = user.name || user.id;
-            document.getElementById('verification-account-id').textContent = user.id;
-            document.getElementById('auth-account-name').textContent = user.name || user.id;
-            document.getElementById('auth-account-id').textContent = user.id;
-            document.getElementById('auth-account-category').textContent = category;
-            document.getElementById('auth-account-location').textContent = liveLocation
-                ? `${liveLocation.latitude.toFixed(5)}, ${liveLocation.longitude.toFixed(5)} · accuracy about ${Math.round(liveLocation.accuracy)} m`
-                : 'Not shared';
-            navigateToStep('step-auth');
-        }
-
-        document.getElementById('resident-aadhaar-form').addEventListener('submit', async event => {
-            event.preventDefault();
-            const aadhaarInput = document.getElementById('aadhaar-input');
-            const sampleNumber = aadhaarInput.value.replace(/\s/g, '');
-            aadhaarInput.value = '';
-
-            if (!/^\d{12}$/.test(sampleNumber)) {
-                showToast('Enter a made-up 12-digit Aadhaar-format number.', 'error');
-                return;
-            }
-
-            const user = await getSignedInVoter();
-            if (!user) return;
-            document.getElementById('verification-account-name').textContent = user.name || user.id;
-            document.getElementById('verification-account-id').textContent = user.id;
-            document.getElementById('account-details-preview').hidden = false;
-            document.getElementById('resident-pan-form').hidden = false;
-        });
-
-        document.getElementById('resident-pan-form').addEventListener('submit', async event => {
-            event.preventDefault();
-            const panInput = document.getElementById('resident-pan');
-            const pan = panInput.value.trim().toUpperCase();
-            panInput.value = '';
-
-            if (!/^[A-Z]{5}\d{4}[A-Z]$/.test(pan)) {
-                showToast('Enter a made-up PAN-format value such as ABCDE1234F.', 'error');
-                return;
-            }
-            await continueToCameraAndQr('Indian Resident', 'PAN', pan);
-        });
-
-        document.getElementById('nri-verification-form').addEventListener('submit', async event => {
-            event.preventDefault();
-            const passportInput = document.getElementById('nri-passport');
-            const parentInput = document.getElementById('nri-parent-name');
-            const passport = passportInput.value.trim().toUpperCase();
-            const parentName = parentInput.value.trim();
-            passportInput.value = '';
-            parentInput.value = '';
-
-            if (!/^[A-Z0-9]{6,12}$/.test(passport)) {
-                showToast('Enter a sample passport number using 6–12 letters or digits.', 'error');
-                return;
-            }
-            if (!parentName || parentName.length > 80) {
-                showToast('Enter a parent name up to 80 characters.', 'error');
-                return;
-            }
-            await continueToCameraAndQr('NRI', 'Passport', passport);
-            if (demoVerification) demoVerification.parentName = parentName;
-        });
-
-        document.querySelectorAll('#step-pin .pin-box-input').forEach((input, index, inputs) => {
-            input.addEventListener('input', () => {
-                input.value = input.value.replace(/\D/g, '').slice(-1);
-                if (input.value && inputs[index + 1]) inputs[index + 1].focus();
-            });
-            input.addEventListener('keydown', event => {
-                if (event.key === 'Backspace' && !input.value && inputs[index - 1]) inputs[index - 1].focus();
-                if (event.key === 'ArrowLeft' && inputs[index - 1]) inputs[index - 1].focus();
-                if (event.key === 'ArrowRight' && inputs[index + 1]) inputs[index + 1].focus();
-            });
-            input.addEventListener('paste', event => {
-                const digits = (event.clipboardData.getData('text').match(/\d/g) || []).slice(0, 4);
-                if (!digits.length) return;
-                event.preventDefault();
-                const start = index < 4 ? 0 : 4;
-                digits.forEach((digit, offset) => {
-                    if (inputs[start + offset]) inputs[start + offset].value = digit;
-                });
-                inputs[Math.min(start + digits.length - 1, start + 3)].focus();
-            });
-        });
-
-        function navigateToStep(stepId) {
-            if (stepId !== 'step-auth') {
-                stopLiveCamera();
-                stopQRScanner();
-            }
-            document.querySelectorAll('.app-screen').forEach(s => s.style.display = 'none');
-            const target = document.getElementById(stepId);
-            if (target) target.style.display = 'block';
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        let html5QrCode = null;
-        let qrScannerStartPromise = null;
-        let qrScannerStopPromise = null;
-        let qrScannerRunning = false;
-        let qrScannerStopRequested = false;
-        let cameraStream = null;
-        let qrScanHandled = false;
-        let faceDetectorPromise = null;
-
-        function stopLiveCamera() {
-            const wasStreaming = Boolean(cameraStream);
-            if (cameraStream) {
-                cameraStream.getTracks().forEach(track => track.stop());
-                cameraStream = null;
-            }
-            const video = document.getElementById('live-camera-preview');
-            if (video) {
-                video.srcObject = null;
-                video.hidden = true;
-            }
-            const captureButton = document.getElementById('capture-live-photo');
-            if (captureButton) captureButton.disabled = true;
-            const status = document.getElementById('camera-status');
-            if (status && wasStreaming) {
-                status.textContent = document.getElementById('live-photo-result').hidden
-                    ? 'Camera is off.'
-                    : 'Photo captured locally. It was not uploaded.';
-            }
-        }
-
-        async function startLiveCamera() {
-            const status = document.getElementById('camera-status');
-            const video = document.getElementById('live-camera-preview');
-            if (!demoVerification) {
-                status.textContent = 'Choose a voter category and enter the required details before starting the camera.';
-                return;
-            }
-            if (!navigator.mediaDevices?.getUserMedia) {
-                status.textContent = 'Live camera is not available in this browser. Open the site over HTTPS and allow camera access.';
-                return;
-            }
-
-            stopLiveCamera();
-            if (!await stopQRScanner()) {
-                status.textContent = 'The QR camera is still active. Stop it before starting the photo camera.';
-                return;
-            }
-            demoVerification.photoCheck = 'Photo not captured';
-            document.getElementById('live-photo-result').hidden = true;
-            document.getElementById('qr-account-result').hidden = true;
-            document.getElementById('start-qr-scanner').disabled = true;
-            document.getElementById('qr-image-input').disabled = true;
-            try {
-                cameraStream = await navigator.mediaDevices.getUserMedia({
-                    audio: false,
-                    video: { facingMode: 'user' }
-                });
-                video.srcObject = cameraStream;
-                video.hidden = false;
-                await video.play();
-                document.getElementById('capture-live-photo').disabled = false;
-                status.textContent = 'Camera is live. Take a photo when ready.';
-            } catch (err) {
-                status.textContent = err.name === 'NotAllowedError'
-                    ? 'Camera permission was denied. Allow camera access in your browser settings and try again.'
-                    : 'Could not start the camera. Check that a camera is connected and try again.';
-                console.error('Live camera error:', err);
-            }
-        }
-
-        function captureLivePhoto() {
-            const video = document.getElementById('live-camera-preview');
-            const canvas = document.getElementById('live-photo-canvas');
-            const image = document.getElementById('live-photo-result');
-            if (!cameraStream || !video.videoWidth || !video.videoHeight) {
-                document.getElementById('camera-status').textContent = 'Start the live camera and wait for the preview before taking a photo.';
-                return;
-            }
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
-            image.src = canvas.toDataURL('image/jpeg', 0.88);
-            image.hidden = false;
-            video.hidden = true;
-            stopLiveCamera();
-            detectFaceInPhoto(image);
-        }
-
-        async function detectFaceInPhoto(image) {
-            const status = document.getElementById('camera-status');
-            if (!demoVerification) {
-                status.textContent = 'Complete the voter details step before taking a photo.';
-                return;
-            }
-
-            status.textContent = 'Checking for a face on this device…';
-            try {
-                if (!faceDetectorPromise) {
-                    faceDetectorPromise = (async () => {
-                        const { FaceDetector, FilesetResolver } = await import(
-                            'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.21/vision_bundle.mjs'
-                        );
-                        const vision = await FilesetResolver.forVisionTasks(
-                            'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.21/wasm'
-                        );
-                        return FaceDetector.createFromOptions(vision, {
-                            baseOptions: {
-                                modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tflite'
-                            },
-                            runningMode: 'IMAGE',
-                            minDetectionConfidence: 0.5
-                        });
-                    })();
-                }
-                const detector = await faceDetectorPromise;
-                const faces = detector.detect(image).detections;
-                if (faces.length === 0) {
-                    demoVerification.photoCheck = 'No face detected in the photo';
-                    status.textContent = 'No face detected. Retake the photo with your face in view.';
-                    document.getElementById('start-qr-scanner').disabled = true;
-                    document.getElementById('qr-image-input').disabled = true;
-                    return;
-                }
-                if (faces.length > 1) {
-                    demoVerification.photoCheck = 'More than one face detected';
-                    status.textContent = 'More than one face detected. Retake the photo with one person in view.';
-                    document.getElementById('start-qr-scanner').disabled = true;
-                    document.getElementById('qr-image-input').disabled = true;
-                    return;
-                }
-                demoVerification.photoCheck = 'One face detected locally (not identity verified)';
-                status.textContent = 'Face detected in this photo on this device. Identity and eligibility are not verified.';
-                document.getElementById('start-qr-scanner').disabled = false;
-                document.getElementById('qr-image-input').disabled = false;
-            } catch (err) {
-                demoVerification.photoCheck = 'Photo captured; face detection failed';
-                status.textContent = 'Photo captured, but the on-device face detector could not load. No face or identity was verified; you may still scan your account QR.';
-                document.getElementById('start-qr-scanner').disabled = false;
-                document.getElementById('qr-image-input').disabled = false;
-                faceDetectorPromise = null;
-                console.error('Face detection error:', err);
-            }
-        }
-
-        function getAccountIdFromQr(decodedText) {
-            let accountId = decodedText.trim();
-            try {
-                const payload = JSON.parse(accountId);
-                if (!payload || typeof payload !== 'object' || Array.isArray(payload)
-                    || Object.keys(payload).length !== 1 || typeof payload.accountId !== 'string') {
-                    return null;
-                }
-                accountId = payload.accountId.trim();
-            } catch {
-                // A plain account ID is also a valid QR payload.
-            }
-            return /^[A-Za-z0-9_-]{1,64}$/.test(accountId) ? accountId : null;
-        }
-
-        async function stopQRScanner() {
-            if (qrScannerStopPromise) return qrScannerStopPromise;
-            if (!html5QrCode) return true;
-            const scanner = html5QrCode;
-            qrScannerStopRequested = true;
-            qrScannerStopPromise = (async () => {
-                if (qrScannerStartPromise) {
-                    try {
-                        await qrScannerStartPromise;
-                    } catch {
-                        // Start errors are reported by startQRScanner; cleanup still follows.
-                    }
-                }
-                try {
-                    if (html5QrCode !== scanner) return true;
-                    if (qrScannerRunning) {
-                        try {
-                            await scanner.stop();
-                        } catch (err) {
-                            if (scanner.isScanning) throw err;
-                            console.error('QR camera stopped with a cleanup warning:', err);
-                        }
-                        qrScannerRunning = false;
-                    }
-                    scanner.clear();
-                    if (html5QrCode === scanner) html5QrCode = null;
-                    document.getElementById('stop-qr-scanner').hidden = true;
-                    document.getElementById('start-qr-scanner').disabled = false;
-                    document.getElementById('start-qr-scanner').textContent = 'Start QR scanner';
-                    document.getElementById('qr-image-input').disabled = false;
-                    return true;
-                } catch (err) {
-                    console.error('Could not stop QR scanner cleanly:', err);
-                    document.getElementById('qr-image-input').disabled = false;
-                    return false;
-                }
-            })();
-            try {
-                return await qrScannerStopPromise;
-            } finally {
-                qrScannerStopPromise = null;
-                if (!html5QrCode) qrScannerStopRequested = false;
-            }
-        }
-
-        async function startQRScanner() {
-            const status = document.getElementById('qr-status');
-            if (!demoVerification || demoVerification.photoCheck === 'Photo not captured'
-                || demoVerification.photoCheck === 'No face detected in the photo'
-                || demoVerification.photoCheck === 'More than one face detected') {
-                status.textContent = 'Complete the profile details and take a photo before scanning the account QR.';
-                return;
-            }
-            if (typeof Html5Qrcode === 'undefined') {
-                status.textContent = 'QR scanner could not load. Check your connection and refresh the page.';
-                return;
-            }
-            stopLiveCamera();
-            if (!await stopQRScanner()) {
-                status.textContent = 'The previous camera session could not be stopped. Refresh the page before trying again.';
-                return;
-            }
-            qrScanHandled = false;
-            document.getElementById('qr-account-result').hidden = true;
-            document.getElementById('qr-image-input').disabled = true;
-            document.getElementById('start-qr-scanner').disabled = true;
-            document.getElementById('start-qr-scanner').textContent = 'Starting camera…';
-            document.getElementById('stop-qr-scanner').hidden = true;
-            status.textContent = 'Starting rear camera… allow camera access when your browser asks.';
-            const scanner = new Html5Qrcode('qr-reader', { formatsToSupport: [Html5QrcodeSupportedFormats.QR_CODE] });
-            html5QrCode = scanner;
-            qrScannerStopRequested = false;
-            try {
-                const startPromise = (async () => {
-                    const cameras = await Html5Qrcode.getCameras();
-                    const camera = cameras.find(device => /back|rear|environment|world/i.test(device.label)) || cameras[0];
-                    if (!camera?.id) throw new Error('No camera device was found.');
-                    await scanner.start(
-                        camera.id,
-                        {
-                            fps: 10,
-                            qrbox: { width: 250, height: 250 },
-                            aspectRatio: 1
-                        },
-                        async decodedText => {
-                            if (qrScanHandled) return;
-                            qrScanHandled = true;
-                            const accountId = getAccountIdFromQr(decodedText);
-                            status.textContent = 'QR detected. Stopping camera…';
-                            if (!await stopQRScanner()) {
-                                status.textContent = 'QR detected, but the camera could not be stopped safely. Refresh before continuing.';
-                                return;
-                            }
-                            handleAccountQr(accountId, status);
-                        },
-                        () => {}
-                    );
-                    qrScannerRunning = true;
-                    status.textContent = 'Camera opened. Waiting for the first live frame…';
-                    await waitForQrScannerReady(scanner);
-                })();
-                qrScannerStartPromise = startPromise;
-                await startPromise;
-                if (qrScannerStopRequested) {
-                    await stopQRScanner();
-                    return;
-                }
-                document.getElementById('stop-qr-scanner').hidden = false;
-                document.getElementById('start-qr-scanner').textContent = 'Scanner is running';
-                status.textContent = 'Scanner is running. Hold your account QR steady inside the frame.';
-            } catch (err) {
-                console.error('QR scanner error:', err);
-                status.textContent = err?.name === 'NotAllowedError'
-                    ? 'Camera permission was denied. Allow camera access in browser settings and try again.'
-                    : 'Could not start the QR camera. Check the camera permission and try again, or scan a QR image.';
-                await stopQRScanner();
-            } finally {
-                if (qrScannerStartPromise) qrScannerStartPromise = null;
-                if (!qrScannerRunning && html5QrCode === scanner) {
-                    try {
-                        scanner.clear();
-                        html5QrCode = null;
-                    } catch (cleanupError) {
-                        console.error('Could not clear failed QR scanner:', cleanupError);
-                    }
-                    document.getElementById('stop-qr-scanner').hidden = true;
-                    document.getElementById('start-qr-scanner').disabled = false;
-                    document.getElementById('start-qr-scanner').textContent = 'Start QR scanner';
-                    document.getElementById('qr-image-input').disabled = false;
-                }
-            }
-
-            function waitForQrScannerReady(scanner) {
-                return new Promise((resolve, reject) => {
-                    const startedAt = Date.now();
-                    const poll = window.setInterval(() => {
-                        const video = document.querySelector('#qr-reader video');
-                        if (scanner.isScanning && video?.readyState >= 2 && video.videoWidth > 0
-                            && scanner.canvasElement?.isConnected) {
-                            window.clearInterval(poll);
-                            resolve();
-                        } else if (Date.now() - startedAt >= 12000) {
-                            window.clearInterval(poll);
-                            reject(new Error('The camera did not deliver a live frame.'));
-                        }
-                    }, 100);
-                });
-            }
-        }
-
-        function handleAccountQr(accountId, status) {
-            if (!accountId) {
-                status.textContent = 'That QR does not contain a valid account ID. Scan a QR with only the ID (or {"accountId":"your-id"}); passwords and identity-document QR codes are not accepted.';
-                return;
-            }
-            const user = getUserInfo();
-            if (!demoVerification || !user || String(user.id).toUpperCase() !== accountId.toUpperCase()
-                || demoVerification.accountId.toUpperCase() !== accountId.toUpperCase()) {
-                status.textContent = 'The scanned account ID does not match the signed-in account. No account details were shown.';
-                return;
-            }
-
-            document.getElementById('qr-account-name').textContent = demoVerification.name;
-            document.getElementById('qr-account-id').textContent = demoVerification.accountId;
-            document.getElementById('qr-account-category').textContent = demoVerification.category;
-            document.getElementById('qr-account-document').textContent = `${demoVerification.documentType}: ${demoVerification.maskedDocument}`;
-            document.getElementById('qr-parent-row').hidden = demoVerification.category !== 'NRI';
-            document.getElementById('qr-account-parent').textContent = demoVerification.parentName;
-            document.getElementById('qr-account-location').textContent = liveLocation
-                ? `${liveLocation.latitude.toFixed(5)}, ${liveLocation.longitude.toFixed(5)} (accuracy about ${Math.round(liveLocation.accuracy)} m)`
-                : 'Not shared';
-            document.getElementById('qr-face-status').textContent = demoVerification.photoCheck;
-            document.getElementById('qr-account-result').hidden = false;
-            status.textContent = 'QR scanned. The account ID matches your signed-in account.';
-        }
-
-        function canScanAccountQr() {
-            return demoVerification
-                && demoVerification.photoCheck !== 'Photo not captured'
-                && demoVerification.photoCheck !== 'No face detected in the photo'
-                && demoVerification.photoCheck !== 'More than one face detected';
-        }
-
-        document.getElementById('qr-image-input').addEventListener('change', async event => {
-            const file = event.target.files?.[0];
-            const status = document.getElementById('qr-status');
-            event.target.value = '';
-            if (!file) return;
-            if (!canScanAccountQr()) {
-                status.textContent = 'Complete the profile details and take a photo before scanning the account QR.';
-                return;
-            }
-            if (!await stopQRScanner()) {
-                status.textContent = 'Stop the live scanner before selecting a QR image.';
-                return;
-            }
-            if (typeof Html5Qrcode === 'undefined') {
-                status.textContent = 'QR image scanning could not load. Check your connection and refresh the page.';
-                return;
-            }
-
-            status.textContent = 'Reading QR code from the selected image…';
-            event.target.disabled = true;
-            const scanner = new Html5Qrcode('qr-reader');
-            try {
-                const decodedText = await scanner.scanFile(file, true);
-                handleAccountQr(getAccountIdFromQr(decodedText), status);
-            } catch (err) {
-                status.textContent = 'No readable QR code was found in that image. Try a clearer image or use the live scanner.';
-                console.error('QR image scan error:', err);
-            } finally {
-                scanner.clear();
-                event.target.disabled = false;
+        openBtn.addEventListener('click', async () => {
+            modal.classList.add('active');
+            const cameras = await qrScanner.getCameras();
+            if (cameras.length > 1) {
+                cameraSelect.style.display = 'block';
+                cameraSelect.innerHTML = cameras.map(c => `<option value="${c.id}">${c.label || 'Camera ' + c.id}</option>`).join('');
             }
         });
 
-        document.getElementById('start-live-camera').addEventListener('click', startLiveCamera);
-        document.getElementById('capture-live-photo').addEventListener('click', captureLivePhoto);
-        document.getElementById('start-qr-scanner').addEventListener('click', startQRScanner);
-        document.getElementById('stop-qr-scanner').addEventListener('click', async () => {
-            const status = document.getElementById('qr-status');
-            status.textContent = 'Stopping camera…';
-            status.textContent = await stopQRScanner()
-                ? 'Scanner stopped. You can restart it or choose a QR image.'
-                : 'Could not safely stop the camera. Refresh the page before continuing.';
-        });
-        document.getElementById('continue-to-ballot').addEventListener('click', () => {
-            if (!document.getElementById('qr-account-result').hidden) navigateToStep('step-ballot');
+        closeBtn.addEventListener('click', async () => {
+            await qrScanner.stopScanning();
+            modal.classList.remove('active');
+            stopCamBtn.style.display = 'none';
+            startCamBtn.style.display = 'inline-flex';
         });
 
-        function openVoteModal(id, name, party, symbol) {
-            selectedCandidateObj = { id, name, party, symbol };
-            document.getElementById('modal-candidate-name').innerText = name;
-            document.getElementById('modal-party-name').innerText = party;
-            document.getElementById('modal-symbol').innerText = symbol;
-
-            const thumb = document.getElementById('slide-thumb');
-            if (thumb) {
-                thumb.style.left = '4px';
-                thumb.style.background = '#800000';
-                thumb.innerHTML = '►';
-                thumb.disabled = false;
-                thumb.setAttribute('aria-valuenow', '0');
-                const sliderText = document.querySelector('#slide-container .slide-to-vote-text');
-                if (sliderText) sliderText.textContent = '>> Slide to confirm your vote';
-            }
-
-            document.getElementById('modal-confirm-vote').style.display = 'flex';
-
-            initSlideToVote(async () => {
-                showToast("Submitting vote...", "info");
-                return submitVoteApi(selectedCandidateObj.id);
-            });
-        }
-
-        function closeVoteModal() {
-            document.getElementById('modal-confirm-vote').style.display = 'none';
-        }
-
-        async function submitVoteApi(candidateId) {
-            const token = getToken();
-            const electionId = 1;
-
-            if (!token) {
-                showToast("Authentication required. Redirecting to login...", "error");
-                setTimeout(() => window.location.href = '/pages/auth/Login.html', 800);
-                return false;
-            }
-
-            try {
-                const res = await fetch('/api/voter/vote', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({ candidateId, electionId })
-                });
-
-                const data = await res.json();
-
-                if (!res.ok) {
-                    showToast(data.error || "Voting failed", "error");
-                    closeVoteModal();
-                    return false;
-                }
-
-                closeVoteModal();
-                
-                document.getElementById('receipt-ref-no').innerText = data.voteHash ? data.voteHash.slice(0, 16) : 'Not provided';
-                document.getElementById('receipt-vote-time').innerText = new Date().toLocaleString();
-                document.getElementById('receipt-vote-id').innerText = data.voteHash || 'Not provided by server';
-                
-                const user = getUserInfo();
-                if (user && user.id) document.getElementById('receipt-voter-name').innerText = user.name || user.id;
-
-                navigateToStep('step-success');
-                showToast("Practice ballot recorded. Thank you for participating.", "success");
-                return true;
-
-            } catch (err) {
-                showToast("Network connection error. Try again.", "error");
-                return false;
-            }
-        }
-
-        function downloadPDFReceipt() {
-            window.print();
-            showToast("Use the print dialog to save your participation certificate.", "info");
-        }
-
-    </script>
-    <script>
-        const leaderProfiles = {
-            'narendra-modi': {
-                name: 'Narendra Modi',
-                party: 'Bharatiya Janata Party (BJP)',
-                dob: 'Born 17 September 1950',
-                highlights: ['Joined the Bharatiya Janata Party in 1987.', 'Became Chief Minister of Gujarat in 2001.', 'Became Prime Minister of India in 2014.'],
-                source: 'https://www.britannica.com/biography/Narendra-Modi'
-            },
-            'rahul-gandhi': {
-                name: 'Rahul Gandhi',
-                party: 'Indian National Congress (INC)',
-                dob: 'Born 19 June 1970',
-                highlights: ['Entered electoral politics with the Indian National Congress in 2004, winning the Amethi Lok Sabha seat.', 'Served as party president from 2017 to 2019.', 'Became Leader of the Opposition in the Lok Sabha in 2024.'],
-                source: 'https://www.britannica.com/biography/Rahul-Gandhi'
-            },
-            'arvind-kejriwal': {
-                name: 'Arvind Kejriwal',
-                party: 'Aam Aadmi Party (AAP)',
-                dob: 'Born 16 August 1968',
-                highlights: ['Worked in the Indian Revenue Service before entering full-time politics.', 'Co-founded the Aam Aadmi Party in 2012 and became its national convener.', 'Served multiple terms as Chief Minister of Delhi.'],
-                source: 'https://www.britannica.com/biography/Arvind-Kejriwal'
-            },
-            'akhilesh-yadav': {
-                name: 'Akhilesh Yadav',
-                party: 'Samajwadi Party (SP)',
-                dob: 'Born 1 July 1973',
-                highlights: ['Entered Parliament as a Samajwadi Party member in 2000.', 'Served as Chief Minister of Uttar Pradesh from 2012 to 2017.', 'Became national president of the Samajwadi Party in 2017.'],
-                source: 'https://www.britannica.com/biography/Akhilesh-Yadav'
-            },
-            mayawati: {
-                name: 'Mayawati',
-                party: 'Bahujan Samaj Party (BSP)',
-                dob: 'Born 15 January 1956',
-                highlights: ['Joined the Bahujan Samaj Party in 1984, the year it was founded.', 'Became Chief Minister of Uttar Pradesh for the first time in 1995.', 'Served four terms as Chief Minister of Uttar Pradesh.'],
-                source: 'https://www.britannica.com/biography/Mayawati'
-            },
-            'mamata-banerjee': {
-                name: 'Mamata Banerjee',
-                party: 'All India Trinamool Congress (AITC)',
-                dob: 'Born 5 January 1955',
-                highlights: ['Began her political career with the Indian National Congress.', 'Founded the All India Trinamool Congress in 1998.', 'Became Chief Minister of West Bengal in 2011.'],
-                source: 'https://www.britannica.com/biography/Mamata-Banerjee'
-            }
-        };
-        const profileDialog = document.getElementById('leader-profile-dialog');
-
-        document.querySelectorAll('.leader-profile-trigger').forEach((button) => {
-            button.addEventListener('click', () => {
-                const profile = leaderProfiles[button.dataset.profile];
-                if (!profile) return;
-                document.getElementById('leader-profile-name').textContent = profile.name;
-                document.getElementById('leader-profile-party').textContent = profile.party;
-                document.getElementById('leader-profile-dob').textContent = profile.dob;
-                const highlights = document.getElementById('leader-profile-highlights');
-                highlights.replaceChildren(...profile.highlights.map((item) => {
-                    const listItem = document.createElement('li');
-                    listItem.textContent = item;
-                    return listItem;
-                }));
-                const source = document.getElementById('leader-profile-source');
-                source.href = profile.source;
-                profileDialog.showModal();
-            });
+        startCamBtn.addEventListener('click', async () => {
+            startCamBtn.style.display = 'none';
+            stopCamBtn.style.display = 'inline-flex';
+            const selectedCam = cameraSelect.value || null;
+            await qrScanner.startScanning(selectedCam);
         });
 
-        document.querySelector('.leader-profile-close').addEventListener('click', () => profileDialog.close());
-        profileDialog.addEventListener('click', (event) => {
-            if (event.target === profileDialog) profileDialog.close();
+        stopCamBtn.addEventListener('click', async () => {
+            await qrScanner.stopScanning();
+            stopCamBtn.style.display = 'none';
+            startCamBtn.style.display = 'inline-flex';
+        });
+
+        fileInput.addEventListener('change', async (e) => {
+            if (e.target.files.length > 0) {
+                await qrScanner.scanFile(e.target.files[0]);
+            }
         });
     </script>
 </body>

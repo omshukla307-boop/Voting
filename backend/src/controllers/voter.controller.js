@@ -10,7 +10,8 @@ exports.castVote = async (req, res) => {
   const t = await sequelize.transaction();
 
   try {
-    const voterId = req.user.id;
+
+    const voterId = req.user.id;  //----- Assuming user ID is available in req.user -----//
     const { candidateId, electionId, txHash } = req.body;
 
     if (!candidateId || !electionId) {
@@ -19,18 +20,14 @@ exports.castVote = async (req, res) => {
     }
 
     const election = await Election.findByPk(electionId);
-    const now = new Date();
-    
-    if (!election) {
-      await t.rollback();
-      return res.status(404).json({ error: "Election not found" });
-    }
 
-    // Check election active state
-    const isTimeActive = now >= new Date(election.startTime) && now <= new Date(election.endTime);
-    if (election.status !== 'live' && !isTimeActive) {
+    console.log("Incoming electionId:", electionId);
+    console.log("Election found:", election);
+
+    const now = new Date();
+    if (!election || now < election.startTime || now > election.endTime) {
       await t.rollback();
-      return res.status(400).json({ error: "Election is not currently active" });
+      return res.status(400).json({ error: "Election is not within the active time window" });
     }
 
     const existingVote = await Vote.findOne({
@@ -39,7 +36,7 @@ exports.castVote = async (req, res) => {
 
     if (existingVote) {
       await t.rollback();
-      return res.status(400).json({ error: "You have already cast your vote for this election" });
+      return res.status(400).json({ error: "You have already voted" });
     }
 
     const candidate = await Candidate.findOne({
@@ -48,13 +45,12 @@ exports.castVote = async (req, res) => {
 
     if (!candidate) {
       await t.rollback();
-      return res.status(400).json({ error: "Invalid candidate selected" });
+      return res.status(400).json({ error: "Invalid candidate" });
     }
 
-    const generatedHash = txHash || ('0x' + crypto.randomBytes(32).toString('hex'));
-
     await Vote.create(
-      { voterId, candidateId, electionId, voteHash: generatedHash },
+      // Save the real txHash into your database's voteHash column!
+      { voterId, candidateId, electionId, voteHash: txHash },
       { transaction: t }
     );
 
@@ -68,7 +64,6 @@ exports.castVote = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Vote cast successfully",
-      voteHash: generatedHash
     });
 
   } catch (error) {
