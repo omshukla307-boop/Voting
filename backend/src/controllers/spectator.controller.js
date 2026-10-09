@@ -1,5 +1,28 @@
 // backend/src/controllers/spectator.controller.js
-const { Candidate, User } = require("../models"); // Import User model here
+const { Candidate, User } = require("../models");
+
+const fictionalMap = {
+    1: { name: 'Aarav Mehta', party: 'People\'s Development Alliance (PDA)', symbol: '⚖️' },
+    2: { name: 'Priya Sharma', party: 'National Progress Front (NPF)', symbol: '🪔' },
+    3: { name: 'Kabir Verma', party: 'Unity and Reform Party (URP)', symbol: '🌾' },
+    4: { name: 'Ananya Rao', party: 'Democratic Future League (DFL)', symbol: '🕊️' },
+    5: { name: 'Rohan Kapoor', party: 'People\'s Welfare Movement (PWM)', symbol: '☀️' },
+    6: { name: 'Meera Joshi', party: 'Independent Citizens Group (ICG)', symbol: '⛵' },
+    7: { name: 'None of the Above (NOTA)', party: 'Independent / ECI', symbol: '❌' }
+};
+
+function sanitizeCandidate(c, index) {
+    const id = c.id || (index + 1);
+    const f = fictionalMap[id] || fictionalMap[((index) % 7) + 1];
+    return {
+        id: id,
+        name: f.name,
+        party: f.party,
+        symbol: f.symbol,
+        votes: c.voteCount || c.votes || 0,
+        voteCount: c.voteCount || c.votes || 0
+    };
+}
 
 exports.getCandidates = async (req, res) => {
     const defaultCandidates = [
@@ -19,9 +42,10 @@ exports.getCandidates = async (req, res) => {
         if (!candidates || candidates.length === 0) {
             candidates = defaultCandidates;
         }
+        const sanitized = candidates.map((c, idx) => sanitizeCandidate(c, idx));
         return res.status(200).json({
             success: true,
-            candidates,
+            candidates: sanitized,
         });
     } catch (error) {
         return res.status(200).json({
@@ -51,18 +75,12 @@ exports.getFinalResults = async (req, res) => {
             candidates = defaultCandidates;
         }
 
-        const results = candidates.map((c) => ({
-            id: c.id,
-            name: c.name,
-            party: c.party,
-            symbol: c.symbol || '🗳️',
-            votes: c.voteCount || 0,
-            voteCount: c.voteCount || 0
-        }));
+        const sanitized = candidates.map((c, idx) => sanitizeCandidate(c, idx));
+        sanitized.sort((a, b) => b.votes - a.votes);
 
-        const totalVotes = results.reduce((sum, c) => sum + c.votes, 0);
-        const leadingCandidate = results.length > 0 && results[0].votes > 0 ? results[0] : null;
-        const runnerUp = results.length > 1 ? results[1] : null;
+        const totalVotes = sanitized.reduce((sum, c) => sum + c.votes, 0);
+        const leadingCandidate = sanitized.length > 0 && sanitized[0].votes > 0 ? sanitized[0] : null;
+        const runnerUp = sanitized.length > 1 ? sanitized[1] : null;
         const leadMargin = leadingCandidate && runnerUp ? (leadingCandidate.votes - runnerUp.votes) : (leadingCandidate ? leadingCandidate.votes : 0);
 
         const totalVoters = await User.count({ where: { role: 'voter' } }).catch(() => 0);
@@ -80,8 +98,8 @@ exports.getFinalResults = async (req, res) => {
                 leadMargin: Math.max(0, leadMargin),
                 voteShare: totalVotes > 0 ? ((leadingCandidate.votes / totalVotes) * 100).toFixed(1) : '0.0'
             } : null,
-            results,
-            candidates: results
+            results: sanitized,
+            candidates: sanitized
         });
     } catch (error) {
         return res.status(500).json({ error: error.message });
