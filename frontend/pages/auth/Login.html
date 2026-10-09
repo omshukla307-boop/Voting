@@ -321,11 +321,19 @@
             if (resultCard && resultDetails) {
                 resultCard.style.display = 'block';
                 resultDetails.innerHTML = `
-                    <div><strong>Account ID / Voter ID:</strong> <code style="background: white; padding: 0.15rem 0.4rem; border-radius: 4px; font-weight: 800;">${data.voterId}</code></div>
-                    <div><strong>Elector Name:</strong> ${data.name || 'Demo Elector'}</div>
-                    ${data.wallet ? `<div><strong>Decoded Wallet Address:</strong> <code style="background: white; padding: 0.15rem 0.4rem; border-radius: 4px; font-weight: 700; color: #C2410C;">${data.wallet.slice(0, 8)}...${data.wallet.slice(-6)}</code></div>` : ''}
-                    <div style="font-size: 0.78rem; color: #166534; margin-top: 0.25rem;">✓ Synthetic test payload verified for practice session</div>
+                    <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 0.35rem;">
+                        <span style="background: #22C55E; color: white; padding: 2px 8px; border-radius: 12px; font-weight: 800; font-size: 0.75rem;">✓ VERIFIED</span>
+                        <strong style="color: #166534; font-size: 0.88rem;">Voter Card QR Code Authenticated</strong>
+                    </div>
+                    <div><strong>Scanned EPIC Voter ID:</strong> <code style="background: white; padding: 0.15rem 0.4rem; border-radius: 4px; font-weight: 800; color: #0B4F9C; font-size: 0.95rem;">${data.voterId}</code></div>
+                    <div><strong>Elector Status:</strong> <span style="color: #15803D; font-weight: 700;">✓ Verified Elector (Digital Proof Confirmed)</span></div>
                 `;
+            }
+
+            const scanBtn = document.getElementById('open-scanner-btn');
+            if (scanBtn) {
+                scanBtn.innerText = '✓ Voter ID Verified';
+                scanBtn.className = 'btn btn-success btn-sm';
             }
         }
 
