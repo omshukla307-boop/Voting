@@ -5,16 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Digital Voting System of India</title>
     <link rel="stylesheet" href="/css/styles.css">
-    <!-- html5-qrcode library for QR Scanner -->
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 </head>
 <body>
-    <!-- Practice Banner -->
+    <!-- Top Banner (Matches Screenshot) -->
     <div class="demo-banner">
         ⚠️ PRACTICE / DEMO ELECTION PORTAL — Educational Prototype. Not affiliated with the Election Commission of India (ECI).
     </div>
 
-    <!-- Navigation Bar (Matches Screenshots) -->
+    <!-- Navigation Bar (Matches Screenshot) -->
     <nav>
         <a href="/" class="logo">
             <div class="logo-img">
@@ -32,45 +31,46 @@
     </nav>
 
     <div class="container">
-        <!-- Hero Section -->
-        <div class="card" style="text-align: center; border-top: 4px solid var(--navy-primary);">
-            <div style="display: inline-block; background: var(--saffron-light); color: var(--saffron-accent); padding: 0.3rem 0.85rem; border-radius: 4px; font-weight: 700; font-size: 0.85rem; margin-bottom: 0.75rem; border: 1px solid #FFD8A8;">
-                🇮🇳 General Election 2026 Prototype
+        <!-- Hero Section (Matches Screenshot) -->
+        <div class="card" style="text-align: center; border-top: 3px solid #28A745; padding: 2.25rem 2rem;">
+            <div style="display: inline-block; background: #FFFBEB; border: 1px solid #FDE68A; color: #B45309; padding: 0.25rem 0.75rem; border-radius: 4px; font-weight: 700; font-size: 0.8rem; margin-bottom: 0.85rem;">
+                IN General Election 2026 Prototype
             </div>
             
-            <h1 style="font-size: 2.1rem; margin-bottom: 0.5rem;">Secure & Transparent Digital E-Voting</h1>
-            <p style="max-width: 680px; margin: 0 auto 1.25rem auto;">
+            <h1 style="font-size: 2.1rem; font-weight: 800; color: #1A202C; margin-bottom: 0.5rem;">Secure & Transparent Digital E-Voting</h1>
+            <p style="max-width: 660px; margin: 0 auto 1.25rem auto; font-size: 0.9rem; color: #718096;">
                 Authentic electoral portal for Indian resident voters and overseas electors (NRIs). Features Web3 cryptographic voter receipts and automated double-voting protection.
             </p>
 
-            <!-- Countdown Timer & Status -->
-            <div style="background: #F8FAFC; border: 1px solid var(--border-color); border-radius: 6px; padding: 1rem; max-width: 420px; margin: 0 auto 1.5rem auto;">
-                <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); margin-bottom: 0.2rem;">ELECTION TIME REMAINING</div>
-                <div id="countdown-timer" style="font-size: 1.4rem; font-weight: 800; color: var(--navy-primary); font-family: monospace;">08 hrs : 50 mins : 10 sec</div>
-                <div style="margin-top: 0.4rem;">
-                    <span id="wallet-status-badge" class="badge badge-ended">Wallet Not Connected</span>
+            <!-- Time Remaining & Wallet Box (Matches Screenshot) -->
+            <div style="background: #F8F9FA; border: 1px solid #E2E8F0; border-radius: 6px; padding: 1.15rem; max-width: 440px; margin: 0 auto 1.5rem auto;">
+                <div style="font-size: 0.75rem; font-weight: 700; color: #718096; letter-spacing: 0.5px; margin-bottom: 0.25rem;">ELECTION TIME REMAINING</div>
+                <div id="countdown-timer" style="font-size: 1.45rem; font-weight: 800; color: #1A202C; font-family: monospace;">08 hrs : 50 mins : 00 sec</div>
+                <div>
+                    <span id="wallet-status-badge" class="wallet-badge-pill">Wallet: Connecting...</span>
                 </div>
             </div>
 
-            <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
-                <a href="/pages/auth/Login.html" class="btn btn-saffron">
+            <!-- Action Buttons Row (Matches Screenshot) -->
+            <div style="display: flex; gap: 0.65rem; justify-content: center; flex-wrap: wrap;">
+                <a href="/pages/auth/Login.html" class="btn" style="background: #0B4F9C;">
                     🗳️ Voter Login & Vote
                 </a>
-                <button id="open-scanner-btn" class="btn btn-secondary">
+                <button id="open-scanner-btn" class="btn btn-gray">
                     📷 Scan Voter ID Card
                 </button>
-                <a href="/pages/spectator/LiveCounting.html" class="btn btn-secondary">
+                <a href="/pages/spectator/LiveCounting.html" class="btn btn-gray">
                     📊 View Live Tally
                 </a>
-                <a href="/pages/auth/AdminLogin.html" class="btn btn-secondary">
+                <a href="/admin-login.html" class="btn btn-gray">
                     🔐 Admin Portal
                 </a>
             </div>
         </div>
 
         <!-- Scanner Verification Alert -->
-        <div id="scanner-result-card" class="card" style="display: none; border-left: 4px solid var(--green-success);">
-            <h3 style="color: var(--green-success);">✓ Voter ID QR Scanned Successfully</h3>
+        <div id="scanner-result-card" class="card" style="display: none; border-left: 4px solid #28A745;">
+            <h3 style="color: #28A745;">✓ Voter ID Scanned Successfully</h3>
             <div id="scanner-result-details" style="font-size: 0.95rem; margin-bottom: 0.75rem;"></div>
             <div class="alert-box alert-info">
                 Format valid for practice portal. Proceed to Voter Verification to complete Web3 wallet sign-in.
@@ -78,50 +78,38 @@
             <a href="/pages/auth/Login.html" id="scanner-login-link" class="btn">Proceed to Voter Authentication</a>
         </div>
 
-        <!-- Recognized National Candidates -->
+        <!-- Recognized Candidates Section (Matches Screenshot) -->
         <div class="card">
-            <h2 style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
-                <span>🇮🇳 Recognized Candidates & Parties</span>
-                <span class="badge badge-live">Live Ballot Pool</span>
+            <h2 style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; font-size: 1.35rem; color: #1A202C;">
+                <span>IN Recognized Candidates & Parties</span>
+                <span style="font-size: 0.85rem; color: #718096; font-weight: 600;">Live Ballot Pool</span>
             </h2>
-            <p>Constituency candidates available for verified electors.</p>
+            <p style="font-size: 0.85rem; color: #718096;">Constituency candidates available for verified electors.</p>
 
             <div class="candidate-grid">
                 <div class="candidate-card">
                     <div class="symbol-badge">🪷</div>
-                    <h3>Narendra Modi</h3>
-                    <p style="color: var(--navy-primary); font-weight: 700; margin-bottom: 0.25rem;">Bharatiya Janata Party (BJP)</p>
-                    <p style="font-size: 0.85rem;">Constituency: Varanasi / National</p>
+                    <h3 style="font-size: 1.05rem; margin-bottom: 0.2rem;">Narendra Modi</h3>
+                    <p style="color: #2D3748; font-weight: 700; font-size: 0.85rem; margin-bottom: 0.2rem;">Bharatiya Janata Party (BJP)</p>
+                    <p style="font-size: 0.8rem; color: #718096;">Constituency: Varanasi / National</p>
                 </div>
                 <div class="candidate-card">
                     <div class="symbol-badge">✋</div>
-                    <h3>Rahul Gandhi</h3>
-                    <p style="color: var(--navy-primary); font-weight: 700; margin-bottom: 0.25rem;">Indian National Congress (INC)</p>
-                    <p style="font-size: 0.85rem;">Constituency: Wayanad / National</p>
+                    <h3 style="font-size: 1.05rem; margin-bottom: 0.2rem;">Rahul Gandhi</h3>
+                    <p style="color: #2D3748; font-weight: 700; font-size: 0.85rem; margin-bottom: 0.2rem;">Indian National Congress (INC)</p>
+                    <p style="font-size: 0.8rem; color: #718096;">Constituency: Wayanad / National</p>
                 </div>
                 <div class="candidate-card">
                     <div class="symbol-badge">🧹</div>
-                    <h3>Arvind Kejriwal</h3>
-                    <p style="color: var(--navy-primary); font-weight: 700; margin-bottom: 0.25rem;">Aam Aadmi Party (AAP)</p>
-                    <p style="font-size: 0.85rem;">Constituency: New Delhi / National</p>
+                    <h3 style="font-size: 1.05rem; margin-bottom: 0.2rem;">Arvind Kejriwal</h3>
+                    <p style="color: #2D3748; font-weight: 700; font-size: 0.85rem; margin-bottom: 0.2rem;">Aam Aadmi Party (AAP)</p>
+                    <p style="font-size: 0.8rem; color: #718096;">Constituency: New Delhi / National</p>
                 </div>
                 <div class="candidate-card">
                     <div class="symbol-badge">🌺</div>
-                    <h3>Mamata Banerjee</h3>
-                    <p style="color: var(--navy-primary); font-weight: 700; margin-bottom: 0.25rem;">All India Trinamool Congress (AITC)</p>
-                    <p style="font-size: 0.85rem;">Constituency: Kolkata / State</p>
-                </div>
-                <div class="candidate-card">
-                    <div class="symbol-badge">🌅</div>
-                    <h3>M. K. Stalin</h3>
-                    <p style="color: var(--navy-primary); font-weight: 700; margin-bottom: 0.25rem;">Dravida Munnetra Kazhagam (DMK)</p>
-                    <p style="font-size: 0.85rem;">Constituency: Chennai / State</p>
-                </div>
-                <div class="candidate-card">
-                    <div class="symbol-badge">⏰</div>
-                    <h3>Sharad Pawar</h3>
-                    <p style="color: var(--navy-primary); font-weight: 700; margin-bottom: 0.25rem;">Nationalist Congress Party (NCP)</p>
-                    <p style="font-size: 0.85rem;">Constituency: Baramati / State</p>
+                    <h3 style="font-size: 1.05rem; margin-bottom: 0.2rem;">Mamata Banerjee</h3>
+                    <p style="color: #2D3748; font-weight: 700; font-size: 0.85rem; margin-bottom: 0.2rem;">All India Trinamool Congress (AITC)</p>
+                    <p style="font-size: 0.8rem; color: #718096;">Constituency: Kolkata / State</p>
                 </div>
             </div>
         </div>
@@ -130,9 +118,9 @@
     <!-- Voter ID Scanner Modal -->
     <div id="scanner-modal" class="modal-backdrop">
         <div class="modal-content">
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.5rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8F0; padding-bottom: 0.5rem;">
                 <h3>📷 Scan Voter ID Card (QR / Barcode)</h3>
-                <button id="close-scanner-btn" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted);">&times;</button>
+                <button id="close-scanner-btn" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #718096;">&times;</button>
             </div>
             
             <p style="font-size: 0.85rem; margin-top: 0.5rem; margin-bottom: 0.75rem;">
@@ -151,9 +139,9 @@
             </div>
 
             <!-- Live Video Container -->
-            <div id="qr-reader" style="width: 100%; min-height: 200px; background: #000; border-radius: 6px; overflow: hidden;"></div>
+            <div id="qr-reader" style="width: 100%; min-height: 200px; background: #000; border-radius: 4px; overflow: hidden;"></div>
 
-            <div style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--border-subtle);">
+            <div style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid #E2E8F0;">
                 <label for="qr-file-input" style="font-size: 0.85rem; font-weight: 600;">Option 2: Upload Voter ID Image File</label>
                 <input type="file" id="qr-file-input" accept="image/*" style="padding: 0.4rem; font-size: 0.85rem;">
             </div>
@@ -169,7 +157,7 @@
         let qrScanner = null;
 
         function startTimer() {
-            let totalSeconds = 8 * 3600 + 50 * 60 + 10;
+            let totalSeconds = 8 * 3600 + 50 * 60 + 0;
             const timerEl = document.getElementById('countdown-timer');
             setInterval(() => {
                 if (totalSeconds > 0) totalSeconds--;
