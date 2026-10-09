@@ -94,11 +94,15 @@ app.set('views', frontendPath);
 // Serve all static assets from frontend
 app.use(express.static(frontendPath));
 
+const adminCtrl = require("./controllers/admin.controller");
+
 // API Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/voter", voterRoutes);
 app.use("/api/spectator", spectatorRoutes);
 app.use("/api/admin", adminRoutes);
+app.post("/api/admin/end-voting", adminCtrl.endElection);
+app.post("/api/admin/end", adminCtrl.endElection);
 app.use("/api/ai", aiRoutes);
 app.use("/api/chat", aiRoutes);
 app.post("/chat", aiCtrl.handleChat);

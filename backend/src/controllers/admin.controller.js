@@ -113,3 +113,18 @@ exports.getLiveVotes = async (req, res) => {
         return res.status(500).json({ error: 'Could not fetch live votes' });
     }
 };
+
+// =============================
+// END ELECTION / STOP VOTING
+// =============================
+exports.endElection = async (req, res) => {
+    try {
+        const now = new Date();
+        const past = new Date(now.getTime() - 1000);
+        await Election.update({ endTime: past }, { where: {} });
+        return res.json({ success: true, message: "Voting has been successfully ended.", status: "completed" });
+    } catch (err) {
+        console.error("endElection error", err);
+        return res.status(500).json({ error: "Could not end voting session." });
+    }
+};

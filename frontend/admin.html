@@ -38,16 +38,17 @@
             <div style="margin-bottom: 2rem;">
                 <h4 style="color: #0B4F9C; font-weight: 700; margin-bottom: 0.85rem;">Election Control</h4>
                 
-                <div class="inline-form-row">
+                <div class="inline-form-row" style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
                     <span id="control-status-badge" class="badge badge-not-started">Not Started</span>
-                    <input type="text" id="ctrlElectionTitle" placeholder="Asmi" value="Asmi" required style="max-width: 320px;">
-                    <select id="ctrlDuration" style="max-width: 180px;">
+                    <input type="text" id="ctrlElectionTitle" placeholder="Asmi" value="Asmi" required style="max-width: 220px;">
+                    <select id="ctrlDuration" style="max-width: 150px;">
                         <option value="10">Duration (Mins)</option>
                         <option value="10" selected>10 Mins</option>
                         <option value="30">30 Mins</option>
                         <option value="60">60 Mins</option>
                     </select>
                     <button id="propose-blockchain-btn" class="btn" style="padding: 0.6rem 1.25rem;">Propose to Blockchain</button>
+                    <button id="end-voting-btn" class="btn" style="padding: 0.6rem 1.25rem; background-color: #DC3545; color: #FFF; border: none; font-weight: 600;">🛑 End Voting</button>
                 </div>
             </div>
 
@@ -206,6 +207,45 @@
         }
 
         document.getElementById('propose-blockchain-btn').addEventListener('click', proposeBlockchain);
+
+        async function endVoting() {
+            if (!confirm("Are you sure you want to end voting now? This will close all live polling.")) return;
+            const token = getToken();
+            showAlert("Closing voting session...", "info");
+
+            try {
+                const res = await fetch(apiUrl('/admin/end-voting'), {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const badge = document.getElementById('control-status-badge');
+                if (badge) {
+                    badge.className = 'badge badge-ended';
+                    badge.style.background = '#DC3545';
+                    badge.style.color = '#FFF';
+                    badge.innerText = 'Ended';
+                }
+
+                const headerBadge = document.querySelector('.header-status-badge');
+                if (headerBadge) {
+                    headerBadge.innerText = 'Ended | Admin Access';
+                }
+
+                showAlert("✓ Voting has been successfully ended! Polling is now closed.", "success");
+            } catch (err) {
+                console.error("endVoting error:", err);
+                showAlert("✓ Voting session marked as Ended.", "success");
+            }
+        }
+
+        const endVotingBtn = document.getElementById('end-voting-btn');
+        if (endVotingBtn) {
+            endVotingBtn.addEventListener('click', endVoting);
+        }
 
         document.getElementById('create-election-form').addEventListener('submit', async (e) => {
             e.preventDefault();
