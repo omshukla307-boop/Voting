@@ -95,11 +95,6 @@ class VoteInMetaMask {
         sessionStorage.removeItem('connectedWallet');
         localStorage.removeItem('connectedWallet');
         this.initListeners();
-
-        // Automatically open clean MetaMask prompt window on page load
-        setTimeout(() => {
-            this.connect();
-        }, 400);
     }
 
     async connect() {
