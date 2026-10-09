@@ -55,14 +55,19 @@ function checkAuth() {
     const role = getUserRole();
     const path = window.location.pathname.toLowerCase();
 
+    const isAuthPage = path.includes('login') || path.includes('auth') || path.includes('admin-login');
+
+    // MANDATORY SIGN-IN FIRST: Redirect unauthenticated visitors to Login.html immediately
+    if (!token && !isAuthPage) {
+        window.location.href = '/pages/auth/Login.html';
+        return;
+    }
+
     const isAdminLoginPage = path.includes('admin-login') || path.includes('adminlogin');
     const isAdminPage = (path.includes('/admin') || path.includes('admindashboard')) && !isAdminLoginPage;
-    const isProtectedVoterPage = path.includes('/voter/votepage') || path.includes('/voter/dashboard') || path.includes('/voter/aftervote');
 
-    if (isAdminPage && (!token || role !== 'admin')) {
+    if (isAdminPage && role !== 'admin') {
         window.location.href = '/admin-login.html';
-    } else if (isProtectedVoterPage && !token) {
-        window.location.href = '/pages/auth/Login.html';
     }
 }
 
