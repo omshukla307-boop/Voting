@@ -272,18 +272,6 @@
             window.location.href = '/pages/voter/AfterVote.html';
         }
 
-        async function autoOpenMetaMaskOnVotePage() {
-            if (window.voteInWallet && window.voteInWallet.isInstalled() && !window.voteInWallet.account) {
-                const badge = document.getElementById('wallet-status-badge');
-                if (badge) badge.innerText = '🦊 Opening MetaMask...';
-                await window.voteInWallet.connect();
-            }
-        }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            setTimeout(autoOpenMetaMaskOnVotePage, 300);
-        });
-
         loadCandidates();
     </script>
 </body>

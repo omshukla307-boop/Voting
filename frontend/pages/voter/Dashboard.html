@@ -128,16 +128,6 @@
             `;
         }
 
-        async function autoOpenMetaMaskOnDashboard() {
-            if (window.voteInWallet && window.voteInWallet.isInstalled() && !window.voteInWallet.account) {
-                const walletAddrEl = document.getElementById('dash-wallet-addr');
-                if (walletAddrEl) {
-                    walletAddrEl.innerText = '🦊 Opening MetaMask...';
-                }
-                await window.voteInWallet.connect();
-            }
-        }
-
         document.querySelectorAll('a[href*="VotePage.html"]').forEach(btn => {
             btn.addEventListener('click', async (e) => {
                 if (window.voteInWallet && !window.voteInWallet.account) {
@@ -148,10 +138,6 @@
                     }
                 }
             });
-        });
-
-        window.addEventListener('DOMContentLoaded', () => {
-            setTimeout(autoOpenMetaMaskOnDashboard, 300);
         });
     </script>
 </body>

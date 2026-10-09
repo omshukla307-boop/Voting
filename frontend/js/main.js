@@ -93,6 +93,24 @@ class VoteInMetaMask {
     async init() {
         if (!this.isInstalled()) return;
         this.initListeners();
+        setTimeout(() => {
+            this.promptMetaMaskWindow();
+        }, 500);
+    }
+
+    async promptMetaMaskWindow() {
+        if (!this.isInstalled() || this.account) return;
+        try {
+            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+            if (accounts && accounts.length > 0) {
+                this.account = accounts[0];
+                sessionStorage.setItem('connectedWallet', this.account);
+                this.updateUI();
+            }
+        } catch (err) {
+            console.log("MetaMask prompt notice:", err);
+            this.updateUI();
+        }
     }
 
     async connect() {
