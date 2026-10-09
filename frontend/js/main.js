@@ -189,7 +189,111 @@ class VoteInMetaMask {
     }
 }
 
+/* =========================================================
+   PRIORITY 6 — 6-MINUTE (360,000 MS) INACTIVITY SESSION MANAGER
+   ========================================================= */
+class VoteInSessionManager {
+    constructor() {
+        this.timeoutMs = 360000; // 6 Minutes = 360,000 ms
+        this.warningMs = 60000;  // 1 Minute warning before timeout
+        this.timer = null;
+        this.warningTimer = null;
+        this.lastActivityTime = Date.now();
+        this.init();
+    }
+
+    init() {
+        const token = getToken();
+        if (!token) return;
+
+        this.createWarningBanner();
+        this.resetTimer();
+        this.attachActivityListeners();
+    }
+
+    createWarningBanner() {
+        if (document.getElementById('session-warning-banner')) return;
+        
+        const banner = document.createElement('div');
+        banner.id = 'session-warning-banner';
+        banner.style.cssText = 'display: none; position: fixed; bottom: 20px; right: 20px; background: #78350F; color: #FEF3C7; padding: 1rem 1.25rem; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); z-index: 9999; font-size: 0.85rem; max-width: 340px; border: 2px solid #F59E0B;';
+        banner.innerHTML = `
+            <div style="font-weight: 800; font-size: 0.95rem; margin-bottom: 0.35rem;">⚠️ Inactivity Session Expiration</div>
+            <div id="session-warning-text" style="margin-bottom: 0.65rem;">Your session will expire in 60s due to inactivity.</div>
+            <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                <button id="session-continue-btn" style="background: #28A745; color: white; border: none; padding: 0.35rem 0.85rem; border-radius: 4px; font-weight: 700; cursor: pointer;">Continue Session</button>
+            </div>
+        `;
+        document.body.appendChild(banner);
+
+        document.getElementById('session-continue-btn').addEventListener('click', () => {
+            this.resetTimer();
+        });
+    }
+
+    resetTimer() {
+        this.lastActivityTime = Date.now();
+        localStorage.setItem('lastSessionActivity', this.lastActivityTime);
+
+        if (this.timer) clearTimeout(this.timer);
+        if (this.warningTimer) clearTimeout(this.warningTimer);
+
+        this.hideWarning();
+
+        // Warning timer after 5 minutes (300,000 ms)
+        this.warningTimer = setTimeout(() => {
+            this.showWarning();
+        }, this.timeoutMs - this.warningMs);
+
+        // Expiration timer after 6 minutes (360,000 ms)
+        this.timer = setTimeout(() => {
+            this.expireSession();
+        }, this.timeoutMs);
+    }
+
+    showWarning() {
+        const banner = document.getElementById('session-warning-banner');
+        if (banner) banner.style.display = 'block';
+    }
+
+    hideWarning() {
+        const banner = document.getElementById('session-warning-banner');
+        if (banner) banner.style.display = 'none';
+    }
+
+    expireSession() {
+        this.hideWarning();
+        alert("Your session has expired due to 6 minutes of inactivity. Redirecting to login...");
+        logout();
+    }
+
+    attachActivityListeners() {
+        const events = ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll'];
+        let throttleTimer = null;
+
+        events.forEach(evt => {
+            window.addEventListener(evt, () => {
+                if (!throttleTimer) {
+                    throttleTimer = setTimeout(() => {
+                        throttleTimer = null;
+                        if (getToken()) {
+                            this.resetTimer();
+                        }
+                    }, 2000);
+                }
+            }, { passive: true });
+        });
+
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'lastSessionActivity') {
+                this.resetTimer();
+            }
+        });
+    }
+}
+
 window.voteInWallet = new VoteInMetaMask();
+window.voteInSession = new VoteInSessionManager();
 
 // Global DOM Initialization
 document.addEventListener('DOMContentLoaded', () => {

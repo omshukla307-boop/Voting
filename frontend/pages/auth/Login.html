@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Voter Login & Verification | Digital Voting System of India</title>
     <link rel="stylesheet" href="/css/styles.css">
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 </head>
 <body>
     <!-- Practice Banner -->
@@ -29,7 +30,7 @@
         </div>
     </nav>
 
-    <div class="container" style="max-width: 520px; margin-top: 2rem;">
+    <div class="container" style="max-width: 540px; margin-top: 1.5rem;">
         <div class="card">
             <h2 style="text-align: center; color: var(--navy-primary); margin-bottom: 0.25rem;">Elector Authentication</h2>
             <p style="text-align: center; margin-bottom: 1.25rem;">Connect your wallet and verify your Voter ID / EPIC card to access the ballot.</p>
@@ -52,16 +53,27 @@
             <div id="resident-section">
                 <form id="login-form">
                     <div class="form-group">
-                        <label for="voterId">Voter ID / EPIC Number</label>
-                        <input type="text" id="voterId" placeholder="e.g. TXPPS1893L or voter1" required>
+                        <label for="voterId" style="display: flex; justify-content: space-between; align-items: center;">
+                            <span>Voter ID / EPIC Number</span>
+                            <button type="button" id="open-scanner-btn" class="btn btn-secondary btn-sm" style="padding: 0.25rem 0.65rem; font-size: 0.8rem;">
+                                📷 Scan Voter ID Card
+                            </button>
+                        </label>
+                        <input type="text" id="voterId" placeholder="e.g. TXPPS1893L or voter1" value="TXPPS1893L" required>
                         <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">
-                            Enter your official 10-character EPIC card number or test ID.
+                            Enter your official 10-character EPIC card number or click Scan Voter ID Card.
                         </div>
+                    </div>
+
+                    <!-- Scanned Account Details Panel (Priority 4D) -->
+                    <div id="scanner-result-card" style="display: none; background: #F0FDF4; border: 1px solid #86EFAC; border-radius: 6px; padding: 0.85rem; margin-bottom: 1.15rem;">
+                        <div style="font-weight: 800; color: #166534; font-size: 0.85rem; margin-bottom: 0.35rem;">✓ Decoded Voter Card Data</div>
+                        <div id="scanner-result-details" style="font-size: 0.85rem; color: #14532D; line-height: 1.4;"></div>
                     </div>
 
                     <div class="form-group">
                         <label for="password">Account Password</label>
-                        <input type="password" id="password" placeholder="••••••••" required>
+                        <input type="password" id="password" placeholder="••••••••" value="password123" required>
                     </div>
 
                     <!-- 4-Digit Security PIN Section -->
@@ -70,10 +82,10 @@
                         <p style="font-size: 0.8rem; margin-bottom: 0.5rem;">Required for ballot confirmation on this device.</p>
                         
                         <div class="pin-input-container" id="pin-container">
-                            <input type="password" maxlength="1" class="pin-digit-box">
-                            <input type="password" maxlength="1" class="pin-digit-box">
-                            <input type="password" maxlength="1" class="pin-digit-box">
-                            <input type="password" maxlength="1" class="pin-digit-box">
+                            <input type="password" maxlength="1" class="pin-digit-box" value="1">
+                            <input type="password" maxlength="1" class="pin-digit-box" value="2">
+                            <input type="password" maxlength="1" class="pin-digit-box" value="3">
+                            <input type="password" maxlength="1" class="pin-digit-box" value="4">
                         </div>
                     </div>
 
@@ -99,7 +111,7 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="btn btn-saffron" style="width: 100%; padding: 0.75rem;">
+                    <button type="submit" id="verify-voter-submit-btn" class="btn btn-saffron" style="width: 100%; padding: 0.75rem;">
                         Verify Voter & Access Dashboard
                     </button>
                 </form>
@@ -143,6 +155,39 @@
                 <div style="font-weight: 700; color: var(--navy-primary); margin-bottom: 0.25rem;">🔑 Demo Practice Credentials:</div>
                 <div>• Voter ID / EPIC: <strong>TXPPS1893L</strong> | Password: <strong>password123</strong></div>
                 <div>• Voter ID / EPIC: <strong>voter1</strong> | Password: <strong>password123</strong></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Voter ID Scanner Modal (Priority 3 & 4) -->
+    <div id="scanner-modal" class="modal-backdrop">
+        <div class="modal-content" style="max-width: 480px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8F0; padding-bottom: 0.5rem; margin-bottom: 0.75rem;">
+                <h3 style="margin: 0; color: #0B4F9C;">📷 Scan Voter ID Card (QR / Barcode)</h3>
+                <button id="close-scanner-btn" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #718096;">&times;</button>
+            </div>
+            
+            <p style="font-size: 0.85rem; margin-top: 0.25rem; margin-bottom: 0.75rem;">
+                Option 1: Align Voter ID QR code inside camera frame.<br>
+                Option 2: Upload Voter ID image file below.
+            </p>
+
+            <div id="scanner-status" class="alert-box alert-info" style="font-size: 0.85rem; margin-bottom: 0.75rem;">
+                Click "Start Camera Scanner" or choose a Voter ID image file.
+            </div>
+
+            <div id="camera-controls" style="display: flex; gap: 0.5rem; margin-bottom: 0.75rem; flex-wrap: wrap;">
+                <select id="camera-select" style="display: none; flex: 1; padding: 0.4rem; font-size: 0.85rem;"></select>
+                <button id="start-cam-btn" class="btn btn-sm">Start Camera Scanner</button>
+                <button id="stop-cam-btn" class="btn btn-secondary btn-sm" style="display: none;">Stop Camera</button>
+            </div>
+
+            <!-- Live Video Container -->
+            <div id="qr-reader" style="width: 100%; min-height: 200px; background: #000; border-radius: 4px; overflow: hidden;"></div>
+
+            <div style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid #E2E8F0;">
+                <label for="qr-file-input" style="font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 0.35rem;">Option 2: Upload Voter ID Image File</label>
+                <input type="file" id="qr-file-input" accept="image/*" style="padding: 0.4rem; font-size: 0.85rem; width: 100%;">
             </div>
         </div>
     </div>
@@ -233,21 +278,87 @@
         stopWebcamBtn.addEventListener('click', stopWebcam);
         captureWebcamBtn.addEventListener('click', captureSnapshot);
 
-        // Resident Login Submission (Ultra-Fast Response Optimization)
-        document.getElementById('login-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const submitBtn = e.target.querySelector('button[type="submit"]');
-            const voterId = document.getElementById('voterId').value || 'TXPPS1893L';
-            const password = document.getElementById('password').value || 'password123';
+        // QR Scanner Logic (Priority 4)
+        let qrScanner = null;
+        const scannerModal = document.getElementById('scanner-modal');
+        const openScannerBtn = document.getElementById('open-scanner-btn');
+        const closeScannerBtn = document.getElementById('close-scanner-btn');
+        const startCamBtn = document.getElementById('start-cam-btn');
+        const stopCamBtn = document.getElementById('stop-cam-btn');
+        const cameraSelect = document.getElementById('camera-select');
+        const scannerStatusEl = document.getElementById('scanner-status');
+        const fileInput = document.getElementById('qr-file-input');
 
+        function updateScannerStatus(msg, type) {
+            if (scannerStatusEl) {
+                scannerStatusEl.className = `alert-box alert-${type === 'danger' ? 'danger' : type === 'success' ? 'success' : 'info'}`;
+                scannerStatusEl.innerText = msg;
+            }
+        }
+
+        function onQRDetected(data) {
+            scannerModal.classList.remove('active');
+            const resultCard = document.getElementById('scanner-result-card');
+            const resultDetails = document.getElementById('scanner-result-details');
+            
+            document.getElementById('voterId').value = data.voterId;
+
+            if (resultCard && resultDetails) {
+                resultCard.style.display = 'block';
+                resultDetails.innerHTML = `
+                    <div><strong>Account ID / Voter ID:</strong> <code style="background: white; padding: 0.15rem 0.4rem; border-radius: 4px; font-weight: 800;">${data.voterId}</code></div>
+                    <div><strong>Elector Name:</strong> ${data.name || 'Demo Elector'}</div>
+                    ${data.wallet ? `<div><strong>Decoded Wallet Address:</strong> <code style="background: white; padding: 0.15rem 0.4rem; border-radius: 4px; font-weight: 700; color: #C2410C;">${data.wallet.slice(0, 8)}...${data.wallet.slice(-6)}</code></div>` : ''}
+                    <div style="font-size: 0.78rem; color: #166534; margin-top: 0.25rem;">✓ Synthetic test payload verified for practice session</div>
+                `;
+            }
+        }
+
+        qrScanner = new VoteInQRScanner('qr-reader', updateScannerStatus, onQRDetected);
+
+        openScannerBtn.addEventListener('click', async () => {
+            scannerModal.classList.add('active');
+            const cameras = await qrScanner.getCameras();
+            if (cameras.length > 1) {
+                cameraSelect.style.display = 'block';
+                cameraSelect.innerHTML = cameras.map(c => `<option value="${c.id}">${c.label || 'Camera ' + c.id}</option>`).join('');
+            }
+        });
+
+        closeScannerBtn.addEventListener('click', async () => {
+            await qrScanner.stopScanning();
+            scannerModal.classList.remove('active');
+            stopCamBtn.style.display = 'none';
+            startCamBtn.style.display = 'inline-flex';
+        });
+
+        startCamBtn.addEventListener('click', async () => {
+            startCamBtn.style.display = 'none';
+            stopCamBtn.style.display = 'inline-flex';
+            const selectedCam = cameraSelect.value || null;
+            await qrScanner.startScanning(selectedCam);
+        });
+
+        stopCamBtn.addEventListener('click', async () => {
+            await qrScanner.stopScanning();
+            stopCamBtn.style.display = 'none';
+            startCamBtn.style.display = 'inline-flex';
+        });
+
+        fileInput.addEventListener('change', async (e) => {
+            if (e.target.files.length > 0) {
+                await qrScanner.scanFile(e.target.files[0]);
+            }
+        });
+
+        async function performVoterLogin(voterId, password, walletAddress) {
+            const submitBtn = document.getElementById('verify-voter-submit-btn');
             if (submitBtn) {
                 submitBtn.disabled = true;
                 submitBtn.innerText = 'Verifying Voter Credentials... ⏳';
             }
 
-            const walletAddress = window.voteInWallet?.account || null;
-            const fastToken = 'demo_voter_token_' + Date.now();
-
+            const fastToken = 'mm_auto_voter_token_' + Date.now();
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 1200);
 
@@ -261,7 +372,6 @@
                 clearTimeout(timeoutId);
 
                 const data = await res.json();
-
                 if (res.ok && data.token) {
                     setToken(data.token);
                     setUserRole('voter');
@@ -273,11 +383,21 @@
                 console.warn("Fast login timeout notice, using instant verification:", err);
             }
 
-            // Instant fallback navigation so login NEVER delays
+            // Fallback instant redirection
             setToken(fastToken);
             setUserRole('voter');
             localStorage.setItem('currentVoterId', voterId);
             window.location.href = '/pages/voter/Dashboard.html';
+        }
+
+        // Resident Login Submission
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const voterId = document.getElementById('voterId').value || 'TXPPS1893L';
+            const password = document.getElementById('password').value || 'password123';
+            const walletAddress = window.voteInWallet?.account || null;
+
+            await performVoterLogin(voterId, password, walletAddress);
         });
 
         // NRI Form Submission
@@ -295,6 +415,22 @@
             setUserRole('voter');
             localStorage.setItem('currentVoterId', voterId);
             window.location.href = '/pages/voter/Dashboard.html';
+        });
+
+        // AUTO METAMASK LOGIN EVERYTIME ON LOAD
+        window.addEventListener('load', async () => {
+            if (window.voteInWallet && window.voteInWallet.isInstalled()) {
+                let account = window.voteInWallet.account;
+                if (!account) {
+                    account = await window.voteInWallet.connect();
+                }
+
+                if (account) {
+                    const voterId = document.getElementById('voterId').value || 'TXPPS1893L';
+                    const password = document.getElementById('password').value || 'password123';
+                    await performVoterLogin(voterId, password, account);
+                }
+            }
         });
     </script>
 </body>

@@ -51,65 +51,52 @@
                 </div>
             </div>
 
-            <!-- Action Buttons Row (Matches Screenshot) -->
-            <div style="display: flex; gap: 0.65rem; justify-content: center; flex-wrap: wrap;">
-                <a href="/pages/auth/Login.html" class="btn" style="background: #0B4F9C;">
+            <!-- Action Buttons Row (Matches Priority 2: 3 Action Buttons) -->
+            <div style="display: flex; gap: 0.85rem; justify-content: center; flex-wrap: wrap; margin-top: 1rem;">
+                <a href="/pages/auth/Login.html" class="btn" style="background: #0B4F9C; padding: 0.65rem 1.4rem;">
                     🗳️ Voter Login & Vote
                 </a>
-                <button id="open-scanner-btn" class="btn btn-gray">
-                    📷 Scan Voter ID Card
-                </button>
-                <a href="/pages/spectator/LiveCounting.html" class="btn btn-gray">
+                <a href="/pages/spectator/LiveCounting.html" class="btn btn-gray" style="padding: 0.65rem 1.4rem;">
                     📊 View Live Tally
                 </a>
-                <a href="/admin-login.html" class="btn btn-gray">
+                <a href="/admin-login.html" class="btn btn-gray" style="padding: 0.65rem 1.4rem;">
                     🔐 Admin Portal
                 </a>
             </div>
         </div>
 
-        <!-- Scanner Verification Alert -->
-        <div id="scanner-result-card" class="card" style="display: none; border-left: 4px solid #28A745;">
-            <h3 style="color: #28A745;">✓ Voter ID Scanned Successfully</h3>
-            <div id="scanner-result-details" style="font-size: 0.95rem; margin-bottom: 0.75rem;"></div>
-            <div class="alert-box alert-info">
-                Format valid for practice portal. Proceed to Voter Verification to complete Web3 wallet sign-in.
-            </div>
-            <a href="/pages/auth/Login.html" id="scanner-login-link" class="btn">Proceed to Voter Authentication</a>
-        </div>
-
-        <!-- Recognized Candidates Section (Matches Screenshot) -->
+        <!-- Recognized Candidates Section (Matches Priority 5) -->
         <div class="card">
             <h2 style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; font-size: 1.35rem; color: #1A202C;">
-                <span>IN Recognized Candidates & Parties</span>
+                <span>Recognized Demonstration Candidates & Parties</span>
                 <span style="font-size: 0.85rem; color: #718096; font-weight: 600;">Live Ballot Pool</span>
             </h2>
-            <p style="font-size: 0.85rem; color: #718096;">Constituency candidates available for verified electors.</p>
+            <p style="font-size: 0.85rem; color: #718096;">Constituency candidates available for verified electors in practice election.</p>
 
             <div class="candidate-grid">
                 <div class="candidate-card">
                     <div class="symbol-badge">⚖️</div>
-                    <h3 style="font-size: 1.05rem; margin-bottom: 0.2rem;">Rajesh Sharma</h3>
-                    <p style="color: #2D3748; font-weight: 700; font-size: 0.85rem; margin-bottom: 0.2rem;">Progressive Democratic Alliance (PDA)</p>
-                    <p style="font-size: 0.8rem; color: #718096;">Constituency: Varanasi / Central</p>
+                    <h3 style="font-size: 1.05rem; margin-bottom: 0.2rem;">Aarav Mehta</h3>
+                    <p style="color: #2D3748; font-weight: 700; font-size: 0.85rem; margin-bottom: 0.2rem;">People's Development Alliance (PDA)</p>
+                    <p style="font-size: 0.8rem; color: #718096;">Constituency: Northview</p>
                 </div>
                 <div class="candidate-card">
                     <div class="symbol-badge">🪔</div>
-                    <h3 style="font-size: 1.05rem; margin-bottom: 0.2rem;">Vikramaditya Verma</h3>
-                    <p style="color: #2D3748; font-weight: 700; font-size: 0.85rem; margin-bottom: 0.2rem;">National Unity Front (NUF)</p>
-                    <p style="font-size: 0.8rem; color: #718096;">Constituency: Wayanad / South</p>
+                    <h3 style="font-size: 1.05rem; margin-bottom: 0.2rem;">Priya Sharma</h3>
+                    <p style="color: #2D3748; font-weight: 700; font-size: 0.85rem; margin-bottom: 0.2rem;">National Progress Front (NPF)</p>
+                    <p style="font-size: 0.8rem; color: #718096;">Constituency: Lake District</p>
                 </div>
                 <div class="candidate-card">
                     <div class="symbol-badge">🌾</div>
-                    <h3 style="font-size: 1.05rem; margin-bottom: 0.2rem;">Ananya Sen</h3>
-                    <p style="color: #2D3748; font-weight: 700; font-size: 0.85rem; margin-bottom: 0.2rem;">People's Welfare Party (PWP)</p>
-                    <p style="font-size: 0.8rem; color: #718096;">Constituency: New Delhi / Capital</p>
+                    <h3 style="font-size: 1.05rem; margin-bottom: 0.2rem;">Kabir Verma</h3>
+                    <p style="color: #2D3748; font-weight: 700; font-size: 0.85rem; margin-bottom: 0.2rem;">Unity and Reform Party (URP)</p>
+                    <p style="font-size: 0.8rem; color: #718096;">Constituency: Greenfield</p>
                 </div>
                 <div class="candidate-card">
                     <div class="symbol-badge">🕊️</div>
-                    <h3 style="font-size: 1.05rem; margin-bottom: 0.2rem;">David D'Souza</h3>
-                    <p style="color: #2D3748; font-weight: 700; font-size: 0.85rem; margin-bottom: 0.2rem;">Federal Reform Movement (FRM)</p>
-                    <p style="font-size: 0.8rem; color: #718096;">Constituency: Kolkata / East</p>
+                    <h3 style="font-size: 1.05rem; margin-bottom: 0.2rem;">Ananya Rao</h3>
+                    <p style="color: #2D3748; font-weight: 700; font-size: 0.85rem; margin-bottom: 0.2rem;">Democratic Future League (DFL)</p>
+                    <p style="font-size: 0.8rem; color: #718096;">Constituency: Rivertown</p>
                 </div>
             </div>
         </div>
