@@ -560,16 +560,18 @@ class VoteInQRScanner {
             }
         }
 
-        // Set default to requested TIS1952092
+        // Set default to requested TIS1952092 and name Hiral Chawra
         if (!voterId || voterId.length < 3 || voterId === 'TXPPS1893L') {
             voterId = 'TIS1952092';
         }
 
+        const name = (voterId === 'TIS1952092' || voterId === 'TXPPS1893L') ? 'Hiral Chawra' : 'Verified Elector';
+
         return {
             valid: true,
             voterId: String(voterId).toUpperCase(),
-            name: 'Verified Elector',
-            statusMessage: `✓ Account Fetched (${String(voterId).toUpperCase()})`
+            name: name,
+            statusMessage: `✓ Account Fetched: ${name} (${String(voterId).toUpperCase()})`
         };
     }
 }

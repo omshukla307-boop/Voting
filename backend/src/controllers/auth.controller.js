@@ -29,7 +29,7 @@ exports.login = async (req, res) => {
         // Auto-create voter record so ANY entered Voter ID works seamlessly!
         user = await User.create({
           voterId: targetVoterId,
-          name: `Voter ${targetVoterId}`,
+          name: targetVoterId === 'TIS1952092' ? 'Hiral Chawra' : `Voter ${targetVoterId}`,
           aadharNo: `${Math.floor(100000000000 + Math.random() * 899999999999)}`,
           email: `${targetVoterId.toLowerCase().replace(/[^a-z0-9]/g, '')}@example.com`,
           mobileNo: `${Math.floor(6000000000 + Math.random() * 3999999999)}`,
