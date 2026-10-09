@@ -100,14 +100,9 @@
     <script src="/js/main.js"></script>
     <script>
         const voterId = localStorage.getItem('currentVoterId') || 'TXPPS1893L';
-        const wallet = localStorage.getItem('connectedWallet');
         const lastVoteHash = sessionStorage.getItem('lastVoteHash');
 
         document.getElementById('dash-voter-id').innerText = voterId;
-
-        if (wallet) {
-            document.getElementById('dash-wallet-addr').innerText = `${wallet.slice(0, 6)}...${wallet.slice(-4)}`;
-        }
 
         if (lastVoteHash) {
             const candidateName = sessionStorage.getItem('lastCandidateName') || 'Candidate';

@@ -209,6 +209,8 @@ document.addEventListener('click', async (e) => {
     if (btn && window.voteInWallet) {
         if (!window.voteInWallet.account) {
             await window.voteInWallet.connect();
+        } else {
+            window.voteInWallet.disconnect();
         }
     }
 });
