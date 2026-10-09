@@ -128,6 +128,23 @@
             <!-- Live Video Container -->
             <div id="qr-reader" style="width: 100%; min-height: 200px; background: #000; border-radius: 4px; overflow: hidden;"></div>
 
+            <!-- Scannable Demo QR Code Card -->
+            <div style="margin-top: 0.75rem; padding: 0.75rem; background: #F8FAFC; border: 1px dashed #0B4F9C; border-radius: 6px; text-align: center;">
+                <div style="font-weight: 800; color: #0B4F9C; font-size: 0.85rem; margin-bottom: 0.35rem;">
+                    📱 Scannable Demo Voter ID QR Code
+                </div>
+                <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 0.35rem;">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=TIS1952092" alt="Scannable Voter ID QR Code" style="width: 130px; height: 130px; border: 3px solid white; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                </div>
+                <div style="font-size: 0.8rem; color: #1E293B;">
+                    <strong>EPIC Voter ID:</strong> <code style="background: white; padding: 0.15rem 0.4rem; border-radius: 4px; color: #0B4F9C; font-weight: 800;">TIS1952092</code><br>
+                    <strong>Name:</strong> <span style="font-weight: 700; color: #166534;">Hiral Chawra</span>
+                </div>
+                <div style="font-size: 0.75rem; color: #64748B; margin-top: 0.25rem;">
+                    Point your camera at this QR code or upload an image file.
+                </div>
+            </div>
+
             <div style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid #E2E8F0;">
                 <label for="qr-file-input" style="font-size: 0.85rem; font-weight: 600;">Option 2: Upload Voter ID Image File</label>
                 <input type="file" id="qr-file-input" accept="image/*" style="padding: 0.4rem; font-size: 0.85rem;">
