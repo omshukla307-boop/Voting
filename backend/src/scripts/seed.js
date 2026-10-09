@@ -21,24 +21,23 @@ async function seed() {
             });
         }
 
-        // Create candidates with Indian Political Leaders
+        // Create practice candidates with fake names
         const candidates = [
-            { name: 'Narendra Modi', party: 'Bharatiya Janata Party (BJP)', symbol: '🪷', electionId: election.id, constituency: 'Varanasi / National', constituencyType: 'general', state: 'Uttar Pradesh' },
-            { name: 'Rahul Gandhi', party: 'Indian National Congress (INC)', symbol: '✋', electionId: election.id, constituency: 'Wayanad / National', constituencyType: 'general', state: 'Kerala' },
-            { name: 'Arvind Kejriwal', party: 'Aam Aadmi Party (AAP)', symbol: '🧹', electionId: election.id, constituency: 'New Delhi / National', constituencyType: 'general', state: 'Delhi' },
-            { name: 'Mamata Banerjee', party: 'All India Trinamool Congress (AITC)', symbol: '🌺', electionId: election.id, constituency: 'Kolkata / State', constituencyType: 'general', state: 'West Bengal' },
-            { name: 'M. K. Stalin', party: 'Dravida Munnetra Kazhagam (DMK)', symbol: '🌅', electionId: election.id, constituency: 'Chennai / State', constituencyType: 'general', state: 'Tamil Nadu' },
-            { name: 'Sharad Pawar', party: 'Nationalist Congress Party (NCP)', symbol: '⏰', electionId: election.id, constituency: 'Baramati / State', constituencyType: 'general', state: 'Maharashtra' },
+            { name: 'Rajesh Sharma', party: 'Progressive Democratic Alliance (PDA)', symbol: '⚖️', electionId: election.id, constituency: 'Varanasi / Central', constituencyType: 'general', state: 'Uttar Pradesh' },
+            { name: 'Vikramaditya Verma', party: 'National Unity Front (NUF)', symbol: '🪔', electionId: election.id, constituency: 'Wayanad / South', constituencyType: 'general', state: 'Kerala' },
+            { name: 'Ananya Sen', party: 'People\'s Welfare Party (PWP)', symbol: '🌾', electionId: election.id, constituency: 'New Delhi / Capital', constituencyType: 'general', state: 'Delhi' },
+            { name: 'David D\'Souza', party: 'Federal Reform Movement (FRM)', symbol: '🕊️', electionId: election.id, constituency: 'Kolkata / East', constituencyType: 'general', state: 'West Bengal' },
+            { name: 'Sunita Chaudhary', party: 'Secular Citizens Alliance (SCA)', symbol: '☀️', electionId: election.id, constituency: 'Chennai / Metro', constituencyType: 'general', state: 'Tamil Nadu' },
+            { name: 'Tariq Ahmad Khan', party: 'United National Coalition (UNC)', symbol: '⛵', electionId: election.id, constituency: 'Baramati / West', constituencyType: 'general', state: 'Maharashtra' },
+            { name: 'None of the Above (NOTA)', party: 'Independent / ECI', symbol: '❌', electionId: election.id, constituency: 'National / All', constituencyType: 'general', state: 'All India' }
         ];
 
+        // Clean up old real candidate records if present
+        await Candidate.destroy({ where: { electionId: election.id } });
+
         for (const c of candidates) {
-            const exists = await Candidate.findOne({ where: { name: c.name, electionId: c.electionId } });
-            if (!exists) {
-                await Candidate.create(c);
-                console.log('Created candidate', c.name);
-            } else {
-                await exists.update({ party: c.party, symbol: c.symbol, constituency: c.constituency, state: c.state });
-            }
+            await Candidate.create(c);
+            console.log('Created candidate', c.name);
         }
 
         // Create test voters (password will be hashed by User model hook)
