@@ -95,17 +95,21 @@ class VoteInMetaMask {
         sessionStorage.removeItem('connectedWallet');
         localStorage.removeItem('connectedWallet');
         this.initListeners();
+
+        // Automatically open clean MetaMask prompt window on page load
+        setTimeout(() => {
+            this.connect();
+        }, 400);
     }
 
-    async openSideWindow() {
-        if (!this.isInstalled()) return;
-        try {
-            // Forces MetaMask side panel window to open for manual connection
-            await window.ethereum.request({
-                method: 'wallet_requestPermissions',
-                params: [{ eth_accounts: {} }]
-            });
+    async connect() {
+        if (!this.isInstalled()) {
+            alert("MetaMask browser extension is not installed!\n\nPlease install MetaMask from https://metamask.io/ to connect your Web3 wallet.");
+            window.open('https://metamask.io/download/', '_blank');
+            return null;
+        }
 
+        try {
             const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
             if (accounts && accounts.length > 0) {
                 this.account = accounts[0];
@@ -113,14 +117,10 @@ class VoteInMetaMask {
                 return this.account;
             }
         } catch (err) {
-            console.log("MetaMask side window notice:", err);
+            console.warn("MetaMask connection notice:", err);
             this.updateUI();
         }
         return null;
-    }
-
-    async connect() {
-        return await this.openSideWindow();
     }
 
     disconnect() {
