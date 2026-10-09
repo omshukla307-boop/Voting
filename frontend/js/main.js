@@ -95,9 +95,6 @@ class VoteInMetaMask {
         sessionStorage.removeItem('connectedWallet');
         localStorage.removeItem('connectedWallet');
         this.initListeners();
-        setTimeout(() => {
-            this.openSideWindow();
-        }, 500);
     }
 
     async openSideWindow() {
