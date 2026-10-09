@@ -1,8 +1,7 @@
 // Beginner-friendly Admin controller
 // Small, clear examples for creating elections and candidates.
 
-const Election = require('../models/Election');
-const Candidate = require('../models/Candidate');
+const { Election, Candidate, Vote, User } = require('../models');
 
 // Create a new election (very basic)
 exports.createElection = async (req, res) => {
@@ -45,30 +44,6 @@ exports.getSummary = async (req, res) => {
     }
 };
 
-/* =============================
-// GET ELECTION STATUS
-
-exports.getElectionStatus = async (req, res) => {
-    try {
-        const election = await Election.findOne({
-            order: [['createdAt', 'DESC']]
-        });
-
-        if (!election) {
-            return res.json({ status: "none" });
-        }
-
-        return res.json({
-            status: election.status
-        });
-
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-};
- ============================ */
-
- 
 // =============================
 // GET DYNAMIC ELECTION STATUS
 // =============================
@@ -95,5 +70,36 @@ exports.getElectionStatus = async (req, res) => {
         return res.json({ status: currentStatus });
     } catch (err) {
         res.status(500).json({ error: err.message });
+    }
+};
+
+// =============================
+// GET LIVE AUDIT VOTES LEDGER
+// =============================
+exports.getLiveVotes = async (req, res) => {
+    try {
+        const votes = await Vote.findAll({
+            order: [['createdAt', 'DESC']],
+            limit: 100,
+            include: [
+                { model: Candidate, attributes: ['id', 'name', 'party'] },
+                { model: User, attributes: ['voterId', 'name'] }
+            ]
+        });
+
+        const formattedVotes = votes.map(vote => ({
+            id: vote.id,
+            voterId: vote.voterId || (vote.User ? vote.User.voterId : 'N/A'),
+            walletAddress: vote.walletAddress || 'N/A',
+            candidateName: vote.Candidate ? vote.Candidate.name : `Candidate #${vote.candidateId}`,
+            candidateParty: vote.Candidate ? vote.Candidate.party : '',
+            voteHash: vote.voteHash || 'N/A',
+            timeStamp: vote.createdAt || vote.timeStamp
+        }));
+
+        return res.json({ success: true, votes: formattedVotes });
+    } catch (err) {
+        console.error('getLiveVotes error', err);
+        return res.status(500).json({ error: 'Could not fetch live votes' });
     }
 };

@@ -96,6 +96,38 @@
                     </div>
                 </form>
             </div>
+
+            <!-- Section 4: Live Cryptographic Elector Audit Ledger (Multi-Device Live Stream) -->
+            <div style="margin-top: 2rem; border-top: 2px solid #0B4F9C; padding-top: 1.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+                    <div>
+                        <h4 style="color: #0B4F9C; font-weight: 700; margin: 0;">Live Cryptographic Elector Audit Ledger</h4>
+                        <span style="font-size: 0.82rem; color: #6C757D;">Real-time multi-device votes stream linked to MetaMask Web3 Wallets & EPIC Voter IDs</span>
+                    </div>
+                    <span style="background: #E6F4EA; color: #1E8E3E; border: 1px solid #CEEAD6; padding: 4px 10px; border-radius: 12px; font-weight: 600; font-size: 0.78rem; display: flex; align-items: center; gap: 5px;">
+                        <span style="height: 8px; width: 8px; background-color: #1E8E3E; border-radius: 50%; display: inline-block;"></span> LIVE POLLING
+                    </span>
+                </div>
+
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 0.88rem; text-align: left;">
+                        <thead>
+                            <tr style="background: #F8FAFC; border-bottom: 2px solid #E2E8F0; color: #475569;">
+                                <th style="padding: 10px;">EPIC Voter ID</th>
+                                <th style="padding: 10px;">MetaMask Address</th>
+                                <th style="padding: 10px;">Candidate Choice</th>
+                                <th style="padding: 10px;">Tx Hash</th>
+                                <th style="padding: 10px;">Timestamp</th>
+                            </tr>
+                        </thead>
+                        <tbody id="live-audit-rows">
+                            <tr>
+                                <td colspan="5" style="text-align: center; color: #6C757D; padding: 1.5rem;">Connecting to Database Live Stream...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -172,6 +204,42 @@
                 showAlert('Error creating election.', 'danger');
             }
         });
+
+        async function fetchLiveAuditVotes() {
+            try {
+                const res = await fetch(apiUrl('/admin/votes'));
+                if (!res.ok) return;
+                const data = await res.json();
+                const tbody = document.getElementById('live-audit-rows');
+                if (!data.votes || data.votes.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #6C757D; padding: 1.5rem;">No live votes recorded yet in database.</td></tr>`;
+                    return;
+                }
+                tbody.innerHTML = data.votes.map(v => {
+                    const shortWallet = v.walletAddress && v.walletAddress.length > 10
+                        ? `${v.walletAddress.slice(0, 6)}...${v.walletAddress.slice(-4)}`
+                        : (v.walletAddress || 'N/A');
+                    const shortHash = v.voteHash && v.voteHash.length > 16
+                        ? `${v.voteHash.slice(0, 10)}...${v.voteHash.slice(-6)}`
+                        : (v.voteHash || 'N/A');
+                    const formattedTime = new Date(v.timeStamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                    return `
+                        <tr style="border-bottom: 1px solid #E2E8F0;">
+                            <td style="padding: 10px; font-weight: 600; color: #0B4F9C;">${v.voterId}</td>
+                            <td style="padding: 10px; font-family: monospace; color: #2D3748;" title="${v.walletAddress}">${shortWallet}</td>
+                            <td style="padding: 10px;"><span style="font-weight: 600;">${v.candidateName}</span> ${v.candidateParty ? `<span style="font-size: 0.78rem; color: #64748B;">(${v.candidateParty})</span>` : ''}</td>
+                            <td style="padding: 10px; font-family: monospace; font-size: 0.8rem; color: #4A5568;" title="${v.voteHash}">${shortHash}</td>
+                            <td style="padding: 10px; color: #64748B; font-size: 0.82rem;">${formattedTime}</td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (err) {
+                console.error("Live audit polling error:", err);
+            }
+        }
+
+        fetchLiveAuditVotes();
+        setInterval(fetchLiveAuditVotes, 3000);
     </script>
 </body>
 </html>
