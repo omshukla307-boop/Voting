@@ -19,6 +19,22 @@
       "dest": "/frontend/index.html"
     },
     {
+      "src": "/admin-login.html",
+      "dest": "/frontend/admin-login.html"
+    },
+    {
+      "src": "/admin.html",
+      "dest": "/frontend/admin.html"
+    },
+    {
+      "src": "/admin-login",
+      "dest": "/frontend/admin-login.html"
+    },
+    {
+      "src": "/admin",
+      "dest": "/frontend/admin.html"
+    },
+    {
       "src": "/css/(.*)",
       "dest": "/frontend/css/$1"
     },
@@ -33,6 +49,10 @@
     {
       "src": "/api/(.*)",
       "dest": "/backend/src/server.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/frontend/$1"
     }
   ]
 }
