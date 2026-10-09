@@ -326,6 +326,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (window.voteInWallet) {
         window.voteInWallet.updateUI();
     }
+
+    window.voteInAI = new VoteInAIChatbot();
 });
 
 /* =========================================================
@@ -718,4 +720,177 @@ function initSlideToVote(sliderId, thumbId, textId, onConfirm) {
     thumb.addEventListener('touchstart', onStart, { passive: false });
     document.addEventListener('touchmove', onMove, { passive: false });
     document.addEventListener('touchend', onEnd);
+}
+
+/* =========================================================
+   INTERACTIVE AI VOTING ASSISTANT FLOATING WIDGET
+   ========================================================= */
+class VoteInAIChatbot {
+    constructor() {
+        this.isOpen = false;
+        this.widget = null;
+        this.chatBox = null;
+        this.init();
+    }
+
+    init() {
+        this.renderWidget();
+    }
+
+    renderWidget() {
+        if (document.getElementById('ai-chat-btn')) return;
+
+        const btn = document.createElement('button');
+        btn.id = 'ai-chat-btn';
+        btn.innerHTML = '🤖 <span style="font-weight: 800; font-size: 0.85rem; margin-left: 4px;">AI Assistant</span>';
+        btn.style.cssText = 'position: fixed; bottom: 20px; right: 20px; background: linear-gradient(135deg, #0B4F9C 0%, #042D5A 100%); color: white; border: 2px solid #FF9933; padding: 0.65rem 1.15rem; border-radius: 30px; z-index: 99990; font-family: sans-serif; font-size: 0.95rem; cursor: pointer; box-shadow: 0 8px 24px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 6px; transition: all 0.2s ease;';
+
+        const box = document.createElement('div');
+        box.id = 'ai-chat-box';
+        box.style.cssText = 'position: fixed; bottom: 75px; right: 20px; width: 360px; height: 490px; background: #FFFFFF; border: 2px solid #0B4F9C; border-radius: 12px; z-index: 99991; display: none; flex-direction: column; box-shadow: 0 12px 36px rgba(0,0,0,0.3); font-family: sans-serif; overflow: hidden;';
+
+        box.innerHTML = `
+            <div style="background: #0B4F9C; color: white; padding: 0.75rem 1rem; display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 1.2rem;">🤖</span>
+                    <div>
+                        <div style="font-weight: 800; font-size: 0.9rem;">VoteAdhikar AI Assistant</div>
+                        <div style="font-size: 0.72rem; color: #4ADE80; font-weight: 700;">● Online | OpenRouter LLM</div>
+                    </div>
+                </div>
+                <button id="close-ai-chat-btn" style="background: none; border: none; color: white; font-size: 1.4rem; cursor: pointer;">&times;</button>
+            </div>
+
+            <div id="ai-chat-messages" style="flex: 1; padding: 0.85rem; overflow-y: auto; background: #F8FAFC; display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.88rem;">
+                <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 8px; padding: 0.75rem; color: #1E293B;">
+                    <strong>🤖 AI Assistant:</strong><br>
+                    Namaste! 🙏 Welcome to the Digital Voting System of India. How can I help you today?
+                    <div style="margin-top: 0.5rem; display: flex; flex-wrap: wrap; gap: 4px;">
+                        <button class="ai-pill-btn" onclick="window.voteInAI?.sendQuickMessage('How to Vote?')">🗳️ How to Vote?</button>
+                        <button class="ai-pill-btn" onclick="window.voteInAI?.sendQuickMessage('How to connect MetaMask?')">🦊 Connect Wallet</button>
+                        <button class="ai-pill-btn" onclick="window.voteInAI?.sendQuickMessage('What is Security PIN?')">🔒 4-Digit PIN</button>
+                        <button class="ai-pill-btn" onclick="window.voteInAI?.sendQuickMessage('Show live results')">📊 Live Standings</button>
+                    </div>
+                </div>
+            </div>
+
+            <form id="ai-chat-form" style="display: flex; border-top: 1px solid #E2E8F0; padding: 0.5rem; background: #FFFFFF; gap: 0.5rem;">
+                <input type="text" id="ai-chat-input" placeholder="Ask AI anything about voting..." style="flex: 1; padding: 0.55rem 0.75rem; border: 1px solid #CBD5E1; border-radius: 6px; font-size: 0.85rem;" required>
+                <button type="submit" class="btn btn-saffron btn-sm" style="padding: 0.55rem 0.9rem; font-weight: 700;">Send</button>
+            </form>
+        `;
+
+        document.body.appendChild(btn);
+        document.body.appendChild(box);
+
+        this.widget = btn;
+        this.chatBox = box;
+
+        btn.addEventListener('click', () => this.toggleChat());
+        document.getElementById('close-ai-chat-btn').addEventListener('click', () => this.toggleChat(false));
+        document.getElementById('ai-chat-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const input = document.getElementById('ai-chat-input');
+            const msg = input.value.trim();
+            if (msg) {
+                this.sendMessage(msg);
+                input.value = '';
+            }
+        });
+
+        const style = document.createElement('style');
+        style.innerText = `
+            .ai-pill-btn {
+                background: #EFF6FF;
+                border: 1px solid #93C5FD;
+                color: #1E40AF;
+                padding: 3px 8px;
+                border-radius: 12px;
+                font-size: 0.75rem;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            }
+            .ai-pill-btn:hover {
+                background: #0B4F9C;
+                color: white;
+            }
+        `;
+        document.head.appendChild(style);
+    }
+
+    toggleChat(show = null) {
+        this.isOpen = show !== null ? show : !this.isOpen;
+        if (this.chatBox) {
+            this.chatBox.style.display = this.isOpen ? 'flex' : 'none';
+        }
+    }
+
+    sendQuickMessage(text) {
+        this.toggleChat(true);
+        this.sendMessage(text);
+    }
+
+    async sendMessage(messageText) {
+        const stream = document.getElementById('ai-chat-messages');
+        if (!stream) return;
+
+        const userDiv = document.createElement('div');
+        userDiv.style.cssText = 'background: #0B4F9C; color: white; padding: 0.65rem 0.85rem; border-radius: 8px; align-self: flex-end; max-width: 85%; font-weight: 600; word-break: break-word;';
+        userDiv.innerText = messageText;
+        stream.appendChild(userDiv);
+        stream.scrollTop = stream.scrollHeight;
+
+        const typingDiv = document.createElement('div');
+        typingDiv.id = 'ai-typing-indicator';
+        typingDiv.style.cssText = 'background: #E2E8F0; color: #475569; padding: 0.5rem 0.75rem; border-radius: 8px; align-self: flex-start; font-style: italic; font-size: 0.82rem;';
+        typingDiv.innerText = '🤖 AI is thinking...';
+        stream.appendChild(typingDiv);
+        stream.scrollTop = stream.scrollHeight;
+
+        const voterId = localStorage.getItem('currentVoterId') || sessionStorage.getItem('currentVoterId') || 'TXPPS1893L';
+        const wallet = window.voteInWallet ? window.voteInWallet.account : null;
+        const lastVote = sessionStorage.getItem('lastVoteHash');
+
+        try {
+            const res = await fetch(apiUrl('/ai/chat'), {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    message: messageText,
+                    userData: {
+                        voterId,
+                        hasWallet: Boolean(wallet),
+                        hasVoted: Boolean(lastVote)
+                    },
+                    systemData: {
+                        state: 'Live Election 2026'
+                    }
+                })
+            });
+
+            const data = await res.json();
+            const indicator = document.getElementById('ai-typing-indicator');
+            if (indicator) indicator.remove();
+
+            const aiReply = data.reply || "I am available to assist you with voting, MetaMask wallet, VVPAT receipts, and live results!";
+
+            const aiDiv = document.createElement('div');
+            aiDiv.style.cssText = 'background: #FFFFFF; border: 1px solid #CBD5E1; color: #1E293B; padding: 0.65rem 0.85rem; border-radius: 8px; align-self: flex-start; max-width: 90%; word-break: break-word; line-height: 1.4;';
+            aiDiv.innerHTML = `<strong>🤖 AI Assistant:</strong><br>${escapeHtml(aiReply).replace(/\n/g, '<br>')}`;
+            stream.appendChild(aiDiv);
+            stream.scrollTop = stream.scrollHeight;
+
+        } catch (err) {
+            console.error("AI Chat message error:", err);
+            const indicator = document.getElementById('ai-typing-indicator');
+            if (indicator) indicator.remove();
+
+            const aiDiv = document.createElement('div');
+            aiDiv.style.cssText = 'background: #FEF2F2; border: 1px solid #FECACA; color: #991B1B; padding: 0.65rem 0.85rem; border-radius: 8px; align-self: flex-start; max-width: 90%;';
+            aiDiv.innerHTML = `<strong>🤖 AI Assistant:</strong><br>To cast your vote: Connect MetaMask wallet, select candidate on EVM unit, and enter your 4-digit Security PIN (1234).`;
+            stream.appendChild(aiDiv);
+            stream.scrollTop = stream.scrollHeight;
+        }
+    }
 }
