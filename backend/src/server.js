@@ -28,6 +28,19 @@ function initializeDatabase() {
       await sequelize.sync();
       console.log("Database synced");
       try {
+        const queryInterface = sequelize.getQueryInterface();
+        const tableInfo = await queryInterface.describeTable('Votes').catch(() => null);
+        if (tableInfo && !tableInfo.walletAddress) {
+          await queryInterface.addColumn('Votes', 'walletAddress', {
+            type: sequelize.Sequelize.STRING,
+            allowNull: true
+          });
+          console.log("Successfully added walletAddress column to Votes table");
+        }
+      } catch (alterErr) {
+        console.warn("Schema alter notice:", alterErr.message);
+      }
+      try {
         await seed();
       } catch (seedErr) {
         console.warn("Seeding notice:", seedErr.message);
