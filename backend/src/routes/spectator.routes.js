@@ -5,5 +5,6 @@ const { getCandidates, getFinalResults } = require("../controllers/spectator.con
 
 router.get("/candidates", getCandidates);
 router.get("/results", getFinalResults);
+router.get("/live", getFinalResults);
 
 module.exports = router;

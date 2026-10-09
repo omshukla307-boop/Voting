@@ -80,6 +80,53 @@
             </div>
         </div>
 
+        <!-- Live Leaderboard & Leading Candidate Widget (Auto-Refreshes 3s) -->
+        <div class="card" style="border-top: 4px solid #FF9933;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.85rem; margin-bottom: 1rem;">
+                <div>
+                    <h3 style="margin: 0; color: var(--navy-primary); display: flex; align-items: center; gap: 0.5rem;">
+                        🏆 Live Leading Candidate & Standings <span class="badge badge-live">AUTO-REFRESH 3s</span>
+                    </h3>
+                    <p style="margin: 0.2rem 0 0 0; font-size: 0.82rem; color: #64748B;">Real-time database tally of leading candidates across all polling stations.</p>
+                </div>
+                <a href="/pages/spectator/LiveCounting.html" class="btn btn-secondary btn-sm">Full Live Leaderboard →</a>
+            </div>
+
+            <!-- Leading Candidate Highlight Pill -->
+            <div id="dash-leading-box" style="background: linear-gradient(135deg, #0B4F9C 0%, #1E3A8A 100%); color: white; padding: 1rem 1.25rem; border-radius: 8px; margin-bottom: 1.25rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <span style="font-size: 0.75rem; background: #FF9933; color: black; font-weight: 800; padding: 2px 8px; border-radius: 12px; text-transform: uppercase;">Current Leader</span>
+                    <h4 id="dash-leader-name" style="margin: 0.35rem 0 0.15rem 0; font-size: 1.3rem; color: white;">Loading live leader...</h4>
+                    <span id="dash-leader-party" style="font-size: 0.85rem; color: #93C5FD;">Fetching standings...</span>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-size: 0.75rem; color: #BFDBFE; font-weight: 700;">TOTAL VOTES</div>
+                    <strong id="dash-leader-votes" style="font-size: 1.4rem; color: white; font-family: monospace;">0</strong>
+                </div>
+            </div>
+
+            <!-- Mini Standings Table -->
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left;">
+                    <thead>
+                        <tr style="background: #F8FAFC; border-bottom: 2px solid #E2E8F0; color: #475569;">
+                            <th style="padding: 8px 10px;">Rank</th>
+                            <th style="padding: 8px 10px;">Candidate</th>
+                            <th style="padding: 8px 10px;">Party</th>
+                            <th style="padding: 8px 10px; text-align: right;">Votes</th>
+                            <th style="padding: 8px 10px;">Share %</th>
+                            <th style="padding: 8px 10px; text-align: center;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dash-standings-body">
+                        <tr>
+                            <td colspan="6" style="text-align: center; color: #64748B; padding: 1rem;">Syncing live election results...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
         <!-- Voting History & Cryptographic Receipts -->
         <div class="card">
             <h3>📜 Voting History & Digital Receipts</h3>
@@ -122,6 +169,59 @@
                 </div>
             `;
         }
+
+        async function fetchDashboardLiveStandings() {
+            try {
+                const res = await fetch(apiUrl('/spectator/live'));
+                if (!res.ok) return;
+                const data = await res.json();
+                const results = data.results || data.candidates || [];
+                results.sort((a, b) => ((b.voteCount || b.votes || 0) - (a.voteCount || a.votes || 0)));
+
+                const total = results.reduce((sum, r) => sum + (r.voteCount || r.votes || 0), 0);
+                const leader = results.length > 0 && (results[0].voteCount || results[0].votes || 0) > 0 ? results[0] : null;
+
+                const lName = document.getElementById('dash-leader-name');
+                const lParty = document.getElementById('dash-leader-party');
+                const lVotes = document.getElementById('dash-leader-votes');
+
+                if (leader) {
+                    const count = leader.voteCount || leader.votes || 0;
+                    const share = total > 0 ? ((count / total) * 100).toFixed(1) : '0.0';
+                    if (lName) lName.innerHTML = `${leader.symbol || '👑'} ${leader.name} <span style="font-size: 0.95rem; color: #FDE047;">(${share}%)</span>`;
+                    if (lParty) lParty.innerText = leader.party;
+                    if (lVotes) lVotes.innerText = count.toLocaleString();
+                } else {
+                    if (lName) lName.innerText = "No votes recorded yet";
+                    if (lParty) lParty.innerText = "Cast a vote to establish standings";
+                    if (lVotes) lVotes.innerText = "0";
+                }
+
+                const tbody = document.getElementById('dash-standings-body');
+                if (tbody && results.length > 0) {
+                    tbody.innerHTML = results.slice(0, 5).map((r, idx) => {
+                        const count = r.voteCount || r.votes || 0;
+                        const pct = total > 0 ? ((count / total) * 100).toFixed(1) : '0.0';
+                        const isLeader = idx === 0 && count > 0;
+                        return `
+                            <tr style="border-bottom: 1px solid #E2E8F0; background: ${isLeader ? '#FEFCE8' : 'transparent'};">
+                                <td style="padding: 8px 10px; font-weight: 700;">#${idx + 1}</td>
+                                <td style="padding: 8px 10px; font-weight: 700; color: #0B4F9C;">${r.symbol || '🗳️'} ${r.name}</td>
+                                <td style="padding: 8px 10px; color: #475569;">${r.party}</td>
+                                <td style="padding: 8px 10px; text-align: right; font-weight: 700; font-family: monospace;">${count}</td>
+                                <td style="padding: 8px 10px; font-weight: 700;">${pct}%</td>
+                                <td style="padding: 8px 10px; text-align: center;">${isLeader ? '<span class="badge badge-active">👑 LEADING</span>' : '<span class="badge badge-not-started">● TRAILING</span>'}</td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+            } catch (err) {
+                console.error("Dashboard live standings sync error:", err);
+            }
+        }
+
+        fetchDashboardLiveStandings();
+        setInterval(fetchDashboardLiveStandings, 3000);
 
         document.querySelectorAll('a[href*="VotePage.html"]').forEach(btn => {
             btn.addEventListener('click', async (e) => {

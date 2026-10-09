@@ -30,6 +30,34 @@
     </nav>
 
     <div class="container">
+        <!-- LIVE LEADING CANDIDATE HERO BANNER -->
+        <div id="leading-candidate-card" class="card" style="background: linear-gradient(135deg, #0B4F9C 0%, #042D5A 100%); color: white; border: none; margin-bottom: 1.5rem; position: relative; overflow: hidden; box-shadow: 0 8px 24px rgba(11, 79, 156, 0.25);">
+            <div style="position: absolute; right: -20px; top: -20px; font-size: 8rem; opacity: 0.1; pointer-events: none;">👑</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <span style="background: #FF9933; color: #000000; font-weight: 800; font-size: 0.78rem; padding: 4px 12px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px; display: inline-flex; align-items: center; gap: 6px;">
+                        👑 CURRENT ELECTION LEADER (AUTO-REFRESHES 3s)
+                    </span>
+                    <h2 id="leading-candidate-name" style="color: #FFFFFF; font-size: 1.8rem; font-weight: 900; margin: 0.5rem 0 0.25rem 0;">
+                        Loading standings...
+                    </h2>
+                    <div id="leading-candidate-party" style="font-size: 1rem; color: #93C5FD; font-weight: 600;">
+                        Cast votes on EVM Ballot to see real-time leader status
+                    </div>
+                </div>
+                <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+                    <div style="background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); padding: 0.85rem 1.25rem; border-radius: 8px; text-align: center; min-width: 120px;">
+                        <span style="font-size: 0.72rem; color: #BFDBFE; font-weight: 700; display: block; text-transform: uppercase;">Leader Votes</span>
+                        <strong id="leading-candidate-votes" style="font-size: 1.6rem; color: #FFFFFF; font-family: monospace;">0</strong>
+                    </div>
+                    <div style="background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); padding: 0.85rem 1.25rem; border-radius: 8px; text-align: center; min-width: 120px;">
+                        <span style="font-size: 0.72rem; color: #BFDBFE; font-weight: 700; display: block; text-transform: uppercase;">Lead Margin</span>
+                        <strong id="leading-candidate-margin" style="font-size: 1.6rem; color: #4ADE80; font-family: monospace;">+0</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Live Leaderboard Card (Priority 7) -->
         <div class="card">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; border-bottom: 2px solid var(--border-subtle); padding-bottom: 1rem; margin-bottom: 1.25rem;">
@@ -124,9 +152,37 @@
                 // Sort results by voteCount descending
                 results.sort((a, b) => ((b.voteCount || b.votes || 0) - (a.voteCount || a.votes || 0)));
 
-                let total = 0;
-                results.forEach(r => total += (r.voteCount || r.votes || 0));
+                let total = data.totalVotes || 0;
+                if (!total) {
+                    results.forEach(r => total += (r.voteCount || r.votes || 0));
+                }
                 document.getElementById('total-votes').innerText = total.toLocaleString();
+
+                // Update Leading Candidate Hero Banner
+                const leaderName = document.getElementById('leading-candidate-name');
+                const leaderParty = document.getElementById('leading-candidate-party');
+                const leaderVotes = document.getElementById('leading-candidate-votes');
+                const leaderMargin = document.getElementById('leading-candidate-margin');
+
+                const leader = results.length > 0 && (results[0].voteCount || results[0].votes || 0) > 0 ? results[0] : null;
+                const runnerUp = results.length > 1 ? results[1] : null;
+
+                if (leader) {
+                    const lVotes = leader.voteCount || leader.votes || 0;
+                    const rVotes = runnerUp ? (runnerUp.voteCount || runnerUp.votes || 0) : 0;
+                    const margin = lVotes - rVotes;
+                    const share = total > 0 ? ((lVotes / total) * 100).toFixed(1) : '0.0';
+
+                    if (leaderName) leaderName.innerHTML = `${leader.symbol || '🏆'} ${leader.name} <span style="font-size: 1.1rem; color: #FDE047;">(${share}%)</span>`;
+                    if (leaderParty) leaderParty.innerText = `Party: ${leader.party} — Currently Leading`;
+                    if (leaderVotes) leaderVotes.innerText = lVotes.toLocaleString();
+                    if (leaderMargin) leaderMargin.innerText = `+${margin}`;
+                } else {
+                    if (leaderName) leaderName.innerText = "No votes recorded yet";
+                    if (leaderParty) leaderParty.innerText = "Cast votes on EVM Ballot to see real-time leader status";
+                    if (leaderVotes) leaderVotes.innerText = "0";
+                    if (leaderMargin) leaderMargin.innerText = "+0";
+                }
 
                 const tbody = document.getElementById('leaderboard-body');
                 const container = document.getElementById('live-results-container');
@@ -143,15 +199,15 @@
                     const isLeader = idx === 0 && count > 0;
 
                     let rankBadge = `<span style="font-weight: 800; color: #64748B;">#${idx + 1}</span>`;
-                    if (idx === 0) rankBadge = `<span class="badge" style="background: #D97706; color: white;">#1 LEADER</span>`;
-                    else if (idx === 1) rankBadge = `<span class="badge" style="background: #475569; color: white;">#2 RUNNER-UP</span>`;
+                    if (idx === 0 && count > 0) rankBadge = `<span class="badge" style="background: #D97706; color: white;">#1 LEADER</span>`;
+                    else if (idx === 1 && count > 0) rankBadge = `<span class="badge" style="background: #475569; color: white;">#2 RUNNER-UP</span>`;
 
                     const statusBadge = isLeader 
                         ? `<span class="badge badge-active">● LEADING</span>` 
                         : `<span class="badge badge-not-started">● TRAILING</span>`;
 
                     return `
-                        <tr style="border-bottom: 1px solid #E2E8F0; background: ${idx % 2 === 0 ? '#FFFFFF' : '#F8FAFC'};">
+                        <tr style="border-bottom: 1px solid #E2E8F0; background: ${isLeader ? '#FEFCE8' : (idx % 2 === 0 ? '#FFFFFF' : '#F8FAFC')};">
                             <td style="padding: 0.75rem 1rem;">${rankBadge}</td>
                             <td style="padding: 0.75rem 1rem; font-weight: 800; color: #0B4F9C;">${r.symbol || '🗳️'} ${r.name}</td>
                             <td style="padding: 0.75rem 1rem; color: #475569; font-weight: 600;">${r.party}</td>
@@ -159,7 +215,7 @@
                             <td style="padding: 0.75rem 1rem;">
                                 <div style="display: flex; align-items: center; gap: 0.5rem;">
                                     <div class="progress-bar" style="flex: 1; height: 10px;">
-                                        <div class="progress-fill" style="width: ${pct}%;"></div>
+                                        <div class="progress-fill" style="width: ${pct}%; background: ${isLeader ? '#D97706' : '#0B4F9C'};"></div>
                                     </div>
                                     <span style="font-weight: 700; font-size: 0.8rem; width: 45px;">${pct}%</span>
                                 </div>
@@ -169,17 +225,18 @@
                     `;
                 }).join('');
 
-                container.innerHTML = results.map(r => {
+                container.innerHTML = results.map((r, idx) => {
                     const count = r.voteCount || r.votes || 0;
                     const pct = total > 0 ? ((count / total) * 100).toFixed(1) : 0;
+                    const isLeader = idx === 0 && count > 0;
                     return `
-                        <div style="margin-bottom: 1rem; background: #FFFFFF; padding: 1rem; border-radius: 6px; border: 1px solid var(--border-color);">
+                        <div style="margin-bottom: 1rem; background: ${isLeader ? '#FEFCE8' : '#FFFFFF'}; padding: 1rem; border-radius: 6px; border: ${isLeader ? '2px solid #F59E0B' : '1px solid var(--border-color)'};">
                             <div style="display: flex; justify-content: space-between; font-weight: 700; margin-bottom: 0.35rem; flex-wrap: wrap; gap: 0.5rem;">
-                                <span style="font-size: 0.95rem;">${r.symbol || '🗳️'} ${r.name} <span style="color: var(--navy-primary); font-size: 0.85rem; font-weight: 600;">(${r.party})</span></span>
+                                <span style="font-size: 0.95rem;">${r.symbol || '🗳️'} ${r.name} <span style="color: var(--navy-primary); font-size: 0.85rem; font-weight: 600;">(${r.party})</span> ${isLeader ? '👑' : ''}</span>
                                 <span style="color: var(--navy-primary); font-size: 0.95rem;">${count} votes <span style="color: var(--text-muted); font-size: 0.8rem;">(${pct}%)</span></span>
                             </div>
                             <div class="progress-bar">
-                                <div class="progress-fill" style="width: ${pct}%;"></div>
+                                <div class="progress-fill" style="width: ${pct}%; background: ${isLeader ? '#D97706' : '#0B4F9C'};"></div>
                             </div>
                         </div>
                     `;
