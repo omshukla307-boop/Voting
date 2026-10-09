@@ -3,36 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Official Ballot | voteIn</title>
+    <title>Official Digital Ballot | Digital Voting System of India</title>
     <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
     <!-- Practice Banner -->
     <div class="demo-banner">
-        ⚠️ PRACTICE / DEMO MODE — Educational Prototype Only. Not affiliated with ECI.
+        ⚠️ PRACTICE / DEMO ELECTION PORTAL — Educational Prototype Only.
     </div>
 
-    <!-- Navigation -->
+    <!-- Navigation Bar -->
     <nav>
         <a href="/" class="logo">
-            <div class="logo-icon">🗳️</div>
-            vote<span>In</span>
+            <div class="logo-chakra">☸</div>
+            Digital Voting System of India
         </a>
         <div class="nav-links">
-            <button class="metamask-connect-btn">🦊 Connect MetaMask</button>
-            <a href="/pages/spectator/LiveCounting.html">Live Tally</a>
+            <a href="/">Home</a>
+            <a href="/pages/voter/VotePage.html" class="active">Vote</a>
+            <a href="/pages/voter/Dashboard.html">Dashboard</a>
+            <a href="/pages/spectator/LiveCounting.html">Results</a>
+            <a href="/pages/auth/AdminLogin.html">Admin</a>
+            <button class="metamask-connect-btn">🦊 Connect Wallet</button>
             <button id="logout-btn" class="btn btn-secondary btn-sm">Logout</button>
         </div>
     </nav>
 
     <div class="container">
-        <div class="card">
-            <h2 style="color: var(--primary); margin-bottom: 0.25rem;">Official Digital Ballot Paper</h2>
-            <p>Select your candidate and swipe the confirmation slider to cast your cryptographic vote.</p>
+        <div class="card" style="border-top: 4px solid var(--navy-primary);">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <h2 style="color: var(--navy-primary); margin: 0;">Official Digital Ballot Paper</h2>
+                    <p style="margin: 0.25rem 0 0 0; font-size: 0.9rem;">Select your preferred candidate and swipe the confirmation slider to cast your vote.</p>
+                </div>
+                <div>
+                    <span id="wallet-status-badge" class="badge badge-ended">Wallet Not Connected</span>
+                </div>
+            </div>
 
-            <div id="vote-alert" class="alert-box alert-danger" style="display: none;"></div>
+            <div id="vote-alert" class="alert-box alert-danger" style="display: none; margin-top: 1rem;"></div>
 
-            <!-- Candidate Cards Pool -->
+            <!-- Candidate Pool -->
             <div id="candidates-container" class="candidate-grid">
                 <div style="text-align: center; grid-column: 1/-1; padding: 2rem; color: var(--text-muted);">
                     Loading registered candidates...
@@ -44,17 +55,17 @@
     <!-- Vote Confirmation Modal with Slide-to-Vote Slider -->
     <div id="vote-modal" class="modal-backdrop">
         <div class="modal-content" style="text-align: center;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                <h3 style="color: var(--primary);">Vote Confirmation</h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.5rem; margin-bottom: 1rem;">
+                <h3 style="color: var(--navy-primary); margin: 0;">Vote Confirmation</h3>
                 <button id="close-modal-btn" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted);">&times;</button>
             </div>
 
             <div id="modal-candidate-badge" class="symbol-badge">🗳️</div>
             <h3 id="modal-candidate-name" style="margin-bottom: 0.25rem;">Candidate Name</h3>
-            <p id="modal-candidate-party" style="color: var(--primary); font-weight: 700; margin-bottom: 1rem;">Party Name</p>
+            <p id="modal-candidate-party" style="color: var(--navy-primary); font-weight: 700; margin-bottom: 1rem;">Party Name</p>
 
             <div class="alert-box alert-info" style="font-size: 0.85rem; text-align: left; margin-bottom: 1rem;">
-                🔒 <strong>Cryptographic Confirmation:</strong> Swiping the slider will generate a SHA-256 block hash and commit your vote to the database. This action is final.
+                🔒 <strong>Cryptographic Authentication:</strong> Swiping the confirmation slider will generate a SHA-256 block hash and commit your vote to the ledger.
             </div>
 
             <!-- Slide to Confirm Slider -->
@@ -63,15 +74,15 @@
                 <div class="slide-thumb" id="slider-thumb">➔</div>
             </div>
 
-            <!-- Fallback Confirmation Button -->
-            <button id="fallback-confirm-btn" class="btn btn-teal" style="width: 100%; margin-top: 1rem;">
+            <!-- Fallback Button -->
+            <button id="fallback-confirm-btn" class="btn btn-saffron" style="width: 100%; margin-top: 1rem;">
                 Confirm & Cast Vote Now
             </button>
         </div>
     </div>
 
     <footer>
-        <p>voteIn Practice Prototype &copy; 2026. Cryptographic Proof of Concept for E-Voting in India.</p>
+        <p>Digital Voting System of India &copy; 2026. Cryptographic Proof of Concept Portal.</p>
     </footer>
 
     <script src="/js/main.js"></script>
@@ -94,15 +105,15 @@
                     <div class="candidate-card" id="candidate-${c.id}">
                         <div class="symbol-badge">${c.symbol || '🗳️'}</div>
                         <h3>${c.name}</h3>
-                        <p style="color: var(--primary); font-weight: 700; margin-bottom: 0.25rem;">${c.party}</p>
+                        <p style="color: var(--navy-primary); font-weight: 700; margin-bottom: 0.25rem;">${c.party}</p>
                         <p style="font-size: 0.85rem; margin-bottom: 1rem;">Constituency: ${c.constituency || 'General'}</p>
-                        <button class="btn btn-teal" style="width: 100%;" onclick="openVoteModal(${c.id}, '${escapeHtml(c.name)}', '${escapeHtml(c.party)}', '${c.symbol || '🗳️'}', ${c.electionId || 1})">
+                        <button class="btn btn-saffron" style="width: 100%;" onclick="openVoteModal(${c.id}, '${escapeHtml(c.name)}', '${escapeHtml(c.party)}', '${c.symbol || '🗳️'}', ${c.electionId || 1})">
                             Vote for ${c.name}
                         </button>
                     </div>
                 `).join('');
             } catch (err) {
-                container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--danger);">Failed to load candidates pool.</div>';
+                container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--danger-red);">Failed to load candidates pool.</div>';
             }
         }
 
@@ -121,17 +132,15 @@
             document.getElementById('modal-candidate-party').innerText = party;
             modal.classList.add('active');
 
-            // Reset slider state
             const thumb = document.getElementById('slider-thumb');
             const text = document.getElementById('slider-text');
             if (thumb) {
                 thumb.style.left = '3px';
-                thumb.style.background = 'var(--primary)';
+                thumb.style.background = 'var(--navy-primary)';
                 thumb.innerText = '➔';
             }
             if (text) text.style.opacity = '1';
 
-            // Init slide listener
             initSlideToVote('slider-container', 'slider-thumb', 'slider-text', submitVote);
         }
 
@@ -146,9 +155,9 @@
             const token = getToken();
             const alertBox = document.getElementById('vote-alert');
 
-            const voterId = sessionStorage.getItem('currentVoterId') || 'TXPPS1893L';
+            const voterId = localStorage.getItem('currentVoterId') || 'TXPPS1893L';
 
-            // Check if MetaMask is connected & request Web3 ballot signature
+            // Check if MetaMask connected & sign ballot
             let web3Result = null;
             if (window.voteInWallet && window.voteInWallet.account) {
                 web3Result = await window.voteInWallet.signBallot(
@@ -159,7 +168,6 @@
                 );
             }
 
-            // Generate receipt tx hash (from Web3 signature or fallback SHA-256 string)
             const txHash = web3Result ? web3Result.signature : ('0x' + Array.from({length: 64}, () => Math.floor(Math.random()*16).toString(16)).join(''));
 
             try {
@@ -186,17 +194,12 @@
                     return;
                 }
 
-                // Store vote confirmation info in sessionStorage
                 sessionStorage.setItem('lastVoteHash', txHash);
                 sessionStorage.setItem('lastCandidateName', selectedCandidate.name);
                 sessionStorage.setItem('lastCandidateParty', selectedCandidate.party);
                 sessionStorage.setItem('lastVoteTime', new Date().toLocaleString());
                 if (web3Result) {
                     sessionStorage.setItem('lastWeb3Wallet', web3Result.address);
-                    sessionStorage.setItem('lastWeb3Signature', web3Result.signature);
-                } else {
-                    sessionStorage.removeItem('lastWeb3Wallet');
-                    sessionStorage.removeItem('lastWeb3Signature');
                 }
 
                 window.location.href = '/pages/voter/AfterVote.html';

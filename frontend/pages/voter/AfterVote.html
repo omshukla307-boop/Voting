@@ -3,89 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vote Receipt & Confirmation | voteIn</title>
+    <title>Digital Vote Receipt | Digital Voting System of India</title>
     <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
     <!-- Practice Banner -->
     <div class="demo-banner">
-        ⚠️ PRACTICE / DEMO MODE — Educational Prototype Only. Not affiliated with ECI.
+        ⚠️ PRACTICE / DEMO ELECTION PORTAL — Educational Prototype Only.
     </div>
 
-    <!-- Navigation -->
+    <!-- Navigation Bar -->
     <nav>
         <a href="/" class="logo">
-            <div class="logo-icon">🗳️</div>
-            vote<span>In</span>
+            <div class="logo-chakra">☸</div>
+            Digital Voting System of India
         </a>
         <div class="nav-links">
-            <button class="metamask-connect-btn">🦊 Connect MetaMask</button>
-            <a href="/pages/spectator/LiveCounting.html">Live Tally</a>
-            <a href="/" class="btn btn-secondary btn-sm">Home</a>
+            <a href="/">Home</a>
+            <a href="/pages/voter/VotePage.html">Vote</a>
+            <a href="/pages/voter/Dashboard.html">Dashboard</a>
+            <a href="/pages/spectator/LiveCounting.html">Results</a>
+            <a href="/pages/auth/AdminLogin.html">Admin</a>
+            <button class="metamask-connect-btn">🦊 Connect Wallet</button>
+            <button id="logout-btn" class="btn btn-secondary btn-sm">Logout</button>
         </div>
     </nav>
 
     <div class="container" style="max-width: 580px; margin-top: 2rem;">
-        <div class="card" style="text-align: center; padding: 2.5rem 1.75rem;">
-            <div style="width: 70px; height: 70px; background: #ECFDF5; border: 3px solid #10B981; border-radius: 50%; color: #10B981; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; font-weight: 800; margin: 0 auto 1rem auto;">
+        <div class="card" style="text-align: center; padding: 2.25rem 1.75rem; border-top: 4px solid var(--green-success);">
+            <div style="width: 64px; height: 64px; background: var(--green-light); border: 2px solid var(--green-success); border-radius: 50%; color: var(--green-success); display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 800; margin: 0 auto 1rem auto;">
                 ✓
             </div>
 
             <h2 style="color: #065F46; margin-bottom: 0.25rem;">Voting Successful!</h2>
-            <p style="margin-bottom: 1.5rem;">Your vote has been cryptographically signed and stored in Supabase.</p>
+            <p style="margin-bottom: 1.25rem;">Your vote has been cryptographically signed and stored in Supabase.</p>
 
             <!-- Digital Receipt Card -->
-            <div style="background: #0F172A; color: #F8FAFC; border-radius: 12px; padding: 1.5rem; text-align: left; margin-bottom: 1.5rem; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
-                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #334155; padding-bottom: 0.75rem; margin-bottom: 1rem;">
-                    <span style="font-weight: 700; color: #94A3B8; font-size: 0.85rem;">RECEIPT METRIC</span>
-                    <span style="font-weight: 700; color: #38BDF8; font-size: 0.85rem;">CRYPTOGRAPHIC VERIFIED</span>
+            <div style="background: #002147; color: #F8FAFC; border-radius: 8px; padding: 1.35rem; text-align: left; margin-bottom: 1.25rem;">
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #1E3A8A; padding-bottom: 0.6rem; margin-bottom: 0.85rem;">
+                    <span style="font-weight: 700; color: #CBD5E1; font-size: 0.8rem;">RECEIPT METRIC</span>
+                    <span style="font-weight: 700; color: #38BDF8; font-size: 0.8rem;">CRYPTOGRAPHIC VERIFIED</span>
                 </div>
 
                 <div style="margin-bottom: 0.75rem;">
-                    <span style="font-size: 0.75rem; color: #94A3B8; display: block;">VOTER EPIC ID</span>
+                    <span style="font-size: 0.75rem; color: #CBD5E1; display: block;">VOTER EPIC ID</span>
                     <strong id="receipt-voter-id" style="font-family: monospace; font-size: 1rem; color: #FFFFFF;">TXPPS1893L</strong>
                 </div>
 
                 <div style="margin-bottom: 0.75rem;">
-                    <span style="font-size: 0.75rem; color: #94A3B8; display: block;">CANDIDATE SECURED</span>
+                    <span style="font-size: 0.75rem; color: #CBD5E1; display: block;">CANDIDATE SECURED</span>
                     <strong id="receipt-candidate" style="font-size: 1.05rem; color: #34D399;">Narendra Modi (BJP)</strong>
                 </div>
 
                 <div style="margin-bottom: 0.75rem;">
-                    <span style="font-size: 0.75rem; color: #94A3B8; display: block;">TIMESTAMP</span>
-                    <span id="receipt-time" style="font-size: 0.9rem; color: #CBD5E1;">-</span>
+                    <span style="font-size: 0.75rem; color: #CBD5E1; display: block;">TIMESTAMP</span>
+                    <span id="receipt-time" style="font-size: 0.85rem; color: #E2E8F0;">-</span>
                 </div>
 
                 <div id="web3-wallet-row" style="margin-bottom: 0.75rem; display: none;">
-                    <span style="font-size: 0.75rem; color: #94A3B8; display: block;">METAMASK SIGNER WALLET</span>
-                    <span id="receipt-web3-wallet" style="font-family: monospace; font-size: 0.85rem; color: #F97316;">-</span>
+                    <span style="font-size: 0.75rem; color: #CBD5E1; display: block;">METAMASK SIGNER WALLET</span>
+                    <span id="receipt-web3-wallet" style="font-family: monospace; font-size: 0.85rem; color: #FF9933;">-</span>
                 </div>
 
                 <div>
-                    <span style="font-size: 0.75rem; color: #94A3B8; display: block; margin-bottom: 0.25rem;">BLOCKCHAIN RECEIPT / WEB3 SIGNATURE</span>
-                    <div id="receipt-hash" style="font-family: monospace; font-size: 0.8rem; background: #1E293B; color: #38BDF8; padding: 0.6rem; border-radius: 6px; word-break: break-all; border: 1px solid #334155;">
+                    <span style="font-size: 0.75rem; color: #CBD5E1; display: block; margin-bottom: 0.25rem;">BLOCKCHAIN RECEIPT HASH / SIGNATURE</span>
+                    <div id="receipt-hash" style="font-family: monospace; font-size: 0.8rem; background: #001733; color: #38BDF8; padding: 0.5rem; border-radius: 4px; word-break: break-all; border: 1px solid #1E3A8A;">
                         0x...
                     </div>
                 </div>
             </div>
 
-            <div class="alert-box alert-info" style="font-size: 0.85rem; text-align: left; margin-bottom: 1.5rem;">
-                ℹ️ <strong>Database & Hashes Notice:</strong> This receipt hash proves that your vote record was immutably appended to the database. It does not contain personally identifiable vote choices.
+            <div class="alert-box alert-info" style="font-size: 0.85rem; text-align: left; margin-bottom: 1.25rem;">
+                ℹ️ <strong>Receipt Verification Notice:</strong> This cryptographic receipt proves your ballot transaction was immutably recorded in the database without revealing personally identifiable ballot choices.
             </div>
 
             <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
                 <button onclick="window.print()" class="btn btn-secondary">
-                    📄 Print / Save PDF Receipt
+                    📄 Print PDF Receipt
                 </button>
-                <a href="/pages/spectator/LiveCounting.html" class="btn btn-teal">
-                    📊 View Live Counting
+                <a href="/pages/spectator/LiveCounting.html" class="btn btn-saffron">
+                    📊 View Live Tally
                 </a>
             </div>
         </div>
     </div>
 
     <footer>
-        <p>voteIn Practice Prototype &copy; 2026. Cryptographic Proof of Concept for E-Voting in India.</p>
+        <p>Digital Voting System of India &copy; 2026. Cryptographic Proof of Concept Portal.</p>
     </footer>
 
     <script src="/js/main.js"></script>
@@ -93,7 +97,7 @@
         const hash = sessionStorage.getItem('lastVoteHash') || '0x' + Array.from({length: 64}, () => Math.floor(Math.random()*16).toString(16)).join('');
         const candidateName = sessionStorage.getItem('lastCandidateName') || 'Selected Candidate';
         const candidateParty = sessionStorage.getItem('lastCandidateParty') || 'Party';
-        const voterId = sessionStorage.getItem('currentVoterId') || 'TXPPS1893L';
+        const voterId = localStorage.getItem('currentVoterId') || 'TXPPS1893L';
         const voteTime = sessionStorage.getItem('lastVoteTime') || new Date().toLocaleString();
         const web3Wallet = sessionStorage.getItem('lastWeb3Wallet');
 

@@ -1,4 +1,4 @@
-// voteIn Main Frontend API, Auth, QR Scanner & Interactive Handlers
+// Digital Voting System of India — Main Frontend API, Wallet & Auth Logic
 
 function normalizeApiBase(base) {
     if (!base) return '/api';
@@ -34,63 +34,73 @@ function setToken(token) {
     localStorage.setItem('token', token);
 }
 
+function getUserRole() {
+    return localStorage.getItem('userRole') || 'guest';
+}
+
+function setUserRole(role) {
+    localStorage.setItem('userRole', role);
+}
+
 function logout() {
     localStorage.removeItem('token');
+    localStorage.removeItem('userRole');
+    localStorage.removeItem('currentVoterId');
+    localStorage.removeItem('connectedWallet');
     window.location.href = '/pages/auth/Login.html';
 }
 
 function checkAuth() {
     const token = getToken();
-    const publicPages = ['Login.html', 'index.html', 'LiveCounting.html', 'FinalResult.html'];
+    const role = getUserRole();
     const path = window.location.pathname;
-    const isPublic = publicPages.some(page => path.endsWith(page)) || path === '/';
 
-    if (!token && !isPublic) {
+    const isAdminPage = path.includes('/admin/AdminDashboard.html');
+    const isVoterPage = path.includes('/voter/VotePage.html') || path.includes('/voter/Dashboard.html');
+
+    if (isAdminPage && (!token || role !== 'admin')) {
+        window.location.href = '/pages/auth/AdminLogin.html';
+    } else if (isVoterPage && !token) {
         window.location.href = '/pages/auth/Login.html';
     }
 }
 
-// Global initialization
-document.addEventListener('DOMContentLoaded', () => {
-    checkAuth();
-    const logoutBtn = document.getElementById('logout-btn');
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', logout);
-    }
-
-    if (window.voteInWallet) {
-        window.voteInWallet.updateUI();
-
-        document.querySelectorAll('.metamask-connect-btn').forEach(btn => {
-            btn.addEventListener('click', async () => {
-                if (window.voteInWallet.account) {
-                    if (confirm(`MetaMask Wallet Connected:\n${window.voteInWallet.account}\n\nDo you want to disconnect this wallet?`)) {
-                        window.voteInWallet.disconnect();
-                    }
-                } else {
-                    await window.voteInWallet.connect();
-                }
-            });
-        });
-    }
-});
-
 /* =========================================================
-   METAMASK / WEB3 WALLET INTEGRATION
+   METAMASK / WEB3 WALLET AUTOMATIC CONTROLLER (EIP-1193)
    ========================================================= */
 class VoteInMetaMask {
     constructor() {
         this.account = localStorage.getItem('connectedWallet') || null;
-        this.initListeners();
+        this.chainId = null;
+        this.init();
     }
 
     isInstalled() {
         return typeof window.ethereum !== 'undefined';
     }
 
+    async init() {
+        if (!this.isInstalled()) return;
+
+        try {
+            // EIP-1193 Silent Accounts Check (does not trigger popup if already authorized)
+            const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+            if (accounts && accounts.length > 0) {
+                this.account = accounts[0];
+                localStorage.setItem('connectedWallet', this.account);
+            }
+            this.chainId = await window.ethereum.request({ method: 'eth_chainId' });
+            this.updateUI();
+        } catch (err) {
+            console.warn("MetaMask silent init notice:", err);
+        }
+
+        this.initListeners();
+    }
+
     async connect() {
         if (!this.isInstalled()) {
-            alert("MetaMask is not detected in your browser!\n\nPlease install the MetaMask browser extension from https://metamask.io to connect your Web3 wallet.");
+            alert("MetaMask browser extension is not installed!\n\nPlease install MetaMask from https://metamask.io/ to connect your Web3 wallet.");
             window.open('https://metamask.io/download/', '_blank');
             return null;
         }
@@ -100,6 +110,7 @@ class VoteInMetaMask {
             if (accounts && accounts.length > 0) {
                 this.account = accounts[0];
                 localStorage.setItem('connectedWallet', this.account);
+                this.chainId = await window.ethereum.request({ method: 'eth_chainId' });
                 this.updateUI();
                 return this.account;
             }
@@ -126,7 +137,7 @@ class VoteInMetaMask {
             if (!connected) return null;
         }
 
-        const message = `voteIn Cryptographic Ballot Authentication\n\nVoter EPIC ID: ${voterId}\nCandidate: ${candidateName} (ID: ${candidateId})\nElection ID: ${electionId}\nTimestamp: ${new Date().toISOString()}`;
+        const message = `Digital Voting System of India — Cryptographic Authentication\n\nVoter EPIC ID: ${voterId}\nCandidate: ${candidateName} (ID: ${candidateId})\nElection ID: ${electionId}\nTimestamp: ${new Date().toISOString()}`;
         
         try {
             const msgBuffer = new TextEncoder().encode(message);
@@ -160,7 +171,8 @@ class VoteInMetaMask {
                 }
             });
 
-            window.ethereum.on('chainChanged', () => {
+            window.ethereum.on('chainChanged', (chainId) => {
+                this.chainId = chainId;
                 window.location.reload();
             });
         }
@@ -175,18 +187,56 @@ class VoteInMetaMask {
                 if (textSpan) textSpan.innerText = shortAddr;
                 else btn.innerHTML = `🦊 ${shortAddr}`;
                 btn.classList.add('wallet-connected');
-                btn.title = `Connected MetaMask Wallet: ${this.account}\nClick to Disconnect`;
+                btn.title = `Connected Wallet: ${this.account}\nClick to Disconnect`;
             } else {
                 if (textSpan) textSpan.innerText = 'Connect MetaMask';
-                else btn.innerHTML = '🦊 Connect MetaMask';
+                else btn.innerHTML = '🦊 Connect Wallet';
                 btn.classList.remove('wallet-connected');
                 btn.title = 'Click to Connect MetaMask Wallet';
             }
         });
+
+        // Wallet status elements
+        const statusEl = document.getElementById('wallet-status-badge');
+        if (statusEl) {
+            if (this.account) {
+                statusEl.className = 'badge badge-live';
+                statusEl.innerText = `Wallet Connected (${this.account.slice(0, 6)}...)`;
+            } else {
+                statusEl.className = 'badge badge-ended';
+                statusEl.innerText = 'Wallet Not Connected';
+            }
+        }
     }
 }
 
 window.voteInWallet = new VoteInMetaMask();
+
+// Global initialization
+document.addEventListener('DOMContentLoaded', () => {
+    checkAuth();
+    
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', logout);
+    }
+
+    if (window.voteInWallet) {
+        window.voteInWallet.updateUI();
+
+        document.querySelectorAll('.metamask-connect-btn').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                if (window.voteInWallet.account) {
+                    if (confirm(`MetaMask Wallet Connected:\n${window.voteInWallet.account}\n\nDo you want to disconnect this wallet?`)) {
+                        window.voteInWallet.disconnect();
+                    }
+                } else {
+                    await window.voteInWallet.connect();
+                }
+            });
+        });
+    }
+});
 
 /* =========================================================
    QR CODE SCANNER CONTROLLER (html5-qrcode integration)
@@ -228,7 +278,7 @@ class VoteInQRScanner {
                 this.html5QrcodeScanner = new Html5Qrcode(this.elementId);
             }
 
-            const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+            const config = { fps: 10, qrbox: { width: 240, height: 240 } };
             const cameraConfig = cameraId ? { deviceId: { exact: cameraId } } : { facingMode: "environment" };
 
             await this.html5QrcodeScanner.start(
@@ -238,12 +288,12 @@ class VoteInQRScanner {
                     this.onScanSuccess(decodedText, decodedResult);
                 },
                 (errorMessage) => {
-                    // Ignore line-by-line scanning frame misses
+                    // Scanning line frame miss
                 }
             );
 
             this.isScanning = true;
-            this.updateStatus("Scanning active. Align QR code inside frame.", "success");
+            this.updateStatus("Camera active. Align Voter ID QR code inside the frame.", "success");
         } catch (err) {
             console.error("QR scanner start error:", err);
             this.isScanning = false;
@@ -266,7 +316,7 @@ class VoteInQRScanner {
                 console.warn("Scanner stop cleanup notice:", err);
             }
         }
-        // Force teardown of any open video stream tracks
+        // Force teardown of open MediaStream tracks
         if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ video: true }).catch(() => null);
@@ -276,12 +326,12 @@ class VoteInQRScanner {
             } catch (e) {}
         }
         this.isScanning = false;
-        this.updateStatus("Scanner stopped.", "info");
+        this.updateStatus("Scanner camera stopped.", "info");
     }
 
     async scanFile(file) {
         if (!file) return;
-        this.updateStatus("Analyzing uploaded QR code image...", "info");
+        this.updateStatus("Analyzing uploaded Voter ID image...", "info");
 
         try {
             if (!this.html5QrcodeScanner) {
@@ -303,7 +353,7 @@ class VoteInQRScanner {
             this.stopScanning();
             this.successCallback(parsed);
         } else {
-            this.updateStatus(`Invalid QR Format: ${parsed.reason || "Payload not recognized"}. Expected demo payload structure.`, "danger");
+            this.updateStatus(`Invalid QR Format: ${parsed.reason || "Payload not recognized"}. Expected demo payload.`, "danger");
         }
     }
 
@@ -314,7 +364,6 @@ class VoteInQRScanner {
         try {
             payload = JSON.parse(text);
         } catch (e) {
-            // Check string format like VOTER:TXPPS1893L
             if (text.includes("VOTER:") || text.includes("EPIC:") || text.includes("VOTEIN:")) {
                 const parts = text.split(":");
                 payload = { voterId: parts[1]?.trim() || text };
@@ -347,7 +396,7 @@ function initPinInputs(containerId, onComplete) {
 
     const boxes = container.querySelectorAll('.pin-digit-box');
     boxes.forEach((box, idx) => {
-        box.value = ''; // Ensure start clean, no dots
+        box.value = '';
         box.placeholder = '•';
 
         box.addEventListener('input', (e) => {
@@ -416,7 +465,7 @@ function initSlideToVote(sliderId, thumbId, textId, onConfirm) {
         if (left >= maxDrag - 5) {
             isDragging = false;
             thumb.style.left = `${maxDrag}px`;
-            thumb.style.background = '#10B981';
+            thumb.style.background = '#138808';
             thumb.innerText = '✓';
             if (onConfirm) onConfirm();
         }

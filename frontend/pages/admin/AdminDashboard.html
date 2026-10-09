@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administrator Dashboard | Digital Voting System of India</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <!-- Practice Banner -->
+    <div class="demo-banner">
+        ⚠️ PRACTICE / DEMO ELECTION PORTAL — Educational Prototype Only.
+    </div>
+
+    <!-- Navigation Bar -->
+    <nav>
+        <a href="/" class="logo">
+            <div class="logo-chakra">☸</div>
+            Digital Voting System of India
+        </a>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/pages/voter/VotePage.html">Vote</a>
+            <a href="/pages/admin/AdminDashboard.html" class="active">Dashboard</a>
+            <a href="/pages/spectator/LiveCounting.html">Results</a>
+            <a href="/pages/admin/AdminDashboard.html" class="active">Admin</a>
+            <button class="metamask-connect-btn">🦊 Connect Wallet</button>
+            <button id="logout-btn" class="btn btn-secondary btn-sm">Logout</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card" style="border-top: 4px solid var(--navy-primary);">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <span class="badge badge-live">Administrator Portal</span>
+                    <h2 style="margin: 0.25rem 0 0 0; color: var(--navy-primary);">Election Management & Control Panel</h2>
+                </div>
+                <button onclick="logout()" class="btn btn-secondary btn-sm">Sign Out Admin</button>
+            </div>
+        </div>
+
+        <!-- Alert messages -->
+        <div id="admin-alert" class="alert-box alert-info" style="display: none;"></div>
+
+        <!-- Section 1: Election Control Panel -->
+        <div class="card">
+            <h3>⚙️ 1. Election Control & Blockchain Status</h3>
+            <p>Monitor current active election parameters and propose state updates to the blockchain ledger.</p>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; background: #F8FAFC; border: 1px solid var(--border-color); padding: 1.25rem; border-radius: 6px; margin-bottom: 1.25rem;">
+                <div>
+                    <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; display: block;">CURRENT ELECTION TITLE</span>
+                    <strong id="ctrl-election-title" style="font-size: 1rem; color: var(--navy-primary);">General Election 2026 Prototype</strong>
+                </div>
+                <div>
+                    <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; display: block;">ELECTION STATUS</span>
+                    <span id="ctrl-election-status-badge" class="badge badge-live">ACTIVE / LIVE</span>
+                </div>
+                <div>
+                    <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; display: block;">BLOCKCHAIN SYNC STATUS</span>
+                    <span id="ctrl-tx-status-badge" class="badge badge-live">Confirmed (Synced)</span>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                <button id="propose-blockchain-btn" class="btn btn-saffron">
+                    ⛓️ Propose State Update to Blockchain
+                </button>
+                <button id="sync-contract-btn" class="btn btn-secondary">
+                    🔄 Refresh Status from Contract
+                </button>
+            </div>
+        </div>
+
+        <!-- Section 2: Create Election Panel -->
+        <div class="card">
+            <h3>➕ 2. Create & Schedule New Election</h3>
+            <p>Define new election parameters and schedule start/end timestamps.</p>
+
+            <form id="create-election-form">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
+                    <div class="form-group">
+                        <label for="elTitle">Election Title</label>
+                        <input type="text" id="elTitle" placeholder="e.g. Lok Sabha General Election 2026" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="elType">Election Type / Level</label>
+                        <select id="elType">
+                            <option value="national">National (Parliamentary)</option>
+                            <option value="state">State (Assembly)</option>
+                            <option value="local">Local (Municipal)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="elStartTime">Start Date & Time</label>
+                        <input type="datetime-local" id="elStartTime" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="elEndTime">End Date & Time</label>
+                        <input type="datetime-local" id="elEndTime" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="elStatus">Initial Election Status</label>
+                    <select id="elStatus">
+                        <option value="live">Live / Active</option>
+                        <option value="upcoming">Upcoming / Draft</option>
+                        <option value="ended">Ended</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-navy" style="width: 100%;">
+                    💾 Save & Launch Election
+                </button>
+            </form>
+        </div>
+
+        <!-- Section 3: Election Management List -->
+        <div class="card">
+            <h3>📋 3. Election Management & History</h3>
+            <p>List of all scheduled and completed elections in the system.</p>
+
+            <div style="overflow-x: auto;">
+                <table id="elections-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Election Title</th>
+                            <th>Level / Type</th>
+                            <th>Start Time</th>
+                            <th>End Time</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="elections-table-body">
+                        <tr>
+                            <td colspan="7" style="text-align: center; color: var(--text-muted);">Loading registered elections...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Digital Voting System of India &copy; 2026. Cryptographic Proof of Concept Portal.</p>
+    </footer>
+
+    <script src="/js/main.js"></script>
+    <script>
+        const alertBox = document.getElementById('admin-alert');
+
+        function showAlert(msg, type = 'info') {
+            alertBox.className = `alert-box alert-${type}`;
+            alertBox.innerText = msg;
+            alertBox.style.display = 'block';
+        }
+
+        // Set default start/end times in form
+        const now = new Date();
+        const end = new Date(Date.now() + 24 * 3600 * 1000);
+        document.getElementById('elStartTime').value = now.toISOString().slice(0, 16);
+        document.getElementById('elEndTime').value = end.toISOString().slice(0, 16);
+
+        async function loadElections() {
+            try {
+                const token = getToken();
+                const res = await fetch(apiUrl('/admin/summary'), {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                const elections = data.elections || [];
+
+                const tbody = document.getElementById('elections-table-body');
+
+                if (elections.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">No elections found. Create one above.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = elections.map(e => {
+                    const statusBadge = e.status === 'live'
+                        ? '<span class="badge badge-live">Active / Live</span>'
+                        : e.status === 'upcoming'
+                        ? '<span class="badge badge-pending">Upcoming</span>'
+                        : '<span class="badge badge-ended">Ended</span>';
+
+                    return `
+                        <tr>
+                            <td><strong>${e.id}</strong></td>
+                            <td><strong>${e.name}</strong></td>
+                            <td>${e.level || 'National'}</td>
+                            <td>${new Date(e.startTime).toLocaleString()}</td>
+                            <td>${new Date(e.endTime).toLocaleString()}</td>
+                            <td>${statusBadge}</td>
+                            <td>
+                                <button class="btn btn-secondary btn-sm" onclick="proposeBlockchain('${e.id}', '${e.name}')">Propose Update</button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (err) {
+                console.error("Failed to load elections:", err);
+            }
+        }
+
+        // Handle Create Election Form
+        document.getElementById('create-election-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('elTitle').value;
+            const level = document.getElementById('elType').value;
+            const startTime = document.getElementById('elStartTime').value;
+            const endTime = document.getElementById('elEndTime').value;
+            const token = getToken();
+
+            try {
+                const res = await fetch(apiUrl('/admin/create'), {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ name, level, startTime, endTime })
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    showAlert(data.error || 'Failed to create election.', 'danger');
+                    return;
+                }
+
+                showAlert(`Election "${name}" created successfully!`, 'success');
+                loadElections();
+            } catch (err) {
+                showAlert('Error submitting election to server.', 'danger');
+            }
+        });
+
+        // Blockchain proposal simulation
+        async function proposeBlockchain(id, name) {
+            if (!window.voteInWallet?.account) {
+                alert("Please connect your MetaMask administrator wallet to sign blockchain state proposals.");
+                await window.voteInWallet?.connect();
+                if (!window.voteInWallet?.account) return;
+            }
+
+            showAlert(`Initiating Web3 transaction for election #${id} (${name})...`, 'info');
+            document.getElementById('ctrl-tx-status-badge').className = 'badge badge-pending';
+            document.getElementById('ctrl-tx-status-badge').innerText = 'Pending Confirmation';
+
+            try {
+                // Sign state proposal using MetaMask personal_sign
+                const signature = await window.voteInWallet.signBallot('ADMIN', id, name, id);
+                if (signature) {
+                    document.getElementById('ctrl-tx-status-badge').className = 'badge badge-live';
+                    document.getElementById('ctrl-tx-status-badge').innerText = 'Confirmed (Synced)';
+                    showAlert(`Blockchain Proposal Confirmed! Tx Signature: ${signature.signature.slice(0, 20)}...`, 'success');
+                } else {
+                    document.getElementById('ctrl-tx-status-badge').className = 'badge badge-ended';
+                    document.getElementById('ctrl-tx-status-badge').innerText = 'Transaction Canceled';
+                    showAlert('Blockchain transaction was canceled by administrator.', 'warning');
+                }
+            } catch (err) {
+                showAlert('Blockchain transaction failed.', 'danger');
+            }
+        }
+
+        document.getElementById('propose-blockchain-btn').addEventListener('click', () => proposeBlockchain(1, 'General Election 2026'));
+        document.getElementById('sync-contract-btn').addEventListener('click', loadElections);
+
+        loadElections();
+    </script>
+</body>
+</html>
