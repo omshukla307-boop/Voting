@@ -129,38 +129,26 @@
             }
         }
 
-        async function loadCandidates() {
+        const defaultCandidates = [
+            { id: 1, name: 'Aarav Mehta', party: 'People\'s Development Alliance (PDA)', symbol: '⚖️', electionId: 1 },
+            { id: 2, name: 'Priya Sharma', party: 'National Progress Front (NPF)', symbol: '🪔', electionId: 1 },
+            { id: 3, name: 'Kabir Verma', party: 'Unity and Reform Party (URP)', symbol: '🌾', electionId: 1 },
+            { id: 4, name: 'Ananya Rao', party: 'Democratic Future League (DFL)', symbol: '🕊️', electionId: 1 },
+            { id: 5, name: 'Rohan Kapoor', party: 'People\'s Welfare Movement (PWM)', symbol: '☀️', electionId: 1 },
+            { id: 6, name: 'Meera Joshi', party: 'Independent Citizens Group (ICG)', symbol: '⛵', electionId: 1 },
+            { id: 7, name: 'None of the Above (NOTA)', party: 'Independent / ECI', symbol: '❌', electionId: 1 }
+        ];
+
+        function renderCandidates(candidates) {
             const sheet = document.getElementById('evm-ballot-sheet');
-            const defaultCandidates = [
-                { id: 1, name: 'Aarav Mehta', party: 'People\'s Development Alliance (PDA)', symbol: '⚖️', electionId: 1 },
-                { id: 2, name: 'Priya Sharma', party: 'National Progress Front (NPF)', symbol: '🪔', electionId: 1 },
-                { id: 3, name: 'Kabir Verma', party: 'Unity and Reform Party (URP)', symbol: '🌾', electionId: 1 },
-                { id: 4, name: 'Ananya Rao', party: 'Democratic Future League (DFL)', symbol: '🕊️', electionId: 1 },
-                { id: 5, name: 'Rohan Kapoor', party: 'People\'s Welfare Movement (PWM)', symbol: '☀️', electionId: 1 },
-                { id: 6, name: 'Meera Joshi', party: 'Independent Citizens Group (ICG)', symbol: '⛵', electionId: 1 },
-                { id: 7, name: 'None of the Above (NOTA)', party: 'Independent / ECI', symbol: '❌', electionId: 1 }
-            ];
+            if (!sheet) return;
 
-            let candidates = defaultCandidates;
-
-            try {
-                const res = await fetch(apiUrl('/spectator/candidates'));
-                if (res.ok) {
-                    const data = await res.json();
-                    const fetched = data.candidates || (Array.isArray(data) ? data : null);
-                    if (fetched && fetched.length > 0) {
-                        candidates = fetched;
-                    }
-                }
-            } catch (err) {
-                console.warn("Candidates fetch notice, using local pool:", err);
+            let list = [...candidates];
+            if (!list.some(c => c.name && c.name.includes('NOTA'))) {
+                list.push({ id: 99, name: 'None of the Above (NOTA)', party: 'Independent / ECI', symbol: '❌', electionId: 1 });
             }
 
-            if (!candidates.some(c => c.name && c.name.includes('NOTA'))) {
-                candidates.push({ id: 99, name: 'None of the Above (NOTA)', party: 'Independent / ECI', symbol: '❌', electionId: 1 });
-            }
-
-            sheet.innerHTML = candidates.map((c, idx) => `
+            sheet.innerHTML = list.map((c, idx) => `
                 <div class="evm-row" id="evm-row-${c.id}">
                     <div class="evm-serial">${idx + 1}</div>
                     <div class="evm-candidate-info">
@@ -180,6 +168,25 @@
                     </div>
                 </div>
             `).join('');
+        }
+
+        async function loadCandidates() {
+            // Render default candidates INSTANTLY at 0ms latency
+            renderCandidates(defaultCandidates);
+
+            // Fetch live update in background if available
+            try {
+                const res = await fetch(apiUrl('/spectator/candidates?t=' + Date.now()));
+                if (res.ok) {
+                    const data = await res.json();
+                    const fetched = data.candidates || (Array.isArray(data) ? data : null);
+                    if (fetched && fetched.length > 0) {
+                        renderCandidates(fetched);
+                    }
+                }
+            } catch (err) {
+                console.warn("Background candidates update notice:", err);
+            }
         }
 
         function escapeHtml(str) {
