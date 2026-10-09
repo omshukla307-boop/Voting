@@ -104,6 +104,9 @@
                 <a href="/pages/spectator/LiveCounting.html" class="btn btn-saffron">
                     📊 View Live Tally
                 </a>
+                <a href="/pages/auth/Login.html" onclick="logout()" class="btn btn-secondary" style="background: #DC2626; color: white;">
+                    🔒 Finish Session & Logout
+                </a>
             </div>
         </div>
     </div>
@@ -130,6 +133,18 @@
             document.getElementById('web3-wallet-row').style.display = 'block';
             document.getElementById('receipt-web3-wallet').innerText = web3Wallet;
         }
+
+        // AUTOMATIC SESSION TERMINATION AFTER VOTING
+        // Clear tokens so voter is logged out and cannot cast a 2nd vote
+        setTimeout(() => {
+            sessionStorage.removeItem('token');
+            localStorage.removeItem('token');
+            sessionStorage.removeItem('userRole');
+            localStorage.removeItem('userRole');
+            if (window.voteInWallet) {
+                window.voteInWallet.account = null;
+            }
+        }, 1000);
     </script>
 </body>
 </html>

@@ -36,20 +36,21 @@ exports.castVote = async (req, res) => {
       }
     }
 
-    // For demo/practice environment: allow voting or updating vote smoothly
+    const { candidateId, electionId, txHash, walletAddress } = req.body;
+
+    if (!walletAddress) {
+      await t.rollback();
+      return res.status(400).json({ error: "MetaMask Web3 wallet is required to cast a vote." });
+    }
+
     const existingVote = await Vote.findOne({
       where: { voterId, electionId: election ? election.id : electionId },
     });
 
     if (existingVote) {
-      await existingVote.update(
-        { candidateId, voteHash: txHash },
-        { transaction: t }
-      );
-      await t.commit();
-      return res.status(200).json({
-        success: true,
-        message: "Vote updated successfully in practice ledger",
+      await t.rollback();
+      return res.status(400).json({
+        error: "You have already cast your ballot in this election. Single-vote policy enforced."
       });
     }
 
