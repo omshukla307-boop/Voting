@@ -47,6 +47,10 @@
       "dest": "/frontend/pages/$1"
     },
     {
+      "src": "/chat",
+      "dest": "/backend/src/server.js"
+    },
+    {
       "src": "/api/(.*)",
       "dest": "/backend/src/server.js"
     },
