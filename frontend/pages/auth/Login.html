@@ -318,6 +318,7 @@
             const resultDetails = document.getElementById('scanner-result-details');
             
             const fetchedId = data.voterId || 'TIS1952092';
+            const fetchedName = data.name || 'Hiral Chawra';
             document.getElementById('voterId').value = fetchedId;
 
             if (resultCard && resultDetails) {
@@ -327,14 +328,15 @@
                         <span style="background: #22C55E; color: white; padding: 2px 8px; border-radius: 12px; font-weight: 800; font-size: 0.75rem;">✓ VERIFIED</span>
                         <strong style="color: #166534; font-size: 0.88rem;">Voter Account Fetched Successfully</strong>
                     </div>
-                    <div><strong>Scanned EPIC Voter ID:</strong> <code style="background: white; padding: 0.15rem 0.4rem; border-radius: 4px; font-weight: 800; color: #0B4F9C; font-size: 1rem;">${fetchedId}</code></div>
-                    <div><strong>Account Status:</strong> <span style="color: #15803D; font-weight: 700;">✓ Account Fetched (${fetchedId})</span></div>
+                    <div style="margin-bottom: 0.2rem;"><strong>Elector Full Name:</strong> <span style="font-weight: 800; color: #0B4F9C; font-size: 1rem;">${fetchedName}</span></div>
+                    <div style="margin-bottom: 0.2rem;"><strong>Scanned EPIC Voter ID:</strong> <code style="background: white; padding: 0.15rem 0.4rem; border-radius: 4px; font-weight: 800; color: #0B4F9C; font-size: 0.95rem;">${fetchedId}</code></div>
+                    <div><strong>Account Status:</strong> <span style="color: #15803D; font-weight: 700;">✓ Account Fetched (${fetchedName} - ${fetchedId})</span></div>
                 `;
             }
 
             const scanBtn = document.getElementById('open-scanner-btn');
             if (scanBtn) {
-                scanBtn.innerText = `✓ Account Fetched (${fetchedId})`;
+                scanBtn.innerText = `✓ Account Fetched: ${fetchedName}`;
                 scanBtn.className = 'btn btn-success btn-sm';
             }
         }
