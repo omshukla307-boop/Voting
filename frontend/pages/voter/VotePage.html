@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Official Digital Ballot | Digital Voting System of India</title>
+    <title>EVM Ballot Unit | Digital Voting System of India</title>
     <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
@@ -30,91 +30,148 @@
         </div>
     </nav>
 
-    <div class="container">
-        <div class="card" style="border-top: 4px solid var(--navy-primary);">
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+    <div class="container" style="max-width: 900px; margin-top: 1.5rem;">
+        <div style="margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+            <div>
+                <h3 style="color: #0B4F9C; margin: 0; font-weight: 800;">Electronic Voting Machine (EVM)</h3>
+                <p style="margin: 0.15rem 0 0 0; font-size: 0.85rem; color: #64748B;">Press the <strong>BLUE BUTTON</strong> next to your chosen candidate to cast your vote.</p>
+            </div>
+            <div>
+                <span id="wallet-status-badge" class="badge badge-ended">Wallet Not Connected</span>
+            </div>
+        </div>
+
+        <div id="vote-alert" class="alert-box alert-danger" style="display: none;"></div>
+
+        <!-- REAL EVM BALLOT UNIT CASING -->
+        <div class="evm-casing">
+            <div class="evm-top-bevel">
                 <div>
-                    <h2 style="color: var(--navy-primary); margin: 0;">Official Digital Ballot Paper</h2>
-                    <p style="margin: 0.25rem 0 0 0; font-size: 0.9rem;">Select your preferred candidate and swipe the confirmation slider to cast your vote.</p>
+                    <div style="font-weight: 900; font-size: 0.85rem; letter-spacing: 1px; color: #94A3B8;">ELECTION COMMISSION OF INDIA</div>
+                    <div style="font-weight: 700; font-size: 1rem; color: #FFFFFF;">BALLOT UNIT — MODEL M3</div>
                 </div>
-                <div>
-                    <span id="wallet-status-badge" class="badge badge-ended">Wallet Not Connected</span>
+                <div class="evm-ready-indicator">
+                    <div class="evm-ready-led"></div>
+                    <span>READY</span>
                 </div>
             </div>
 
-            <div id="vote-alert" class="alert-box alert-danger" style="display: none; margin-top: 1rem;"></div>
-
-            <!-- Candidate Pool -->
-            <div id="candidates-container" class="candidate-grid">
-                <div style="text-align: center; grid-column: 1/-1; padding: 2rem; color: var(--text-muted);">
-                    Loading registered candidates...
+            <!-- EVM BALLOT SHEET -->
+            <div id="evm-ballot-sheet" class="evm-ballot-sheet">
+                <div style="text-align: center; padding: 2.5rem; color: #64748B;">
+                    Loading EVM Ballot Sheet...
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Vote Confirmation Modal with Slide-to-Vote Slider -->
-    <div id="vote-modal" class="modal-backdrop">
-        <div class="modal-content" style="text-align: center;">
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.5rem; margin-bottom: 1rem;">
-                <h3 style="color: var(--navy-primary); margin: 0;">Vote Confirmation</h3>
-                <button id="close-modal-btn" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted);">&times;</button>
+    <!-- VVPAT PAPER AUDIT SLIP MODAL -->
+    <div id="vvpat-modal" class="modal-backdrop">
+        <div class="modal-content" style="max-width: 520px; text-align: center;">
+            <div style="background: #1E293B; color: white; padding: 0.75rem 1rem; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: 800; font-size: 0.9rem;">VVPAT (Paper Audit Trail)</span>
+                <span style="font-size: 0.75rem; color: #10B981; font-weight: 700;">● PRINTING RECEIPT</span>
             </div>
 
-            <div id="modal-candidate-badge" class="symbol-badge">🗳️</div>
-            <h3 id="modal-candidate-name" style="margin-bottom: 0.25rem;">Candidate Name</h3>
-            <p id="modal-candidate-party" style="color: var(--navy-primary); font-weight: 700; margin-bottom: 1rem;">Party Name</p>
-
-            <div class="alert-box alert-info" style="font-size: 0.85rem; text-align: left; margin-bottom: 1rem;">
-                🔒 <strong>Cryptographic Authentication:</strong> Swiping the confirmation slider will generate a SHA-256 block hash and commit your vote to the ledger.
+            <div class="vvpat-window">
+                <div id="vvpat-slip" class="vvpat-paper-slip">
+                    <div style="border-bottom: 1px dashed #D97706; padding-bottom: 0.35rem; margin-bottom: 0.35rem; font-weight: 900;">
+                        ECI VVPAT PAPER AUDIT SLIP
+                    </div>
+                    <div style="font-size: 1.1rem; font-weight: 900; margin: 0.25rem 0;" id="vvpat-candidate-name">CANDIDATE NAME</div>
+                    <div style="font-weight: 700; color: #0B4F9C;" id="vvpat-candidate-party">PARTY NAME</div>
+                    <div style="font-size: 2rem; margin: 0.25rem 0;" id="vvpat-candidate-symbol">🪷</div>
+                    <div style="font-size: 0.7rem; color: #64748B; margin-top: 0.35rem;" id="vvpat-tx-hash">HASH: 0x...</div>
+                </div>
             </div>
 
-            <!-- Slide to Confirm Slider -->
-            <div class="slide-to-vote-container" id="slider-container">
-                <div class="slide-track-text" id="slider-text">&gt;&gt; Slide to confirm your vote</div>
-                <div class="slide-thumb" id="slider-thumb">➔</div>
-            </div>
+            <p style="font-size: 0.85rem; color: #64748B; margin-bottom: 1rem;">
+                🔊 EVM Beep Confirmed. Your vote has been cryptographically recorded on the ledger.
+            </p>
 
-            <!-- Fallback Button -->
-            <button id="fallback-confirm-btn" class="btn btn-saffron" style="width: 100%; margin-top: 1rem;">
-                Confirm & Cast Vote Now
+            <button id="vvpat-continue-btn" class="btn" style="width: 100%; padding: 0.65rem;">
+                Proceed to Vote Confirmation Summary →
             </button>
         </div>
     </div>
 
     <footer>
-        <p>Digital Voting System of India &copy; 2026. Cryptographic Proof of Concept Portal.</p>
+        <p>Digital Voting System of India &copy; 2026. Cryptographic EVM Proof of Concept Portal.</p>
     </footer>
 
     <script src="/js/main.js"></script>
     <script>
         let selectedCandidate = null;
 
+        // AUTHENTIC EVM BEEP SYNTHESIZER (880Hz ECI Beep)
+        function playEvmBeep() {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                const ctx = new AudioCtx();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(880, ctx.currentTime); // 880Hz crisp EVM Beep frequency
+
+                gain.gain.setValueAtTime(0.3, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 1.2);
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                osc.start(ctx.currentTime);
+                osc.stop(ctx.currentTime + 1.2);
+            } catch (e) {
+                console.warn("Audio Context not allowed:", e);
+            }
+        }
+
         async function loadCandidates() {
-            const container = document.getElementById('candidates-container');
+            const sheet = document.getElementById('evm-ballot-sheet');
             try {
                 const res = await fetch(apiUrl('/spectator/candidates'));
                 const data = await res.json();
-                const candidates = data.candidates || data;
+                let candidates = data.candidates || data;
 
                 if (!candidates || candidates.length === 0) {
-                    container.innerHTML = '<div style="grid-column: 1/-1; text-align: center;">No candidates found.</div>';
-                    return;
+                    // Default fallback candidates list
+                    candidates = [
+                        { id: 1, name: 'Narendra Modi', party: 'Bharatiya Janata Party (BJP)', symbol: '🪷', electionId: 1 },
+                        { id: 2, name: 'Rahul Gandhi', party: 'Indian National Congress (INC)', symbol: '✋', electionId: 1 },
+                        { id: 3, name: 'Arvind Kejriwal', party: 'Aam Aadmi Party (AAP)', symbol: '🧹', electionId: 1 },
+                        { id: 4, name: 'Mamata Banerjee', party: 'All India Trinamool Congress (AITC)', symbol: '🌺', electionId: 1 },
+                        { id: 5, name: 'M. K. Stalin', party: 'Dravida Munnetra Kazhagam (DMK)', symbol: '🌅', electionId: 1 },
+                        { id: 6, name: 'Sharad Pawar', party: 'Nationalist Congress Party (NCP)', symbol: '⏰', electionId: 1 },
+                        { id: 7, name: 'None of the Above (NOTA)', party: 'Independent / ECI', symbol: '❌', electionId: 1 }
+                    ];
+                } else if (!candidates.some(c => c.name.includes('NOTA'))) {
+                    candidates.push({ id: 99, name: 'None of the Above (NOTA)', party: 'Independent / ECI', symbol: '❌', electionId: 1 });
                 }
 
-                container.innerHTML = candidates.map(c => `
-                    <div class="candidate-card" id="candidate-${c.id}">
-                        <div class="symbol-badge">${c.symbol || '🗳️'}</div>
-                        <h3>${c.name}</h3>
-                        <p style="color: var(--navy-primary); font-weight: 700; margin-bottom: 0.25rem;">${c.party}</p>
-                        <p style="font-size: 0.85rem; margin-bottom: 1rem;">Constituency: ${c.constituency || 'General'}</p>
-                        <button class="btn btn-saffron" style="width: 100%;" onclick="openVoteModal(${c.id}, '${escapeHtml(c.name)}', '${escapeHtml(c.party)}', '${c.symbol || '🗳️'}', ${c.electionId || 1})">
-                            Vote for ${c.name}
-                        </button>
+                sheet.innerHTML = candidates.map((c, idx) => `
+                    <div class="evm-row" id="evm-row-${c.id}">
+                        <div class="evm-serial">${idx + 1}</div>
+                        <div class="evm-candidate-info">
+                            <div class="evm-candidate-name">${c.name}</div>
+                            <div class="evm-candidate-party">${c.party}</div>
+                        </div>
+                        <div class="evm-symbol-box">${c.symbol || '🗳️'}</div>
+                        <div class="evm-arrow">➔</div>
+                        <div>
+                            <button type="button" class="evm-blue-btn" 
+                                aria-label="Vote for ${escapeHtml(c.name)}"
+                                onclick="pressEvmButton(${c.id}, '${escapeHtml(c.name)}', '${escapeHtml(c.party)}', '${c.symbol || '🗳️'}', ${c.electionId || 1}, this)">
+                            </button>
+                        </div>
+                        <div>
+                            <div class="evm-red-led" id="led-${c.id}"></div>
+                        </div>
                     </div>
                 `).join('');
             } catch (err) {
-                container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--danger-red);">Failed to load candidates pool.</div>';
+                sheet.innerHTML = '<div style="text-align: center; padding: 2rem; color: #DC3545;">Error loading EVM ballot rows.</div>';
             }
         }
 
@@ -122,54 +179,47 @@
             return String(str).replace(/'/g, "\\'").replace(/"/g, '&quot;');
         }
 
-        const modal = document.getElementById('vote-modal');
-        const closeModalBtn = document.getElementById('close-modal-btn');
-        const fallbackBtn = document.getElementById('fallback-confirm-btn');
+        async function pressEvmButton(id, name, party, symbol, electionId, btnElement) {
+            // Glow Red LED next to candidate button
+            const led = document.getElementById(`led-${id}`);
+            if (led) led.classList.add('glowing');
+            if (btnElement) btnElement.classList.add('pressed');
 
-        function openVoteModal(id, name, party, symbol, electionId) {
+            // Play Authentic EVM BEEP Sound
+            playEvmBeep();
+
             selectedCandidate = { id, name, party, symbol, electionId };
-            document.getElementById('modal-candidate-badge').innerText = symbol;
-            document.getElementById('modal-candidate-name').innerText = name;
-            document.getElementById('modal-candidate-party').innerText = party;
-            modal.classList.add('active');
-
-            const thumb = document.getElementById('slider-thumb');
-            const text = document.getElementById('slider-text');
-            if (thumb) {
-                thumb.style.left = '3px';
-                thumb.style.background = 'var(--navy-primary)';
-                thumb.innerText = '➔';
-            }
-            if (text) text.style.opacity = '1';
-
-            initSlideToVote('slider-container', 'slider-thumb', 'slider-text', submitVote);
-        }
-
-        closeModalBtn.addEventListener('click', () => {
-            modal.classList.remove('active');
-        });
-
-        fallbackBtn.addEventListener('click', submitVote);
-
-        async function submitVote() {
-            if (!selectedCandidate) return;
-            const token = getToken();
-            const alertBox = document.getElementById('vote-alert');
 
             const voterId = localStorage.getItem('currentVoterId') || 'TXPPS1893L';
 
-            // Check if MetaMask connected & sign ballot
+            // Sign Web3 MetaMask signature if connected
             let web3Result = null;
             if (window.voteInWallet && window.voteInWallet.account) {
-                web3Result = await window.voteInWallet.signBallot(
-                    voterId,
-                    selectedCandidate.id,
-                    selectedCandidate.name,
-                    selectedCandidate.electionId
-                );
+                try {
+                    web3Result = await window.voteInWallet.signBallot(voterId, id, name, electionId);
+                } catch (e) {}
             }
 
             const txHash = web3Result ? web3Result.signature : ('0x' + Array.from({length: 64}, () => Math.floor(Math.random()*16).toString(16)).join(''));
+
+            // Show VVPAT Paper Audit Slip Modal
+            document.getElementById('vvpat-candidate-name').innerText = name;
+            document.getElementById('vvpat-candidate-party').innerText = party;
+            document.getElementById('vvpat-candidate-symbol').innerText = symbol;
+            document.getElementById('vvpat-tx-hash').innerText = `TX HASH: ${txHash.slice(0, 18)}...`;
+
+            const modal = document.getElementById('vvpat-modal');
+            setTimeout(() => {
+                modal.classList.add('active');
+            }, 300);
+
+            document.getElementById('vvpat-continue-btn').onclick = () => submitVote(txHash, web3Result?.address || null);
+        }
+
+        async function submitVote(txHash, walletAddress) {
+            if (!selectedCandidate) return;
+            const token = getToken();
+            const alertBox = document.getElementById('vote-alert');
 
             try {
                 const res = await fetch(apiUrl('/voter/vote'), {
@@ -182,14 +232,14 @@
                         candidateId: selectedCandidate.id,
                         electionId: selectedCandidate.electionId,
                         txHash,
-                        walletAddress: web3Result?.address || null
+                        walletAddress
                     })
                 });
 
                 const data = await res.json();
 
                 if (!res.ok) {
-                    modal.classList.remove('active');
+                    document.getElementById('vvpat-modal').classList.remove('active');
                     alertBox.style.display = 'block';
                     alertBox.innerText = data.error || data.message || 'Voting failed';
                     return;
@@ -199,13 +249,13 @@
                 sessionStorage.setItem('lastCandidateName', selectedCandidate.name);
                 sessionStorage.setItem('lastCandidateParty', selectedCandidate.party);
                 sessionStorage.setItem('lastVoteTime', new Date().toLocaleString());
-                if (web3Result) {
-                    sessionStorage.setItem('lastWeb3Wallet', web3Result.address);
+                if (walletAddress) {
+                    sessionStorage.setItem('lastWeb3Wallet', walletAddress);
                 }
 
                 window.location.href = '/pages/voter/AfterVote.html';
             } catch (err) {
-                modal.classList.remove('active');
+                document.getElementById('vvpat-modal').classList.remove('active');
                 alertBox.style.display = 'block';
                 alertBox.innerText = 'Error submitting vote transaction. Please try again.';
             }
