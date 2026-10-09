@@ -41,6 +41,26 @@ function initializeDatabase() {
         console.warn("Schema alter notice:", alterErr.message);
       }
       try {
+        const { Candidate } = require("./models");
+        const fictionalMap = {
+          1: { name: 'Aarav Mehta', party: 'People\'s Development Alliance (PDA)', symbol: '⚖️' },
+          2: { name: 'Priya Sharma', party: 'National Progress Front (NPF)', symbol: '🪔' },
+          3: { name: 'Kabir Verma', party: 'Unity and Reform Party (URP)', symbol: '🌾' },
+          4: { name: 'Ananya Rao', party: 'Democratic Future League (DFL)', symbol: '🕊️' },
+          5: { name: 'Rohan Kapoor', party: 'People\'s Welfare Movement (PWM)', symbol: '☀️' },
+          6: { name: 'Meera Joshi', party: 'Independent Citizens Group (ICG)', symbol: '⛵' },
+          7: { name: 'None of the Above (NOTA)', party: 'Independent / ECI', symbol: '❌' }
+        };
+        for (const [id, f] of Object.entries(fictionalMap)) {
+          await Candidate.update(
+            { name: f.name, party: f.party, symbol: f.symbol },
+            { where: { id: Number(id) } }
+          ).catch(() => {});
+        }
+      } catch (cUpdateErr) {
+        console.warn("Candidate DB update notice:", cUpdateErr.message);
+      }
+      try {
         await seed();
       } catch (seedErr) {
         console.warn("Seeding notice:", seedErr.message);
