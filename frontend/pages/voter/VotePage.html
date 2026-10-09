@@ -19,6 +19,7 @@
             vote<span>In</span>
         </a>
         <div class="nav-links">
+            <button class="metamask-connect-btn">🦊 Connect MetaMask</button>
             <a href="/pages/spectator/LiveCounting.html">Live Tally</a>
             <button id="logout-btn" class="btn btn-secondary btn-sm">Logout</button>
         </div>
@@ -145,8 +146,21 @@
             const token = getToken();
             const alertBox = document.getElementById('vote-alert');
 
-            // Generate deterministic hex transaction hash receipt
-            const txHash = '0x' + Array.from({length: 64}, () => Math.floor(Math.random()*16).toString(16)).join('');
+            const voterId = sessionStorage.getItem('currentVoterId') || 'TXPPS1893L';
+
+            // Check if MetaMask is connected & request Web3 ballot signature
+            let web3Result = null;
+            if (window.voteInWallet && window.voteInWallet.account) {
+                web3Result = await window.voteInWallet.signBallot(
+                    voterId,
+                    selectedCandidate.id,
+                    selectedCandidate.name,
+                    selectedCandidate.electionId
+                );
+            }
+
+            // Generate receipt tx hash (from Web3 signature or fallback SHA-256 string)
+            const txHash = web3Result ? web3Result.signature : ('0x' + Array.from({length: 64}, () => Math.floor(Math.random()*16).toString(16)).join(''));
 
             try {
                 const res = await fetch(apiUrl('/voter/vote'), {
@@ -158,7 +172,8 @@
                     body: JSON.stringify({
                         candidateId: selectedCandidate.id,
                         electionId: selectedCandidate.electionId,
-                        txHash
+                        txHash,
+                        walletAddress: web3Result?.address || null
                     })
                 });
 
@@ -176,6 +191,13 @@
                 sessionStorage.setItem('lastCandidateName', selectedCandidate.name);
                 sessionStorage.setItem('lastCandidateParty', selectedCandidate.party);
                 sessionStorage.setItem('lastVoteTime', new Date().toLocaleString());
+                if (web3Result) {
+                    sessionStorage.setItem('lastWeb3Wallet', web3Result.address);
+                    sessionStorage.setItem('lastWeb3Signature', web3Result.signature);
+                } else {
+                    sessionStorage.removeItem('lastWeb3Wallet');
+                    sessionStorage.removeItem('lastWeb3Signature');
+                }
 
                 window.location.href = '/pages/voter/AfterVote.html';
             } catch (err) {

@@ -448,6 +448,37 @@ input:focus, select:focus, textarea:focus {
     background: #000;
 }
 
+/* MetaMask Wallet Button */
+.metamask-connect-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: #FFF7ED;
+    border: 1.5px solid #F97316;
+    color: #C2410C;
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 0.4rem 0.9rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.metamask-connect-btn:hover {
+    background: #FFEDD5;
+    border-color: #EA580C;
+}
+
+.metamask-connect-btn.wallet-connected {
+    background: #ECFDF5;
+    border-color: #10B981;
+    color: #047857;
+}
+
+.metamask-connect-btn.wallet-connected:hover {
+    background: #D1FAE5;
+}
+
 /* Footer */
 footer {
     text-align: center;
