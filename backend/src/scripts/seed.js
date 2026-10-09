@@ -46,6 +46,7 @@ async function seed() {
 
         // Create test voters (password will be hashed by User model hook)
         const voters = [
+            { voterId: 'TIS1952092', name: 'Verified Elector (TIS1952092)', aadharNo: '195209219520', email: 'tis1952092@example.com', mobileNo: '9876519520', password: 'password123' },
             { voterId: 'TXPPS1893L', name: 'Demo Voter (TXPPS1893L)', aadharNo: '999988887777', email: 'txpps1893l@example.com', mobileNo: '9876543210', password: 'password123' },
             { voterId: 'voter1', name: 'Test Voter 1', aadharNo: '000000000001', email: 'voter1@example.com', mobileNo: '9000000001', password: 'password123' },
             { voterId: 'voter2', name: 'Test Voter 2', aadharNo: '000000000002', email: 'voter2@example.com', mobileNo: '9000000002', password: '123456' },
