@@ -13,6 +13,8 @@ const authRoutes = require("./routes/auth.routes");
 const voterRoutes = require("./routes/voter.routes");
 const spectatorRoutes = require("./routes/spectator.routes");
 const adminRoutes = require("./routes/admin.routes");
+const aiRoutes = require("./routes/ai.routes");
+const aiCtrl = require("./controllers/ai.controller");
 
 const app = express();
 
@@ -97,6 +99,9 @@ app.use("/api/auth", authRoutes);
 app.use("/api/voter", voterRoutes);
 app.use("/api/spectator", spectatorRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/ai", aiRoutes);
+app.use("/api/chat", aiRoutes);
+app.post("/chat", aiCtrl.handleChat);
 
 app.get("/api/health", (req, res) => {
   res.json({ status: "OK", database: "connected" });
