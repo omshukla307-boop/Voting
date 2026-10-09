@@ -21,15 +21,15 @@ async function seed() {
             });
         }
 
-        // Create practice candidates with fake names
+        // Create practice candidates with specified fictional names (Priority 5)
         const candidates = [
-            { name: 'Rajesh Sharma', party: 'Progressive Democratic Alliance (PDA)', symbol: '⚖️', electionId: election.id, constituency: 'Varanasi / Central', constituencyType: 'general', state: 'Uttar Pradesh' },
-            { name: 'Vikramaditya Verma', party: 'National Unity Front (NUF)', symbol: '🪔', electionId: election.id, constituency: 'Wayanad / South', constituencyType: 'general', state: 'Kerala' },
-            { name: 'Ananya Sen', party: 'People\'s Welfare Party (PWP)', symbol: '🌾', electionId: election.id, constituency: 'New Delhi / Capital', constituencyType: 'general', state: 'Delhi' },
-            { name: 'David D\'Souza', party: 'Federal Reform Movement (FRM)', symbol: '🕊️', electionId: election.id, constituency: 'Kolkata / East', constituencyType: 'general', state: 'West Bengal' },
-            { name: 'Sunita Chaudhary', party: 'Secular Citizens Alliance (SCA)', symbol: '☀️', electionId: election.id, constituency: 'Chennai / Metro', constituencyType: 'general', state: 'Tamil Nadu' },
-            { name: 'Tariq Ahmad Khan', party: 'United National Coalition (UNC)', symbol: '⛵', electionId: election.id, constituency: 'Baramati / West', constituencyType: 'general', state: 'Maharashtra' },
-            { name: 'None of the Above (NOTA)', party: 'Independent / ECI', symbol: '❌', electionId: election.id, constituency: 'National / All', constituencyType: 'general', state: 'All India' }
+            { name: 'Aarav Mehta', party: 'People\'s Development Alliance (PDA)', symbol: '⚖️', electionId: election.id, constituency: 'Northview', constituencyType: 'general', state: 'Delhi' },
+            { name: 'Priya Sharma', party: 'National Progress Front (NPF)', symbol: '🪔', electionId: election.id, constituency: 'Lake District', constituencyType: 'general', state: 'Maharashtra' },
+            { name: 'Kabir Verma', party: 'Unity and Reform Party (URP)', symbol: '🌾', electionId: election.id, constituency: 'Greenfield', constituencyType: 'general', state: 'Uttar Pradesh' },
+            { name: 'Ananya Rao', party: 'Democratic Future League (DFL)', symbol: '🕊️', electionId: election.id, constituency: 'Rivertown', constituencyType: 'general', state: 'Karnataka' },
+            { name: 'Rohan Kapoor', party: 'People\'s Welfare Movement (PWM)', symbol: '☀️', electionId: election.id, constituency: 'Hillcrest', constituencyType: 'general', state: 'Punjab' },
+            { name: 'Meera Joshi', party: 'Independent Citizens Group (ICG)', symbol: '⛵', electionId: election.id, constituency: 'Eastwood', constituencyType: 'general', state: 'Gujarat' },
+            { name: 'None of the Above (NOTA)', party: 'Independent / ECI', symbol: '❌', electionId: election.id, constituency: 'All India', constituencyType: 'general', state: 'All India' }
         ];
 
         // Clean up old real candidate records if present

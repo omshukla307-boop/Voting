@@ -53,7 +53,7 @@
 
                 <div style="margin-bottom: 0.75rem;">
                     <span style="font-size: 0.75rem; color: #CBD5E1; display: block;">CANDIDATE SECURED</span>
-                    <strong id="receipt-candidate" style="font-size: 1.05rem; color: #34D399;">Rajesh Sharma (PDA)</strong>
+                    <strong id="receipt-candidate" style="font-size: 1.05rem; color: #34D399;">Aarav Mehta (PDA)</strong>
                 </div>
 
                 <div style="margin-bottom: 0.75rem;">
@@ -115,8 +115,8 @@
     <script src="/js/main.js"></script>
     <script>
         const hash = sessionStorage.getItem('lastVoteHash') || '0x' + Array.from({length: 64}, () => Math.floor(Math.random()*16).toString(16)).join('');
-        const candidateName = sessionStorage.getItem('lastCandidateName') || 'Rajesh Sharma';
-        const candidateParty = sessionStorage.getItem('lastCandidateParty') || 'Progressive Democratic Alliance (PDA)';
+        const candidateName = sessionStorage.getItem('lastCandidateName') || 'Aarav Mehta';
+        const candidateParty = sessionStorage.getItem('lastCandidateParty') || 'People\'s Development Alliance (PDA)';
         const voterId = localStorage.getItem('currentVoterId') || 'TXPPS1893L';
         const voteTime = sessionStorage.getItem('lastVoteTime') || new Date().toLocaleString();
         const web3Wallet = sessionStorage.getItem('lastWeb3Wallet');
