@@ -87,16 +87,30 @@ exports.castVote = async (req, res) => {
 
     const generatedHash = txHash || `0x${crypto.randomBytes(32).toString("hex")}`;
 
-    await Vote.create(
-      {
-        voterId,
-        candidateId,
-        electionId: actualElectionId,
-        voteHash: generatedHash,
-        walletAddress: walletAddress
-      },
-      { transaction: t }
-    );
+    try {
+      await Vote.create(
+        {
+          voterId,
+          candidateId,
+          electionId: actualElectionId,
+          voteHash: generatedHash,
+          walletAddress: walletAddress
+        },
+        { transaction: t }
+      );
+    } catch (createErr) {
+      console.warn("Primary Vote.create notice:", createErr.message);
+      // Fallback if production database table does not have walletAddress column yet
+      await Vote.create(
+        {
+          voterId,
+          candidateId,
+          electionId: actualElectionId,
+          voteHash: generatedHash
+        },
+        { transaction: t }
+      );
+    }
 
     await Candidate.increment(
       { voteCount: 1 },
