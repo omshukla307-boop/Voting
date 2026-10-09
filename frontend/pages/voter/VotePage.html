@@ -323,6 +323,7 @@
             if (!selectedCandidate) return;
 
             let token = getToken();
+            let voterId = localStorage.getItem('currentVoterId') || sessionStorage.getItem('currentVoterId') || (walletAddress ? `EPIC-${walletAddress.slice(2, 8).toUpperCase()}` : 'TXPPS1893L');
 
             if (!walletAddress) {
                 alert("⚠️ MetaMask Web3 Wallet connection is required to submit your vote!");
@@ -337,6 +338,7 @@
                         'Authorization': token ? `Bearer ${token}` : ''
                     },
                     body: JSON.stringify({
+                        voterId,
                         candidateId: selectedCandidate.id,
                         electionId: selectedCandidate.electionId || 1,
                         txHash,
