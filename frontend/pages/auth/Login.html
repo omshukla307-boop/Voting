@@ -495,7 +495,12 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            setTimeout(updateWalletUI, 200);
+            if (window.voteInWallet) {
+                window.voteInWallet.account = null;
+                sessionStorage.removeItem('connectedWallet');
+                localStorage.removeItem('connectedWallet');
+            }
+            updateWalletUI();
             checkActiveSession();
         });
     </script>

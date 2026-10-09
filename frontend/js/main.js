@@ -82,7 +82,7 @@ function checkAuth() {
    ========================================================= */
 class VoteInMetaMask {
     constructor() {
-        this.account = sessionStorage.getItem('connectedWallet') || null;
+        this.account = null;
         this.init();
     }
 
@@ -92,17 +92,6 @@ class VoteInMetaMask {
 
     async init() {
         if (!this.isInstalled()) return;
-        try {
-            const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-            if (accounts && accounts.length > 0) {
-                this.account = accounts[0];
-                sessionStorage.setItem('connectedWallet', this.account);
-                localStorage.setItem('connectedWallet', this.account);
-                this.updateUI();
-            }
-        } catch (err) {
-            console.warn("eth_accounts silent check notice:", err);
-        }
         this.initListeners();
     }
 
@@ -114,11 +103,19 @@ class VoteInMetaMask {
         }
 
         try {
+            try {
+                await window.ethereum.request({
+                    method: 'wallet_requestPermissions',
+                    params: [{ eth_accounts: {} }]
+                });
+            } catch (permErr) {
+                console.log("Permission request notice:", permErr);
+            }
+
             const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
             if (accounts && accounts.length > 0) {
                 this.account = accounts[0];
                 sessionStorage.setItem('connectedWallet', this.account);
-                localStorage.setItem('connectedWallet', this.account);
                 this.updateUI();
                 return this.account;
             }
