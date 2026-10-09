@@ -131,48 +131,55 @@
 
         async function loadCandidates() {
             const sheet = document.getElementById('evm-ballot-sheet');
+            const defaultCandidates = [
+                { id: 1, name: 'Aarav Mehta', party: 'People\'s Development Alliance (PDA)', symbol: '⚖️', electionId: 1 },
+                { id: 2, name: 'Priya Sharma', party: 'National Progress Front (NPF)', symbol: '🪔', electionId: 1 },
+                { id: 3, name: 'Kabir Verma', party: 'Unity and Reform Party (URP)', symbol: '🌾', electionId: 1 },
+                { id: 4, name: 'Ananya Rao', party: 'Democratic Future League (DFL)', symbol: '🕊️', electionId: 1 },
+                { id: 5, name: 'Rohan Kapoor', party: 'People\'s Welfare Movement (PWM)', symbol: '☀️', electionId: 1 },
+                { id: 6, name: 'Meera Joshi', party: 'Independent Citizens Group (ICG)', symbol: '⛵', electionId: 1 },
+                { id: 7, name: 'None of the Above (NOTA)', party: 'Independent / ECI', symbol: '❌', electionId: 1 }
+            ];
+
+            let candidates = defaultCandidates;
+
             try {
                 const res = await fetch(apiUrl('/spectator/candidates'));
-                const data = await res.json();
-                let candidates = data.candidates || data;
-
-                if (!candidates || candidates.length === 0) {
-                    candidates = [
-                        { id: 1, name: 'Aarav Mehta', party: 'People\'s Development Alliance (PDA)', symbol: '⚖️', electionId: 1 },
-                        { id: 2, name: 'Priya Sharma', party: 'National Progress Front (NPF)', symbol: '🪔', electionId: 1 },
-                        { id: 3, name: 'Kabir Verma', party: 'Unity and Reform Party (URP)', symbol: '🌾', electionId: 1 },
-                        { id: 4, name: 'Ananya Rao', party: 'Democratic Future League (DFL)', symbol: '🕊️', electionId: 1 },
-                        { id: 5, name: 'Rohan Kapoor', party: 'People\'s Welfare Movement (PWM)', symbol: '☀️', electionId: 1 },
-                        { id: 6, name: 'Meera Joshi', party: 'Independent Citizens Group (ICG)', symbol: '⛵', electionId: 1 },
-                        { id: 7, name: 'None of the Above (NOTA)', party: 'Independent / ECI', symbol: '❌', electionId: 1 }
-                    ];
-                } else if (!candidates.some(c => c.name.includes('NOTA'))) {
-                    candidates.push({ id: 99, name: 'None of the Above (NOTA)', party: 'Independent / ECI', symbol: '❌', electionId: 1 });
+                if (res.ok) {
+                    const data = await res.json();
+                    const fetched = data.candidates || (Array.isArray(data) ? data : null);
+                    if (fetched && fetched.length > 0) {
+                        candidates = fetched;
+                    }
                 }
-
-                sheet.innerHTML = candidates.map((c, idx) => `
-                    <div class="evm-row" id="evm-row-${c.id}">
-                        <div class="evm-serial">${idx + 1}</div>
-                        <div class="evm-candidate-info">
-                            <div class="evm-candidate-name">${c.name}</div>
-                            <div class="evm-candidate-party">${c.party}</div>
-                        </div>
-                        <div class="evm-symbol-box">${c.symbol || '🗳️'}</div>
-                        <div class="evm-arrow">➔</div>
-                        <div>
-                            <button type="button" class="evm-blue-btn" 
-                                aria-label="Vote for ${escapeHtml(c.name)}"
-                                onclick="pressEvmButton(${c.id}, '${escapeHtml(c.name)}', '${escapeHtml(c.party)}', '${c.symbol || '🗳️'}', ${c.electionId || 1}, this)">
-                            </button>
-                        </div>
-                        <div>
-                            <div class="evm-red-led" id="led-${c.id}"></div>
-                        </div>
-                    </div>
-                `).join('');
             } catch (err) {
-                sheet.innerHTML = '<div style="text-align: center; padding: 2rem; color: #DC3545;">Error loading EVM ballot rows.</div>';
+                console.warn("Candidates fetch notice, using local pool:", err);
             }
+
+            if (!candidates.some(c => c.name && c.name.includes('NOTA'))) {
+                candidates.push({ id: 99, name: 'None of the Above (NOTA)', party: 'Independent / ECI', symbol: '❌', electionId: 1 });
+            }
+
+            sheet.innerHTML = candidates.map((c, idx) => `
+                <div class="evm-row" id="evm-row-${c.id}">
+                    <div class="evm-serial">${idx + 1}</div>
+                    <div class="evm-candidate-info">
+                        <div class="evm-candidate-name">${c.name}</div>
+                        <div class="evm-candidate-party">${c.party}</div>
+                    </div>
+                    <div class="evm-symbol-box">${c.symbol || '🗳️'}</div>
+                    <div class="evm-arrow">➔</div>
+                    <div>
+                        <button type="button" class="evm-blue-btn" 
+                            aria-label="Vote for ${escapeHtml(c.name)}"
+                            onclick="pressEvmButton(${c.id}, '${escapeHtml(c.name)}', '${escapeHtml(c.party)}', '${c.symbol || '🗳️'}', ${c.electionId || 1}, this)">
+                        </button>
+                    </div>
+                    <div>
+                        <div class="evm-red-led" id="led-${c.id}"></div>
+                    </div>
+                </div>
+            `).join('');
         }
 
         function escapeHtml(str) {
