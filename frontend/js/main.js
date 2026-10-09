@@ -43,6 +43,7 @@ function getToken() {
 function setToken(token) {
     sessionStorage.setItem('token', token);
     localStorage.setItem('token', token);
+    sessionStorage.setItem('sessionStartTime', Date.now().toString());
 }
 
 function getUserRole() {
@@ -60,6 +61,12 @@ function logout() {
     localStorage.removeItem('userRole');
     localStorage.removeItem('currentVoterId');
     localStorage.removeItem('connectedWallet');
+    if (window.voteInSession) {
+        if (window.voteInSession.interval) clearInterval(window.voteInSession.interval);
+        if (window.voteInSession.timer) clearTimeout(window.voteInSession.timer);
+    }
+    const pill = document.getElementById('session-timer-pill');
+    if (pill) pill.remove();
     if (window.voteInWallet) {
         window.voteInWallet.account = null;
     }
@@ -240,7 +247,7 @@ document.addEventListener('click', async (e) => {
    ========================================================= */
 class VoteInSessionManager {
     constructor() {
-        this.timeoutMs = 360000; // 6 Minutes = 360,000 ms
+        this.timeoutMs = 360000; // Strict 6 Minutes = 360,000 ms
         this.timer = null;
         this.interval = null;
         this.init();
@@ -248,7 +255,11 @@ class VoteInSessionManager {
 
     init() {
         const token = getToken();
-        if (!token) return;
+        if (!token) {
+            const existingPill = document.getElementById('session-timer-pill');
+            if (existingPill) existingPill.remove();
+            return;
+        }
 
         let sessionStart = sessionStorage.getItem('sessionStartTime');
         if (!sessionStart) {
@@ -280,7 +291,7 @@ class VoteInSessionManager {
         if (!pill) {
             pill = document.createElement('div');
             pill.id = 'session-timer-pill';
-            pill.style.cssText = 'position: fixed; top: 12px; right: 20px; background: #002147; color: #38BDF8; font-weight: 800; font-size: 0.8rem; padding: 0.35rem 0.85rem; border-radius: 20px; border: 1px solid #1E3A8A; z-index: 9999; font-family: monospace; box-shadow: 0 4px 12px rgba(0,0,0,0.2);';
+            pill.style.cssText = 'position: fixed; bottom: 20px; left: 20px; background: #042D5A; color: #38BDF8; font-weight: 800; font-size: 0.85rem; padding: 0.55rem 1rem; border-radius: 30px; border: 2px solid #0B4F9C; z-index: 99990; font-family: monospace, sans-serif; box-shadow: 0 8px 24px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 6px; transition: all 0.3s ease;';
             document.body.appendChild(pill);
         }
 
@@ -289,17 +300,22 @@ class VoteInSessionManager {
         const updateClock = () => {
             const sessionStart = parseInt(sessionStorage.getItem('sessionStartTime') || Date.now(), 10);
             const elapsed = Date.now() - sessionStart;
-            const remainingSec = Math.max(0, Math.floor((360000 - elapsed) / 1000));
+            const remainingSec = Math.max(0, Math.floor((this.timeoutMs - elapsed) / 1000));
 
             const mins = String(Math.floor(remainingSec / 60)).padStart(2, '0');
             const secs = String(remainingSec % 60).padStart(2, '0');
 
             if (pill) {
-                pill.innerText = `⏱ Session: ${mins}:${secs}`;
                 if (remainingSec <= 60) {
                     pill.style.background = '#78350F';
                     pill.style.color = '#FEF3C7';
                     pill.style.borderColor = '#F59E0B';
+                    pill.innerHTML = `⚠️ <span style="font-weight:800; color:#FBBF24;">Expiring: ${mins}:${secs}</span>`;
+                } else {
+                    pill.style.background = '#042D5A';
+                    pill.style.color = '#38BDF8';
+                    pill.style.borderColor = '#0B4F9C';
+                    pill.innerHTML = `⏱ <span style="font-weight:700;">Session:</span> <span style="color:#60A5FA; font-weight:800;">${mins}:${secs}</span>`;
                 }
             }
 
@@ -316,7 +332,9 @@ class VoteInSessionManager {
     expireSession() {
         if (this.interval) clearInterval(this.interval);
         if (this.timer) clearTimeout(this.timer);
-        alert("⏱ 6-Minute Session Expired! Logging out...");
+        const pill = document.getElementById('session-timer-pill');
+        if (pill) pill.remove();
+        alert("⏱ 6-Minute Security Session Expired! Logging out to protect voting integrity...");
         logout();
     }
 }
