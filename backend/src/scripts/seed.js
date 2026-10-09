@@ -32,11 +32,15 @@ async function seed() {
             { name: 'None of the Above (NOTA)', party: 'Independent / ECI', symbol: '❌', electionId: election.id, constituency: 'All India', constituencyType: 'general', state: 'All India' }
         ];
 
-        // Clean up old real candidate records if present
-        await Candidate.destroy({ where: { electionId: election.id } });
+        // Clean up old real/legacy candidate records if present
+        await Candidate.destroy({ where: {} });
 
-        for (const c of candidates) {
-            await Candidate.create(c);
+        for (let i = 0; i < candidates.length; i++) {
+            const c = candidates[i];
+            await Candidate.create({
+                id: i + 1,
+                ...c
+            });
             console.log('Created candidate', c.name);
         }
 
