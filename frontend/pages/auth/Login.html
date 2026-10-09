@@ -37,8 +37,23 @@
 
             <!-- Wallet Connection Status Display -->
             <div style="background: #F8FAFC; border: 1px solid var(--border-color); padding: 0.85rem; border-radius: 6px; margin-bottom: 1.25rem; display: flex; justify-content: space-between; align-items: center;">
-                <span style="font-size: 0.85rem; font-weight: 700; color: var(--navy-primary);">MetaMask Wallet Status:</span>
-                <span id="wallet-status-badge" class="badge badge-ended">Wallet Not Connected</span>
+                <div>
+                    <span style="font-size: 0.85rem; font-weight: 700; color: var(--navy-primary);">MetaMask Wallet Status:</span>
+                    <span id="wallet-status-badge" class="badge badge-ended" style="margin-left: 0.35rem;">Wallet Not Connected</span>
+                </div>
+                <button type="button" id="connect-wallet-btn" class="btn btn-secondary btn-sm" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;">
+                    🦊 Connect Wallet
+                </button>
+            </div>
+
+            <!-- Active Session Card (If already logged in) -->
+            <div id="already-logged-in-box" style="display: none; background: #EFF6FF; border: 1px solid #93C5FD; border-radius: 6px; padding: 1rem; margin-bottom: 1.25rem; text-align: center;">
+                <div style="font-weight: 800; color: #1E40AF; font-size: 0.95rem; margin-bottom: 0.35rem;">✓ Active Verified Elector Session</div>
+                <div id="already-logged-in-info" style="font-size: 0.85rem; color: #1E3A8A; margin-bottom: 0.75rem;"></div>
+                <div style="display: flex; gap: 0.5rem; justify-content: center;">
+                    <a href="/pages/voter/Dashboard.html" class="btn btn-saffron btn-sm">Go to Dashboard</a>
+                    <button type="button" id="switch-account-btn" class="btn btn-secondary btn-sm">Logout / Switch Account</button>
+                </div>
             </div>
 
             <!-- Elector Category Tabs -->
@@ -417,40 +432,72 @@
             window.location.href = '/pages/voter/Dashboard.html';
         });
 
-        // AUTO METAMASK LOGIN EVERYTIME ON LOAD
-        let isAutoLoggingIn = false;
-        async function triggerAutoMetaMask() {
-            if (isAutoLoggingIn) return;
-            isAutoLoggingIn = true;
+        // WALLET STATUS & ACTIVE SESSION MANAGER
+        const connectWalletBtn = document.getElementById('connect-wallet-btn');
 
+        async function updateWalletUI() {
             const statusBadge = document.getElementById('wallet-status-badge');
-            if (window.voteInWallet && window.voteInWallet.isInstalled()) {
+            if (!window.voteInWallet || !window.voteInWallet.isInstalled()) {
                 if (statusBadge) {
-                    statusBadge.innerText = '🦊 Auto-Opening MetaMask...';
-                    statusBadge.className = 'badge badge-live';
+                    statusBadge.innerText = 'MetaMask Not Installed';
+                    statusBadge.className = 'badge badge-ended';
                 }
-                
-                let account = window.voteInWallet.account;
-                if (!account) {
-                    account = await window.voteInWallet.connect();
-                }
+                return;
+            }
 
-                if (account) {
-                    if (statusBadge) {
-                        statusBadge.innerText = `Wallet: ${account.slice(0, 6)}...${account.slice(-4)}`;
-                        statusBadge.className = 'badge badge-active';
-                    }
-                    const voterId = document.getElementById('voterId').value || 'TXPPS1893L';
-                    const password = document.getElementById('password').value || 'password123';
-                    await performVoterLogin(voterId, password, account);
+            const account = window.voteInWallet.account;
+            if (account) {
+                if (statusBadge) {
+                    statusBadge.innerText = `Wallet: ${account.slice(0, 6)}...${account.slice(-4)}`;
+                    statusBadge.className = 'badge badge-active';
+                }
+                if (connectWalletBtn) {
+                    connectWalletBtn.innerText = '✓ Wallet Connected';
+                    connectWalletBtn.className = 'btn btn-sm btn-success';
+                }
+            } else {
+                if (statusBadge) {
+                    statusBadge.innerText = 'Wallet Not Connected';
+                    statusBadge.className = 'badge badge-ended';
+                }
+                if (connectWalletBtn) {
+                    connectWalletBtn.innerText = '🦊 Connect Wallet';
+                    connectWalletBtn.className = 'btn btn-sm btn-secondary';
+                }
+            }
+        }
+
+        if (connectWalletBtn) {
+            connectWalletBtn.addEventListener('click', async () => {
+                if (window.voteInWallet) {
+                    await window.voteInWallet.connect();
+                    updateWalletUI();
+                }
+            });
+        }
+
+        function checkActiveSession() {
+            const token = getToken();
+            const voterId = localStorage.getItem('currentVoterId') || sessionStorage.getItem('currentVoterId');
+            const alreadyBox = document.getElementById('already-logged-in-box');
+            const alreadyInfo = document.getElementById('already-logged-in-info');
+            const switchBtn = document.getElementById('switch-account-btn');
+
+            if (token && voterId && alreadyBox && alreadyInfo) {
+                alreadyBox.style.display = 'block';
+                alreadyInfo.innerText = `You are currently logged in as EPIC ID: ${voterId}`;
+                if (switchBtn) {
+                    switchBtn.addEventListener('click', () => {
+                        logout();
+                    });
                 }
             }
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            setTimeout(triggerAutoMetaMask, 200);
+            setTimeout(updateWalletUI, 200);
+            checkActiveSession();
         });
-        window.addEventListener('load', triggerAutoMetaMask);
     </script>
 </body>
 </html>
