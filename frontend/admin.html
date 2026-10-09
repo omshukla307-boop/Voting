@@ -110,7 +110,6 @@
         }
 
         async function proposeBlockchain() {
-            // Auto connect MetaMask on proposal click if not connected
             if (!window.voteInWallet?.account) {
                 await window.voteInWallet?.connect();
             }
