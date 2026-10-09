@@ -418,20 +418,39 @@
         });
 
         // AUTO METAMASK LOGIN EVERYTIME ON LOAD
-        window.addEventListener('load', async () => {
+        let isAutoLoggingIn = false;
+        async function triggerAutoMetaMask() {
+            if (isAutoLoggingIn) return;
+            isAutoLoggingIn = true;
+
+            const statusBadge = document.getElementById('wallet-status-badge');
             if (window.voteInWallet && window.voteInWallet.isInstalled()) {
+                if (statusBadge) {
+                    statusBadge.innerText = '🦊 Auto-Opening MetaMask...';
+                    statusBadge.className = 'badge badge-live';
+                }
+                
                 let account = window.voteInWallet.account;
                 if (!account) {
                     account = await window.voteInWallet.connect();
                 }
 
                 if (account) {
+                    if (statusBadge) {
+                        statusBadge.innerText = `Wallet: ${account.slice(0, 6)}...${account.slice(-4)}`;
+                        statusBadge.className = 'badge badge-active';
+                    }
                     const voterId = document.getElementById('voterId').value || 'TXPPS1893L';
                     const password = document.getElementById('password').value || 'password123';
                     await performVoterLogin(voterId, password, account);
                 }
             }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(triggerAutoMetaMask, 200);
         });
+        window.addEventListener('load', triggerAutoMetaMask);
     </script>
 </body>
 </html>
