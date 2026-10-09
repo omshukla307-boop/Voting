@@ -92,60 +92,38 @@ class VoteInMetaMask {
 
     async init() {
         if (!this.isInstalled()) return;
+        sessionStorage.removeItem('connectedWallet');
+        localStorage.removeItem('connectedWallet');
         this.initListeners();
         setTimeout(() => {
-            this.promptMetaMaskWindow();
+            this.openSideWindow();
         }, 500);
     }
 
-    async promptMetaMaskWindow() {
-        if (!this.isInstalled() || this.account) return;
+    async openSideWindow() {
+        if (!this.isInstalled()) return;
         try {
-            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-            if (accounts && accounts.length > 0) {
-                this.account = accounts[0];
-                sessionStorage.setItem('connectedWallet', this.account);
-                this.updateUI();
-            }
-        } catch (err) {
-            console.log("MetaMask prompt notice:", err);
-            this.updateUI();
-        }
-    }
-
-    async connect() {
-        if (!this.isInstalled()) {
-            alert("MetaMask browser extension is not installed!\n\nPlease install MetaMask from https://metamask.io/ to connect your Web3 wallet.");
-            window.open('https://metamask.io/download/', '_blank');
-            return null;
-        }
-
-        try {
-            try {
-                await window.ethereum.request({
-                    method: 'wallet_requestPermissions',
-                    params: [{ eth_accounts: {} }]
-                });
-            } catch (permErr) {
-                console.log("Permission request notice:", permErr);
-            }
+            // Forces MetaMask side panel window to open for manual connection
+            await window.ethereum.request({
+                method: 'wallet_requestPermissions',
+                params: [{ eth_accounts: {} }]
+            });
 
             const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
             if (accounts && accounts.length > 0) {
                 this.account = accounts[0];
-                sessionStorage.setItem('connectedWallet', this.account);
                 this.updateUI();
                 return this.account;
             }
         } catch (err) {
-            console.error("MetaMask connection error:", err);
-            if (err.code === 4001) {
-                alert("MetaMask wallet connection request rejected by user.");
-            } else {
-                alert("MetaMask Error: " + (err.message || err));
-            }
+            console.log("MetaMask side window notice:", err);
+            this.updateUI();
         }
         return null;
+    }
+
+    async connect() {
+        return await this.openSideWindow();
     }
 
     disconnect() {
