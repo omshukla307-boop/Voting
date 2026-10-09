@@ -53,12 +53,13 @@ function logout() {
 function checkAuth() {
     const token = getToken();
     const role = getUserRole();
-    const path = window.location.pathname;
+    const path = window.location.pathname.toLowerCase();
 
-    const isAdminPage = path.includes('/admin') || path.includes('/admin.html') || path.includes('/AdminDashboard.html');
-    const isProtectedVoterPage = path.includes('/voter/VotePage.html') || path.includes('/voter/Dashboard.html') || path.includes('/voter/AfterVote.html');
+    const isAdminLoginPage = path.includes('admin-login') || path.includes('adminlogin');
+    const isAdminPage = (path.includes('/admin') || path.includes('admindashboard')) && !isAdminLoginPage;
+    const isProtectedVoterPage = path.includes('/voter/votepage') || path.includes('/voter/dashboard') || path.includes('/voter/aftervote');
 
-    if (isAdminPage && (!token || role !== 'admin') && !path.includes('admin-login')) {
+    if (isAdminPage && (!token || role !== 'admin')) {
         window.location.href = '/admin-login.html';
     } else if (isProtectedVoterPage && !token) {
         window.location.href = '/pages/auth/Login.html';
@@ -88,9 +89,12 @@ class VoteInMetaMask {
                 this.account = accounts[0];
                 localStorage.setItem('connectedWallet', this.account);
                 this.updateUI();
+            } else {
+                // AUTO CONNECT METAMASK AUTOMATICALLY ON LOAD IF NOT YET CONNECTED
+                await this.connect();
             }
         } catch (err) {
-            console.warn("MetaMask silent init notice:", err);
+            console.warn("MetaMask auto connect notice:", err);
         }
 
         this.initListeners();
