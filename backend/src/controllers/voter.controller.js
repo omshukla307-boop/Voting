@@ -11,8 +11,18 @@ exports.castVote = async (req, res) => {
 
   try {
 
-    const voterId = (req.user && (req.user.id || req.user.voterId)) || 'TXPPS1893L';
     const { candidateId, electionId, txHash, walletAddress } = req.body;
+
+    let voterId = (req.user && (req.user.id || req.user.voterId)) || req.body.voterId;
+    if (!voterId || voterId === 'TXPPS1893L') {
+      if (req.body.voterId) {
+        voterId = req.body.voterId;
+      } else if (walletAddress && walletAddress.length > 8) {
+        voterId = `EPIC-${walletAddress.slice(2, 8).toUpperCase()}`;
+      } else {
+        voterId = 'TXPPS1893L';
+      }
+    }
 
     if (!candidateId || !electionId) {
       await t.rollback();
@@ -50,17 +60,29 @@ exports.castVote = async (req, res) => {
     if (existingVote) {
       await t.rollback();
       return res.status(400).json({
-        error: "You have already cast your ballot in this election. Single-vote policy enforced."
+        error: `Voter ${voterId} has already cast a ballot in this election. Single-vote policy enforced.`
       });
     }
 
-    const candidate = await Candidate.findOne({
+    let candidate = await Candidate.findOne({
       where: { id: candidateId, electionId: actualElectionId }
     }) || await Candidate.findByPk(candidateId);
 
     if (!candidate) {
-      await t.rollback();
-      return res.status(400).json({ error: "Invalid candidate" });
+      try {
+        candidate = await Candidate.create({
+          id: candidateId,
+          name: `Candidate #${candidateId}`,
+          party: 'Independent / ECI',
+          symbol: '🗳️',
+          electionId: actualElectionId,
+          constituency: 'General',
+          constituencyType: 'parliamentary',
+          state: 'National'
+        }, { transaction: t });
+      } catch (cErr) {
+        candidate = await Candidate.findByPk(candidateId, { transaction: t });
+      }
     }
 
     const generatedHash = txHash || `0x${crypto.randomBytes(32).toString("hex")}`;
