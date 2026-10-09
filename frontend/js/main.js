@@ -764,12 +764,15 @@ class VoteInAIChatbot {
             <div id="ai-chat-messages" style="flex: 1; padding: 0.85rem; overflow-y: auto; background: #F8FAFC; display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.88rem;">
                 <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 8px; padding: 0.75rem; color: #1E293B;">
                     <strong>🤖 AI Assistant:</strong><br>
-                    Namaste! 🙏 Welcome to the Digital Voting System of India. How can I help you today?
-                    <div style="margin-top: 0.5rem; display: flex; flex-wrap: wrap; gap: 4px;">
+                    Namaste! 🙏 Welcome to the Digital Voting System of India. How can I assist you today?
+                    <div style="margin-top: 0.65rem; display: flex; flex-wrap: wrap; gap: 5px;">
                         <button class="ai-pill-btn" onclick="window.voteInAI?.sendQuickMessage('How to Vote?')">🗳️ How to Vote?</button>
+                        <button class="ai-pill-btn" onclick="window.voteInAI?.sendQuickMessage('How to scan Voter ID QR?')">📷 Scan Voter ID QR</button>
                         <button class="ai-pill-btn" onclick="window.voteInAI?.sendQuickMessage('How to connect MetaMask?')">🦊 Connect Wallet</button>
-                        <button class="ai-pill-btn" onclick="window.voteInAI?.sendQuickMessage('What is Security PIN?')">🔒 4-Digit PIN</button>
-                        <button class="ai-pill-btn" onclick="window.voteInAI?.sendQuickMessage('Show live results')">📊 Live Standings</button>
+                        <button class="ai-pill-btn" onclick="window.voteInAI?.sendQuickMessage('Who is currently leading?')">👑 Who is Leading?</button>
+                        <button class="ai-pill-btn" onclick="window.voteInAI?.sendQuickMessage('What is the 4-Digit Security PIN?')">🔒 4-Digit PIN</button>
+                        <button class="ai-pill-btn" onclick="window.voteInAI?.sendQuickMessage('How does VVPAT paper slip work?')">📜 VVPAT Receipts</button>
+                        <button class="ai-pill-btn" onclick="window.voteInAI?.sendQuickMessage('How to vote as NRI overseas elector?')">✈️ NRI Voting</button>
                     </div>
                 </div>
             </div>
