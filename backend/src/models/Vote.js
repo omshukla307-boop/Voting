@@ -33,6 +33,10 @@ const Vote = sequelize.define('Vote', {
         allowNull: false,
         unique: true
     },
+    walletAddress: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
     timeStamp: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW
