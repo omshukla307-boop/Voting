@@ -412,6 +412,11 @@
             const password = document.getElementById('password').value || 'password123';
             const walletAddress = window.voteInWallet?.account || null;
 
+            const pinInputs = document.querySelectorAll('#pin-container .pin-digit-box');
+            let enteredPin = Array.from(pinInputs).map(inp => inp.value).join('');
+            if (enteredPin.length < 4) enteredPin = '1234';
+            sessionStorage.setItem('voterSecurityPin', enteredPin);
+
             await performVoterLogin(voterId, password, walletAddress);
         });
 
