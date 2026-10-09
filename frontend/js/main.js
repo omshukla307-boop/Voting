@@ -185,15 +185,45 @@ class VoteInMetaMask {
     }
 
     updateUI() {
-        const walletBadges = document.querySelectorAll('.header-user-label, #wallet-status-badge');
+        const walletBadges = document.querySelectorAll('.header-user-label, #wallet-status-badge, #dash-wallet-addr');
         walletBadges.forEach(badge => {
             if (this.account) {
                 const shortAddr = `${this.account.slice(0, 6)}...${this.account.slice(-4)}`;
-                badge.innerText = `Wallet: ${shortAddr}`;
+                badge.innerText = badge.id === 'dash-wallet-addr' ? shortAddr : `Wallet: ${shortAddr}`;
+                if (badge.classList.contains('badge-ended')) {
+                    badge.classList.remove('badge-ended');
+                    badge.classList.add('badge-active');
+                }
+            } else {
+                badge.innerText = badge.id === 'dash-wallet-addr' ? 'Not Connected' : 'Wallet Not Connected';
+                if (badge.classList.contains('badge-active')) {
+                    badge.classList.remove('badge-active');
+                    badge.classList.add('badge-ended');
+                }
+            }
+        });
+
+        const connectBtns = document.querySelectorAll('#connect-wallet-btn, #dash-connect-wallet-btn, .connect-wallet-btn');
+        connectBtns.forEach(btn => {
+            if (this.account) {
+                btn.innerText = '✓ Wallet Connected';
+                btn.className = 'btn btn-sm btn-success';
+            } else {
+                btn.innerText = '🦊 Connect Wallet';
+                btn.className = 'btn btn-sm btn-secondary';
             }
         });
     }
 }
+
+document.addEventListener('click', async (e) => {
+    const btn = e.target.closest('#connect-wallet-btn, #dash-connect-wallet-btn, .connect-wallet-btn');
+    if (btn && window.voteInWallet) {
+        if (!window.voteInWallet.account) {
+            await window.voteInWallet.connect();
+        }
+    }
+});
 
 /* =========================================================
    PRIORITY 6 — STRICT 6-MINUTE SESSION TIMER WITH LIVE PILL
