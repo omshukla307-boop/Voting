@@ -1,5 +1,15 @@
 // Digital Voting System of India — Master Application JavaScript
 
+function escapeHtml(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
 function normalizeApiBase(base) {
     if (!base) return '/api';
     const value = String(base).trim().replace(/\/+$/, '');
@@ -315,7 +325,7 @@ window.voteInWallet = new VoteInMetaMask();
 window.voteInSession = new VoteInSessionManager();
 
 // Global DOM Initialization
-document.addEventListener('DOMContentLoaded', () => {
+function initGlobalApp() {
     checkAuth();
     
     const logoutBtn = document.getElementById('logout-btn');
@@ -327,8 +337,16 @@ document.addEventListener('DOMContentLoaded', () => {
         window.voteInWallet.updateUI();
     }
 
-    window.voteInAI = new VoteInAIChatbot();
-});
+    if (!window.voteInAI) {
+        window.voteInAI = new VoteInAIChatbot();
+    }
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initGlobalApp);
+} else {
+    initGlobalApp();
+}
 
 /* =========================================================
    PRIORITY 3 — 4-DIGIT SECURITY PIN INPUT HELPER (Single Horizontal Row)
