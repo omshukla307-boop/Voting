@@ -179,7 +179,19 @@
             return String(str).replace(/'/g, "\\'").replace(/"/g, '&quot;');
         }
 
-        function pressEvmButton(id, name, party, symbol, electionId, btnElement) {
+        async function pressEvmButton(id, name, party, symbol, electionId, btnElement) {
+            // ENFORCE METAMASK WALLET CONNECTION REQUIREMENT
+            if (!window.voteInWallet || !window.voteInWallet.account) {
+                alert("⚠️ MetaMask Web3 Wallet is NOT connected!\n\nYou MUST connect your Web3 wallet before casting your official ballot.");
+                if (window.voteInWallet) {
+                    await window.voteInWallet.connect();
+                }
+                if (!window.voteInWallet || !window.voteInWallet.account) {
+                    alert("Voting canceled. A connected Web3 wallet is required to vote.");
+                    return;
+                }
+            }
+
             // Glow Red LED next to candidate button
             const led = document.getElementById(`led-${id}`);
             if (led) led.classList.add('glowing');
@@ -210,9 +222,12 @@
                 continueBtn.disabled = true;
                 continueBtn.innerText = 'Submitting Cryptographic Ballot... ⏳';
 
-                let walletAddress = null;
-                if (window.voteInWallet && window.voteInWallet.account) {
-                    walletAddress = window.voteInWallet.account;
+                let walletAddress = window.voteInWallet ? window.voteInWallet.account : null;
+                if (!walletAddress) {
+                    alert("⚠️ MetaMask Web3 Wallet connection is required to submit your vote!");
+                    continueBtn.disabled = false;
+                    continueBtn.innerText = 'Proceed to Vote Confirmation Summary →';
+                    return;
                 }
 
                 await submitVote(txHash, walletAddress);
@@ -224,24 +239,13 @@
 
             let token = getToken();
 
-            // Auto-issue token if user hasn't logged in yet so voting NEVER fails
-            if (!token) {
-                try {
-                    const issueRes = await fetch(apiUrl('/auth/issue-token'), {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ voterId: localStorage.getItem('currentVoterId') || 'TXPPS1893L' })
-                    });
-                    const issueData = await issueRes.json();
-                    if (issueData.token) {
-                        token = issueData.token;
-                        setToken(token);
-                    }
-                } catch (e) {}
+            if (!walletAddress) {
+                alert("⚠️ MetaMask Web3 Wallet connection is required to submit your vote!");
+                return;
             }
 
             try {
-                await fetch(apiUrl('/voter/vote'), {
+                const res = await fetch(apiUrl('/voter/vote'), {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -254,6 +258,12 @@
                         walletAddress
                     })
                 });
+
+                const data = await res.json();
+                if (!res.ok) {
+                    alert("⚠️ Voting Failed: " + (data.error || "You have already cast your vote in this election. Single-vote policy enforced."));
+                    return;
+                }
             } catch (err) {
                 console.warn("Backend vote submit notice:", err);
             }
