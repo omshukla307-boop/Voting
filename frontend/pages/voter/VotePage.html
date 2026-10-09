@@ -66,6 +66,34 @@
         </div>
     </div>
 
+    <!-- 4-DIGIT SECURITY PIN VERIFICATION MODAL -->
+    <div id="pin-auth-modal" class="modal-backdrop">
+        <div class="modal-content" style="max-width: 440px; text-align: center;">
+            <div style="background: #002147; color: white; padding: 0.75rem 1rem; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <span style="font-weight: 800; font-size: 0.9rem;">🔒 Ballot Confirmation Security PIN</span>
+                <button id="close-pin-modal-btn" type="button" style="background: none; border: none; color: white; font-size: 1.4rem; cursor: pointer;">&times;</button>
+            </div>
+            
+            <h4 style="color: #0B4F9C; margin-bottom: 0.35rem; font-size: 1.05rem;">Re-enter 4-Digit Security PIN</h4>
+            <p style="font-size: 0.85rem; color: #64748B; margin-bottom: 1.15rem;">
+                Please enter the 4-digit security PIN set during authentication to verify ballot authorization on this device.
+            </p>
+
+            <div id="pin-modal-error" class="alert-box alert-danger" style="display: none; margin-bottom: 1rem; font-size: 0.85rem;"></div>
+
+            <div class="pin-input-container" id="vote-pin-container" style="margin-bottom: 1.25rem;">
+                <input type="password" maxlength="1" class="pin-digit-box" id="vpin-1" value="1">
+                <input type="password" maxlength="1" class="pin-digit-box" id="vpin-2" value="2">
+                <input type="password" maxlength="1" class="pin-digit-box" id="vpin-3" value="3">
+                <input type="password" maxlength="1" class="pin-digit-box" id="vpin-4" value="4">
+            </div>
+
+            <button id="confirm-vote-pin-btn" type="button" class="btn btn-saffron" style="width: 100%; padding: 0.75rem; font-weight: 700;">
+                Verify PIN & Cast Official Ballot →
+            </button>
+        </div>
+    </div>
+
     <!-- VVPAT PAPER AUDIT SLIP MODAL -->
     <div id="vvpat-modal" class="modal-backdrop">
         <div class="modal-content" style="max-width: 520px; text-align: center;">
@@ -193,6 +221,18 @@
             return String(str).replace(/'/g, "\\'").replace(/"/g, '&quot;');
         }
 
+        initPinInputs('vote-pin-container');
+
+        const confirmPinBtn = document.getElementById('confirm-vote-pin-btn');
+        const closePinModalBtn = document.getElementById('close-pin-modal-btn');
+        const pinModal = document.getElementById('pin-auth-modal');
+
+        if (closePinModalBtn && pinModal) {
+            closePinModalBtn.addEventListener('click', () => {
+                pinModal.classList.remove('active');
+            });
+        }
+
         async function pressEvmButton(id, name, party, symbol, electionId, btnElement) {
             // ENFORCE METAMASK WALLET CONNECTION REQUIREMENT
             if (!window.voteInWallet || !window.voteInWallet.account) {
@@ -216,36 +256,67 @@
 
             selectedCandidate = { id, name, party, symbol, electionId };
 
-            const txHash = '0x' + Array.from({length: 64}, () => Math.floor(Math.random()*16).toString(16)).join('');
+            // Open 4-Digit Security PIN Modal
+            const pinError = document.getElementById('pin-modal-error');
+            if (pinError) pinError.style.display = 'none';
 
-            // Show VVPAT Paper Audit Slip Modal immediately
-            document.getElementById('vvpat-candidate-name').innerText = name;
-            document.getElementById('vvpat-candidate-party').innerText = party;
-            document.getElementById('vvpat-candidate-symbol').innerText = symbol;
-            document.getElementById('vvpat-tx-hash').innerText = `TX HASH: ${txHash.slice(0, 18)}...`;
+            if (pinModal) {
+                pinModal.classList.add('active');
+                const firstPinInput = document.getElementById('vpin-1');
+                if (firstPinInput) firstPinInput.focus();
+            }
+        }
 
-            const modal = document.getElementById('vvpat-modal');
-            modal.classList.add('active');
+        if (confirmPinBtn) {
+            confirmPinBtn.addEventListener('click', async () => {
+                const inputs = document.querySelectorAll('#vote-pin-container .pin-digit-box');
+                const enteredPin = Array.from(inputs).map(i => i.value).join('');
+                const expectedPin = sessionStorage.getItem('voterSecurityPin') || '1234';
 
-            // Wire Proceed Button
-            const continueBtn = document.getElementById('vvpat-continue-btn');
-            continueBtn.disabled = false;
-            continueBtn.innerText = 'Proceed to Vote Confirmation Summary →';
-            
-            continueBtn.onclick = async function () {
-                continueBtn.disabled = true;
-                continueBtn.innerText = 'Submitting Cryptographic Ballot... ⏳';
+                const pinError = document.getElementById('pin-modal-error');
 
-                let walletAddress = window.voteInWallet ? window.voteInWallet.account : null;
-                if (!walletAddress) {
-                    alert("⚠️ MetaMask Web3 Wallet connection is required to submit your vote!");
-                    continueBtn.disabled = false;
-                    continueBtn.innerText = 'Proceed to Vote Confirmation Summary →';
+                if (enteredPin !== expectedPin) {
+                    if (pinError) {
+                        pinError.style.display = 'block';
+                        pinError.innerText = '❌ Incorrect 4-Digit Security PIN. Please enter the same PIN set during login (Default: 1234).';
+                    }
                     return;
                 }
 
-                await submitVote(txHash, walletAddress);
-            };
+                if (pinError) pinError.style.display = 'none';
+                if (pinModal) pinModal.classList.remove('active');
+
+                // Proceed to VVPAT Paper Audit Slip Modal
+                const txHash = '0x' + Array.from({length: 64}, () => Math.floor(Math.random()*16).toString(16)).join('');
+
+                document.getElementById('vvpat-candidate-name').innerText = selectedCandidate.name;
+                document.getElementById('vvpat-candidate-party').innerText = selectedCandidate.party;
+                document.getElementById('vvpat-candidate-symbol').innerText = selectedCandidate.symbol || '🗳️';
+                document.getElementById('vvpat-tx-hash').innerText = `TX HASH: ${txHash.slice(0, 18)}...`;
+
+                const vvpatModal = document.getElementById('vvpat-modal');
+                if (vvpatModal) vvpatModal.classList.add('active');
+
+                const continueBtn = document.getElementById('vvpat-continue-btn');
+                if (continueBtn) {
+                    continueBtn.disabled = false;
+                    continueBtn.innerText = 'Proceed to Vote Confirmation Summary →';
+                    continueBtn.onclick = async function () {
+                        continueBtn.disabled = true;
+                        continueBtn.innerText = 'Submitting Cryptographic Ballot... ⏳';
+
+                        let walletAddress = window.voteInWallet ? window.voteInWallet.account : null;
+                        if (!walletAddress) {
+                            alert("⚠️ MetaMask Web3 Wallet connection is required to submit your vote!");
+                            continueBtn.disabled = false;
+                            continueBtn.innerText = 'Proceed to Vote Confirmation Summary →';
+                            return;
+                        }
+
+                        await submitVote(txHash, walletAddress);
+                    };
+                }
+            });
         }
 
         async function submitVote(txHash, walletAddress) {
