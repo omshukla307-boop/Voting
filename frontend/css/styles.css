@@ -1,4 +1,4 @@
-/* Digital Voting System of India — Exact Screenshot Stylesheet */
+/* Digital Voting System of India — Master Unified Stylesheet */
 :root {
     --header-bg: #0B4F9C;
     --header-text: #FFFFFF;
@@ -14,6 +14,7 @@
     --btn-red-hover: #BD2130;
     --btn-gray: #6C757D;
     --btn-gray-hover: #5A6268;
+    --green-accent: #28A745;
 }
 
 * {
@@ -31,7 +32,7 @@ body {
     flex-direction: column;
 }
 
-/* Practice Banner (Matches Screenshot) */
+/* Practice Banner */
 .demo-banner {
     background: #78350F;
     color: #FEF3C7;
@@ -41,7 +42,7 @@ body {
     font-weight: 600;
 }
 
-/* Header Navigation Bar (Matches Screenshot) */
+/* Header Navigation Bar */
 nav {
     background: var(--header-bg);
     padding: 0.65rem 2rem;
@@ -91,7 +92,7 @@ nav {
     font-weight: 700;
 }
 
-/* Red Wallet Badge Pill (Matches Screenshot) */
+/* Red Wallet Badge Pill */
 .wallet-badge-pill {
     display: inline-block;
     background: #DC3545;
@@ -134,7 +135,7 @@ nav {
     background: var(--btn-red-hover);
 }
 
-/* Container & Cards (Matches Screenshot) */
+/* Container & Cards */
 .container {
     max-width: 920px;
     margin: 2rem auto;
@@ -172,7 +173,7 @@ p {
     font-size: 0.95rem;
 }
 
-/* Action Buttons (Matches Screenshot) */
+/* Buttons */
 .btn {
     display: inline-flex;
     align-items: center;
@@ -215,6 +216,93 @@ p {
 .btn-sm {
     padding: 0.35rem 0.85rem;
     font-size: 0.85rem;
+}
+
+/* 4-DIGIT SECURITY PIN LAYOUT — EXACT SINGLE HORIZONTAL ROW OF 4 SMALL SQUARE BOXES */
+.pin-input-container {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 0.75rem !important;
+    justify-content: center !important;
+    align-items: center !important;
+    margin: 1rem 0 !important;
+    width: 100% !important;
+}
+
+.pin-digit-box {
+    width: 52px !important;
+    height: 52px !important;
+    min-width: 52px !important;
+    min-height: 52px !important;
+    max-width: 52px !important;
+    max-height: 52px !important;
+    text-align: center !important;
+    font-size: 1.5rem !important;
+    font-weight: 800 !important;
+    border: 1.5px solid var(--border-color) !important;
+    border-radius: 6px !important;
+    background: #FFFFFF !important;
+    color: var(--btn-blue) !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    aspect-ratio: 1 / 1 !important;
+}
+
+.pin-digit-box:focus {
+    outline: none !important;
+    border-color: var(--btn-blue) !important;
+    box-shadow: 0 0 0 3px rgba(11, 79, 156, 0.2) !important;
+    background: #FFFFFF !important;
+}
+
+/* Face Detection Canvas & Camera Frame */
+.face-detection-box {
+    position: relative;
+    width: 100%;
+    max-width: 280px;
+    height: 180px;
+    background: #000000;
+    margin: 0 auto 0.75rem auto;
+    border-radius: 6px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.face-detection-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 2;
+}
+
+/* Tabs */
+.tabs-header {
+    display: flex;
+    border-bottom: 2px solid var(--border-color);
+    margin-bottom: 1.25rem;
+    gap: 0.5rem;
+}
+
+.tab-btn {
+    padding: 0.65rem 1.15rem;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    font-weight: 700;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+}
+
+.tab-btn.active {
+    color: var(--btn-blue);
+    border-bottom-color: var(--btn-blue);
 }
 
 /* Candidate Grid */
@@ -337,26 +425,6 @@ input:focus, select:focus, textarea:focus {
     background: #D4EDDA;
     border: 1px solid #C3E6CB;
     color: #155724;
-}
-
-/* Tables */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 1rem;
-}
-
-th, td {
-    padding: 0.75rem 1rem;
-    border-bottom: 1px solid var(--border-color);
-    text-align: left;
-}
-
-th {
-    background: #F8F9FA;
-    color: #2D3748;
-    font-weight: 700;
-    font-size: 0.85rem;
 }
 
 /* Modals */
