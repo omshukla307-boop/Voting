@@ -126,35 +126,32 @@ class VoteInMetaMask {
         }
 
         try {
-            // Standard EIP-1193 request to open MetaMask connection pop-up window
+            // Force MetaMask to open the Account Selection & Permission Dialog Window every time
+            await window.ethereum.request({
+                method: 'wallet_requestPermissions',
+                params: [{ eth_accounts: {} }]
+            });
+
             const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
             if (accounts && accounts.length > 0) {
                 this.account = accounts[0];
                 this.isManuallyConnected = true;
-                sessionStorage.setItem('connectedWallet', this.account);
-                localStorage.setItem('connectedWallet', this.account);
                 this.updateUI();
                 return this.account;
             }
         } catch (err) {
-            console.warn("MetaMask connection notice:", err);
+            console.warn("MetaMask manual connection notice:", err);
             try {
-                // Secondary fallback attempt if permissions prompt needed
-                await window.ethereum.request({
-                    method: 'wallet_requestPermissions',
-                    params: [{ eth_accounts: {} }]
-                });
+                // Secondary fallback attempt if permissions prompt was dismissed
                 const fallbackAccounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
                 if (fallbackAccounts && fallbackAccounts.length > 0) {
                     this.account = fallbackAccounts[0];
                     this.isManuallyConnected = true;
-                    sessionStorage.setItem('connectedWallet', this.account);
-                    localStorage.setItem('connectedWallet', this.account);
                     this.updateUI();
                     return this.account;
                 }
             } catch (fallbackErr) {
-                console.warn("MetaMask permissions notice:", fallbackErr);
+                console.warn("MetaMask fallback notice:", fallbackErr);
             }
             this.account = null;
             this.isManuallyConnected = false;
@@ -206,8 +203,6 @@ class VoteInMetaMask {
                     this.disconnect();
                 } else if (this.isManuallyConnected) {
                     this.account = accounts[0];
-                    sessionStorage.setItem('connectedWallet', this.account);
-                    localStorage.setItem('connectedWallet', this.account);
                     this.updateUI();
                 }
             });
