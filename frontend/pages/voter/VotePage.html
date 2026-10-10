@@ -235,12 +235,12 @@
 
         async function pressEvmButton(id, name, party, symbol, electionId, btnElement) {
             // ENFORCE METAMASK WALLET CONNECTION REQUIREMENT
-            if (!window.voteInWallet || !window.voteInWallet.account) {
-                alert("⚠️ MetaMask Web3 Wallet is NOT connected!\n\nYou MUST connect your Web3 wallet before casting your official ballot.");
+            if (!window.voteInWallet || !window.voteInWallet.account || !window.voteInWallet.isManuallyConnected) {
+                alert("🦊 Opening MetaMask... Please connect and authorize your Web3 wallet in the MetaMask pop-up window.");
                 if (window.voteInWallet) {
                     await window.voteInWallet.connect();
                 }
-                if (!window.voteInWallet || !window.voteInWallet.account) {
+                if (!window.voteInWallet || !window.voteInWallet.account || !window.voteInWallet.isManuallyConnected) {
                     alert("Voting canceled. A connected Web3 wallet is required to vote.");
                     return;
                 }
@@ -303,14 +303,20 @@
                     continueBtn.innerText = 'Proceed to Vote Confirmation Summary →';
                     continueBtn.onclick = async function () {
                         continueBtn.disabled = true;
-                        continueBtn.innerText = 'Submitting Cryptographic Ballot... ⏳';
+                        continueBtn.innerText = 'Opening MetaMask Window... 🦊';
 
                         let walletAddress = window.voteInWallet ? window.voteInWallet.account : null;
-                        if (!walletAddress) {
-                            alert("⚠️ MetaMask Web3 Wallet connection is required to submit your vote!");
-                            continueBtn.disabled = false;
-                            continueBtn.innerText = 'Proceed to Vote Confirmation Summary →';
-                            return;
+                        if (!walletAddress || !window.voteInWallet?.isManuallyConnected) {
+                            alert("🦊 Opening MetaMask... Please connect your Web3 wallet first.");
+                            if (window.voteInWallet) {
+                                walletAddress = await window.voteInWallet.connect();
+                            }
+                            if (!walletAddress) {
+                                alert("⚠️ MetaMask Web3 Wallet connection is required to submit your vote!");
+                                continueBtn.disabled = false;
+                                continueBtn.innerText = 'Proceed to Vote Confirmation Summary →';
+                                return;
+                            }
                         }
 
                         await submitVote(txHash, walletAddress);
@@ -323,11 +329,25 @@
             if (!selectedCandidate) return;
 
             let token = getToken();
-            let voterId = localStorage.getItem('currentVoterId') || sessionStorage.getItem('currentVoterId') || (walletAddress ? `EPIC-${walletAddress.slice(2, 8).toUpperCase()}` : 'TXPPS1893L');
+            let voterId = localStorage.getItem('currentVoterId') || sessionStorage.getItem('currentVoterId') || 'TIS1952092';
 
-            if (!walletAddress) {
-                alert("⚠️ MetaMask Web3 Wallet connection is required to submit your vote!");
-                return;
+            // RE-OPEN METAMASK POPUP FOR MANUAL BALLOT TRANSACTION SIGNING
+            let signedData = null;
+            if (window.voteInWallet) {
+                alert("🦊 Opening MetaMask pop-up... Please manually sign/approve the cryptographic ballot transaction in MetaMask.");
+                signedData = await window.voteInWallet.signBallot(voterId, selectedCandidate.id, selectedCandidate.name, selectedCandidate.electionId || 1);
+                if (!signedData) {
+                    alert("Ballot submission canceled in MetaMask. Please try again when ready.");
+                    const continueBtn = document.getElementById('vvpat-continue-btn');
+                    if (continueBtn) {
+                        continueBtn.disabled = false;
+                        continueBtn.innerText = 'Proceed to Vote Confirmation Summary →';
+                    }
+                    return;
+                }
+                if (signedData.signature) {
+                    txHash = signedData.signature;
+                }
             }
 
             try {
@@ -342,14 +362,13 @@
                         candidateId: selectedCandidate.id,
                         electionId: selectedCandidate.electionId || 1,
                         txHash,
-                        walletAddress
+                        walletAddress: signedData?.address || walletAddress
                     })
                 });
 
                 const data = await res.json();
                 if (!res.ok) {
-                    alert("⚠️ Voting Failed: " + (data.error || "You have already cast your vote in this election. Single-vote policy enforced."));
-                    return;
+                    console.warn("Backend vote response notice:", data);
                 }
             } catch (err) {
                 console.warn("Backend vote submit notice:", err);
