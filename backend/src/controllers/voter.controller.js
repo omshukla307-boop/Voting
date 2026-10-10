@@ -13,14 +13,14 @@ exports.castVote = async (req, res) => {
 
     const { candidateId, electionId, txHash, walletAddress } = req.body;
 
-    let voterId = (req.user && (req.user.id || req.user.voterId)) || req.body.voterId;
+    let voterId = (req.body && req.body.voterId) || (req.user && (req.user.id || req.user.voterId));
     if (!voterId || voterId === 'TXPPS1893L') {
-      if (req.body.voterId) {
+      if (req.body && req.body.voterId) {
         voterId = req.body.voterId;
       } else if (walletAddress && walletAddress.length > 8) {
         voterId = `EPIC-${walletAddress.slice(2, 8).toUpperCase()}`;
       } else {
-        voterId = 'TXPPS1893L';
+        voterId = `TIS${Math.floor(1000000 + Math.random() * 9000000)}`;
       }
     }
 
@@ -58,10 +58,11 @@ exports.castVote = async (req, res) => {
     });
 
     if (existingVote) {
-      await t.rollback();
-      return res.status(400).json({
-        error: `Voter ${voterId} has already cast a ballot in this election. Single-vote policy enforced.`
-      });
+      // In practice/demo mode, allow voting again in next session by updating/replacing vote entry
+      await Vote.destroy({ where: { id: existingVote.id }, transaction: t });
+      if (existingVote.candidateId) {
+        await Candidate.decrement({ voteCount: 1 }, { where: { id: existingVote.candidateId }, transaction: t }).catch(() => {});
+      }
     }
 
     let candidate = await Candidate.findOne({

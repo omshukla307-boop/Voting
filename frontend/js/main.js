@@ -545,19 +545,22 @@ class VoteInQRScanner {
     }
 
     onScanSuccess(decodedText) {
-        this.updateStatus("✓ QR Code Scanned! Account Fetched (TIS1952092).", "success");
         const parsed = this.parseDemoPayload(decodedText);
+        this.updateStatus(`✓ QR Code Scanned! Account Fetched (${parsed.voterId}).`, "success");
         this.stopScanning();
         this.successCallback(parsed);
     }
 
     parseDemoPayload(text) {
         let voterId = null;
+        let name = null;
+
         if (text && typeof text === 'string') {
             const cleanText = text.trim();
             try {
                 const jsonPayload = JSON.parse(cleanText);
                 voterId = jsonPayload.voterId || jsonPayload.epicNo || jsonPayload.epic || jsonPayload.id;
+                name = jsonPayload.name || jsonPayload.electorName;
             } catch (e) {
                 const epicMatch = cleanText.match(/[A-Z]{3}[0-9]{7}/i);
                 if (epicMatch) {
@@ -568,12 +571,30 @@ class VoteInQRScanner {
             }
         }
 
-        // Set default to requested TIS1952092 and name Hiral Chawra
-        if (!voterId || voterId.length < 3 || voterId === 'TXPPS1893L') {
-            voterId = 'TIS1952092';
-        }
+        // Demo elector pool cycling for multi-account video recording
+        const pool = [
+            { voterId: 'TIS1952092', name: 'Hiral Chawra' },
+            { voterId: 'Z1952092', name: 'Hiral Chawra (NRI)' },
+            { voterId: 'DEL9841205', name: 'Aarav Mehta' },
+            { voterId: 'EPIC7482910', name: 'Priya Sharma' },
+            { voterId: 'VOTER938102', name: 'Kabir Verma' },
+            { voterId: 'NDL8847291', name: 'Ananya Rao' },
+            { voterId: 'BOM3920194', name: 'Rohan Kapoor' },
+            { voterId: 'UP9482019', name: 'Meera Joshi' },
+            { voterId: 'GUJ4829104', name: 'Vikram Singh' }
+        ];
 
-        const name = (voterId === 'TIS1952092' || voterId === 'TXPPS1893L') ? 'Hiral Chawra' : 'Verified Elector';
+        if (!window._demoScanIndex) window._demoScanIndex = 0;
+
+        if (!voterId || voterId.length < 4 || voterId === 'TXPPS1893L') {
+            const elector = pool[window._demoScanIndex % pool.length];
+            window._demoScanIndex++;
+            voterId = elector.voterId;
+            name = elector.name;
+        } else {
+            const match = pool.find(e => e.voterId === voterId);
+            name = name || (match ? match.name : `Verified Elector (${voterId})`);
+        }
 
         return {
             valid: true,

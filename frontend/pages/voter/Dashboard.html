@@ -47,7 +47,7 @@
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-top: 1.5rem; background: #F8FAFC; border: 1px solid var(--border-color); padding: 1.25rem; border-radius: 6px;">
                 <div>
                     <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; display: block;">VOTER EPIC ID</span>
-                    <strong id="dash-voter-id" style="font-size: 1.1rem; color: var(--navy-primary); font-family: monospace;">TXPPS1893L</strong>
+                    <strong id="dash-voter-id" style="font-size: 1.1rem; color: var(--navy-primary); font-family: monospace;">TIS1952092</strong>
                 </div>
                 <div>
                     <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; display: block;">ELECTORAL STATUS</span>
@@ -146,7 +146,7 @@
 
     <script src="/js/main.js"></script>
     <script>
-        const voterId = localStorage.getItem('currentVoterId') || 'TXPPS1893L';
+        const voterId = localStorage.getItem('currentVoterId') || sessionStorage.getItem('currentVoterId') || 'TIS1952092';
         const lastVoteHash = sessionStorage.getItem('lastVoteHash');
 
         document.getElementById('dash-voter-id').innerText = voterId;
