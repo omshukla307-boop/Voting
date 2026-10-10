@@ -1,4 +1,5 @@
 // backend/src/controllers/ai.controller.js
+// Updated: Digital Voting System of India — AI Chat & Knowledge Engine Controller
 
 /**
  * Comprehensive Trained Project Knowledge & NLU Engine
