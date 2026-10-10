@@ -56,6 +56,16 @@
                 </div>
             </div>
 
+            <!-- DigiLocker Official Verification Button -->
+            <div style="background: #F0F4F8; border: 1px solid #CBD5E1; padding: 0.85rem; border-radius: 6px; margin-bottom: 1.25rem; text-align: center;">
+                <button type="button" id="digilocker-login-btn" class="btn" style="width: 100%; background: #004D99; color: #FFFFFF; font-weight: 700; padding: 0.65rem 1rem; border: none; border-radius: 6px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer;">
+                    <span style="font-size: 1.1rem;">🇮🇳</span> Verify & Sign In with DigiLocker
+                </button>
+                <div style="font-size: 0.78rem; color: #64748B; margin-top: 0.35rem;">
+                    Fetch official Voter ID (EPIC) & Aadhaar directly from Government Database.
+                </div>
+            </div>
+
             <!-- Elector Category Tabs -->
             <div class="tabs-header">
                 <button class="tab-btn active" id="tab-resident-btn">🇮🇳 Resident Elector</button>
@@ -259,6 +269,16 @@
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const prefilledVoterId = urlParams.get('voterId');
+        const dlToken = urlParams.get('digilockerToken');
+
+        // Automatic DigiLocker session verification
+        if (dlToken && prefilledVoterId) {
+            setToken(dlToken);
+            setUserRole('voter');
+            localStorage.setItem('currentVoterId', prefilledVoterId);
+            window.location.href = '/pages/voter/Dashboard.html';
+        }
+
         if (prefilledVoterId) {
             document.getElementById('voterId').value = prefilledVoterId;
         } else {
@@ -277,6 +297,31 @@
                 document.querySelectorAll('#pin-container .pin-digit-box').forEach(box => box.value = '');
             }
         });
+
+        // DigiLocker Sign-In Click Listener
+        const dlBtn = document.getElementById('digilocker-login-btn');
+        if (dlBtn) {
+            dlBtn.addEventListener('click', async () => {
+                dlBtn.innerText = 'Connecting to DigiLocker Portal... ⏳';
+                dlBtn.disabled = true;
+                try {
+                    const res = await fetch(apiUrl('/auth/digilocker/url'));
+                    const data = await res.json();
+                    if (data && data.authUrl) {
+                        window.location.href = data.authUrl;
+                    } else {
+                        alert("Could not initialize DigiLocker session. Please try again.");
+                        dlBtn.disabled = false;
+                        dlBtn.innerHTML = '<span style="font-size: 1.1rem;">🇮🇳</span> Verify & Sign In with DigiLocker';
+                    }
+                } catch (err) {
+                    console.error("DigiLocker URL error:", err);
+                    alert("Error connecting to DigiLocker authentication service.");
+                    dlBtn.disabled = false;
+                    dlBtn.innerHTML = '<span style="font-size: 1.1rem;">🇮🇳</span> Verify & Sign In with DigiLocker';
+                }
+            });
+        }
 
         initPinInputs('pin-container');
 
