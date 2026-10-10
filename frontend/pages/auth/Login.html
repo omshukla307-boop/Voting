@@ -74,7 +74,7 @@
                                 📷 Scan Voter ID Card
                             </button>
                         </div>
-                        <input type="text" id="voterId" placeholder="e.g. TXPPS1893L or voter1" value="TXPPS1893L" required>
+                        <input type="text" id="voterId" placeholder="Enter Voter ID / EPIC Number" required>
                         <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">
                             Enter your official 10-character EPIC card number or click Scan Voter ID Card.
                         </div>
@@ -88,7 +88,7 @@
 
                     <div class="form-group">
                         <label for="password">Account Password</label>
-                        <input type="password" id="password" placeholder="••••••••" value="password123" required>
+                        <input type="password" id="password" placeholder="••••••••" required>
                     </div>
 
                     <!-- 4-Digit Security PIN Section -->
@@ -97,10 +97,10 @@
                         <p style="font-size: 0.8rem; margin-bottom: 0.5rem;">Required for ballot confirmation on this device.</p>
                         
                         <div class="pin-input-container" id="pin-container">
-                            <input type="password" maxlength="1" class="pin-digit-box" value="1">
-                            <input type="password" maxlength="1" class="pin-digit-box" value="2">
-                            <input type="password" maxlength="1" class="pin-digit-box" value="3">
-                            <input type="password" maxlength="1" class="pin-digit-box" value="4">
+                            <input type="password" maxlength="1" class="pin-digit-box">
+                            <input type="password" maxlength="1" class="pin-digit-box">
+                            <input type="password" maxlength="1" class="pin-digit-box">
+                            <input type="password" maxlength="1" class="pin-digit-box">
                         </div>
                     </div>
 
@@ -183,14 +183,6 @@
                         Submit NRI Details & Proceed
                     </button>
                 </form>
-            </div>
-
-            <!-- Test Credentials Card -->
-            <div style="margin-top: 1.25rem; padding: 0.85rem; background: #F8FAFC; border: 1px dashed var(--border-color); border-radius: 6px; font-size: 0.85rem; color: var(--text-muted);">
-                <div style="font-weight: 700; color: var(--navy-primary); margin-bottom: 0.25rem;">🔑 Demo Practice Credentials:</div>
-                <div>• Scanned Voter ID: <strong>TIS1952092</strong> | Password: <strong>password123</strong></div>
-                <div>• Voter ID / EPIC: <strong>TXPPS1893L</strong> | Password: <strong>password123</strong></div>
-                <div>• Voter ID / EPIC: <strong>voter1</strong> | Password: <strong>password123</strong></div>
             </div>
         </div>
     </div>
