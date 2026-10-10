@@ -308,7 +308,11 @@
                     const res = await fetch(apiUrl('/auth/digilocker/url'));
                     const data = await res.json();
                     if (data && data.authUrl) {
-                        window.location.href = data.authUrl;
+                        let targetUrl = data.authUrl;
+                        if (!targetUrl.startsWith('http://') && !targetUrl.startsWith('https://')) {
+                            targetUrl = apiUrl(targetUrl.replace(/^\/api/, ''));
+                        }
+                        window.location.href = targetUrl;
                     } else {
                         alert("Could not initialize DigiLocker session. Please try again.");
                         dlBtn.disabled = false;

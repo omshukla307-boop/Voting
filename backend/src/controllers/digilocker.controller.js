@@ -19,7 +19,7 @@ exports.getAuthUrl = (req, res) => {
         
         // If in local/demo environment without real government credentials, provide direct demo callback endpoint
         if (!process.env.DIGILOCKER_CLIENT_ID || process.env.DIGILOCKER_CLIENT_ID === 'DEMO_CLIENT_ID') {
-            const demoUrl = `${req.protocol}://${req.get('host')}/api/auth/digilocker/callback?code=demo_auth_code&state=${state}`;
+            const demoUrl = `/api/auth/digilocker/callback?code=demo_auth_code&state=${state}`;
             return res.json({ success: true, authUrl: demoUrl, isDemo: true });
         }
 
