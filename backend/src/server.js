@@ -95,9 +95,12 @@ app.set('views', frontendPath);
 app.use(express.static(frontendPath));
 
 const adminCtrl = require("./controllers/admin.controller");
+const digilockerCtrl = require("./controllers/digilocker.controller");
 
 // API Routes
 app.use("/api/auth", authRoutes);
+app.get("/api/auth/digilocker/url", digilockerCtrl.getAuthUrl);
+app.get("/api/auth/digilocker/callback", digilockerCtrl.handleCallback);
 app.use("/api/voter", voterRoutes);
 app.use("/api/spectator", spectatorRoutes);
 app.use("/api/admin", adminRoutes);
