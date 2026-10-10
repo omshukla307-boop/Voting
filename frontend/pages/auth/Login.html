@@ -606,7 +606,7 @@
         // Resident Login Submission
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const voterId = document.getElementById('voterId').value || 'TXPPS1893L';
+            const voterId = document.getElementById('voterId').value || 'TIS1952092';
             const password = document.getElementById('password').value || 'password123';
             const walletAddress = window.voteInWallet?.account || null;
 
@@ -622,7 +622,7 @@
         document.getElementById('nri-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const submitBtn = e.target.querySelector('button[type="submit"]');
-            const voterId = document.getElementById('nriVoterId').value || 'TXPPS1893L';
+            const voterId = document.getElementById('nriVoterId').value || 'Z1952092';
 
             if (submitBtn) {
                 submitBtn.disabled = true;
