@@ -66,7 +66,7 @@
 
             <!-- Indian Resident Elector Form -->
             <div id="resident-section">
-                <form id="login-form">
+                <form id="login-form" autocomplete="off">
                     <div class="form-group">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
                             <label for="voterId" style="margin-bottom: 0;">Voter ID / EPIC Number</label>
@@ -74,7 +74,7 @@
                                 📷 Scan Voter ID Card
                             </button>
                         </div>
-                        <input type="text" id="voterId" placeholder="Enter Voter ID / EPIC Number" required>
+                        <input type="text" id="voterId" name="voter_epic_no_autofill" placeholder="Enter Voter ID / EPIC Number" autocomplete="off" required>
                         <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">
                             Enter your official 10-character EPIC card number or click Scan Voter ID Card.
                         </div>
@@ -88,7 +88,7 @@
 
                     <div class="form-group">
                         <label for="password">Account Password</label>
-                        <input type="password" id="password" placeholder="••••••••" required>
+                        <input type="password" id="password" name="voter_pass_no_autofill" placeholder="••••••••" autocomplete="new-password" required>
                     </div>
 
                     <!-- 4-Digit Security PIN Section -->
@@ -97,10 +97,10 @@
                         <p style="font-size: 0.8rem; margin-bottom: 0.5rem;">Required for ballot confirmation on this device.</p>
                         
                         <div class="pin-input-container" id="pin-container">
-                            <input type="password" maxlength="1" class="pin-digit-box">
-                            <input type="password" maxlength="1" class="pin-digit-box">
-                            <input type="password" maxlength="1" class="pin-digit-box">
-                            <input type="password" maxlength="1" class="pin-digit-box">
+                            <input type="password" maxlength="1" class="pin-digit-box" name="pin_digit_1" autocomplete="off">
+                            <input type="password" maxlength="1" class="pin-digit-box" name="pin_digit_2" autocomplete="off">
+                            <input type="password" maxlength="1" class="pin-digit-box" name="pin_digit_3" autocomplete="off">
+                            <input type="password" maxlength="1" class="pin-digit-box" name="pin_digit_4" autocomplete="off">
                         </div>
                     </div>
 
@@ -261,7 +261,22 @@
         const prefilledVoterId = urlParams.get('voterId');
         if (prefilledVoterId) {
             document.getElementById('voterId').value = prefilledVoterId;
+        } else {
+            document.getElementById('voterId').value = '';
         }
+        document.getElementById('password').value = '';
+        document.querySelectorAll('#pin-container .pin-digit-box').forEach(box => box.value = '');
+
+        // Form reset on DOM ready to wipe browser auto-fill cache
+        window.addEventListener('load', () => {
+            const form = document.getElementById('login-form');
+            if (form && !prefilledVoterId) {
+                form.reset();
+                document.getElementById('voterId').value = '';
+                document.getElementById('password').value = '';
+                document.querySelectorAll('#pin-container .pin-digit-box').forEach(box => box.value = '');
+            }
+        });
 
         initPinInputs('pin-container');
 

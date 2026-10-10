@@ -32,6 +32,17 @@ body {
     flex-direction: column;
 }
 
+/* Disable Browser Autofill Background & Style */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 1000px #FFFFFF inset !important;
+    box-shadow: 0 0 0 1000px #FFFFFF inset !important;
+    -webkit-text-fill-color: #212529 !important;
+    transition: background-color 50000s ease-in-out 0s !important;
+}
+
 /* Practice Banner */
 .demo-banner {
     background: #78350F;
