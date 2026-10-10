@@ -100,6 +100,7 @@ function checkAuth() {
 class VoteInMetaMask {
     constructor() {
         this.account = null;
+        this.isManuallyConnected = false;
         this.init();
     }
 
@@ -108,10 +109,13 @@ class VoteInMetaMask {
     }
 
     async init() {
-        if (!this.isInstalled()) return;
+        this.account = null;
+        this.isManuallyConnected = false;
         sessionStorage.removeItem('connectedWallet');
         localStorage.removeItem('connectedWallet');
+        if (!this.isInstalled()) return;
         this.initListeners();
+        this.updateUI();
     }
 
     async connect() {
@@ -135,11 +139,14 @@ class VoteInMetaMask {
             const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
             if (accounts && accounts.length > 0) {
                 this.account = accounts[0];
+                this.isManuallyConnected = true;
                 this.updateUI();
                 return this.account;
             }
         } catch (err) {
             console.warn("MetaMask connection notice:", err);
+            this.account = null;
+            this.isManuallyConnected = false;
             this.updateUI();
         }
         return null;
@@ -147,13 +154,14 @@ class VoteInMetaMask {
 
     disconnect() {
         this.account = null;
+        this.isManuallyConnected = false;
         sessionStorage.removeItem('connectedWallet');
         localStorage.removeItem('connectedWallet');
         this.updateUI();
     }
 
     async signBallot(voterId, candidateId, candidateName, electionId) {
-        if (!this.account) {
+        if (!this.account || !this.isManuallyConnected) {
             await this.connect();
             if (!this.account) return null;
         }
@@ -183,9 +191,9 @@ class VoteInMetaMask {
     initListeners() {
         if (typeof window.ethereum !== 'undefined') {
             window.ethereum.on('accountsChanged', (accounts) => {
-                if (accounts.length === 0) {
+                if (!accounts || accounts.length === 0) {
                     this.disconnect();
-                } else {
+                } else if (this.isManuallyConnected) {
                     this.account = accounts[0];
                     sessionStorage.setItem('connectedWallet', this.account);
                     localStorage.setItem('connectedWallet', this.account);
@@ -202,7 +210,7 @@ class VoteInMetaMask {
     updateUI() {
         const walletBadges = document.querySelectorAll('.header-user-label, #wallet-status-badge, #dash-wallet-addr');
         walletBadges.forEach(badge => {
-            if (this.account) {
+            if (this.account && this.isManuallyConnected) {
                 const shortAddr = `${this.account.slice(0, 6)}...${this.account.slice(-4)}`;
                 badge.innerText = badge.id === 'dash-wallet-addr' ? shortAddr : `Wallet: ${shortAddr}`;
                 if (badge.classList.contains('badge-ended')) {
@@ -220,7 +228,7 @@ class VoteInMetaMask {
 
         const connectBtns = document.querySelectorAll('#connect-wallet-btn, #dash-connect-wallet-btn, .connect-wallet-btn');
         connectBtns.forEach(btn => {
-            if (this.account) {
+            if (this.account && this.isManuallyConnected) {
                 btn.innerText = '✓ Wallet Connected';
                 btn.className = 'btn btn-sm btn-success';
             } else {
